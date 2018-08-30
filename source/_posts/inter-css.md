@@ -1,7 +1,8 @@
 ---
 title: 前端面试之css
 date: 2018-08-27 19:42:30
-tags: css
+tags: [面试, css]
+categories: 面试
 ---
 
 [Front-end-Developer-Questions](https://github.com/markyun/My-blog/tree/master/Front-end-Developer-Questions/Questions-and-Answers)

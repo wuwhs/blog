@@ -2,6 +2,7 @@
 title: element-ui更换主题和按需引入组件
 date: 2018-08-27 19:40:30
 tags: [vue, element-ui]
+categories: vue
 ---
 
 ### 前言
@@ -41,7 +42,7 @@ import 'element-ui/lib/theme-chalk/index.css'
 </el-row>
 ```
 
-![](https://note.youdao.com/yws/public/resource/813e8f68e489060d70ccfdff42b3aecc/xmlnote/9ACB4AA84F6C4BF5A31894E862473674/17981)
+![](/gb/element-ui更换主题和按需引入组件/0.bmp)
 
 再看一下打包后的资源大小情况`npm run build --report`。
 
@@ -67,7 +68,7 @@ static/css/app.f24bb0ae3686720fe2e00c5a2024b8f1.css.map     267 kB          [emi
 
 再看一下各个模块占用情况：
 
-![](https://note.youdao.com/yws/public/resource/813e8f68e489060d70ccfdff42b3aecc/xmlnote/C07B357A10A0402D80D2E778DF4BE026/17928)
+![](/gb/element-ui更换主题和按需引入组件/1.bmp)
 
 发现`elment-ui.common.js`占用最大。所有模块资源总共有708kb。怎么才能减小打包后的大小呢？很容易就会想到ui的引入和样式的引入中，实际我们只使用了三个组件，却整体都被打包了，在这里引入这三个组件即可。
 
@@ -140,7 +141,7 @@ static/css/app.bf52525d6279e7fb87b4db770d119a8d.css.map      63 kB          [emi
 
 再看各个模块占用情况：
 
-![](https://note.youdao.com/yws/public/resource/813e8f68e489060d70ccfdff42b3aecc/xmlnote/2B075F3F1EB94BC3BB5B70677A8E3EEB/18201)
+![](/gb/element-ui更换主题和按需引入组件/2.bmp)
 
 WHAT?竟然模块都没什么变化，岂不是竹篮打水，事与愿违。
 
@@ -190,7 +191,7 @@ static/css/app.b140020e5dbee406ae70780b43ba7ddc.css.map    91.4 kB          [emi
 
 `static/js/vendor.js`确实变小了，126kB。再来看各个模块分析图。
 
-![](https://note.youdao.com/yws/public/resource/813e8f68e489060d70ccfdff42b3aecc/xmlnote/A1313A097D104F76ACF5D8F0EE047186/18121)
+![](/gb/element-ui更换主题和按需引入组件/3.bmp)
 
 模块总共135.03KB，少了5倍！
 
@@ -210,7 +211,7 @@ $--font-path: "~element-ui/lib/theme-chalk/fonts";
 
 现在我们的主题就变成了
 
-![](https://note.youdao.com/yws/public/resource/813e8f68e489060d70ccfdff42b3aecc/xmlnote/81D3354FBC96433DA313C971168A9C86/18158)
+![](/gb/element-ui更换主题和按需引入组件/4.bmp)
 
 如果你没有用到`SCSS`，可以用`element-theme`主题编译插件，生成自定义主题文件引入。
 

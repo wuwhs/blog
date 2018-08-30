@@ -1,7 +1,8 @@
 ---
 title: 前端面试之javascript
 date: 2018-08-27 19:42:30
-tags: javascript
+tags: [面试, javascript]
+categories: 面试
 ---
 
 ### 介绍js的基本数据类型

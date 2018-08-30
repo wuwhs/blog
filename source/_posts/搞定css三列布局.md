@@ -1,7 +1,8 @@
 ---
 title: 搞定css三列布局
 date: 2018-08-27 19:42:30
-tags: css
+tags: [css, 布局]
+categories: css
 ---
 
 > 谈到布局，首先就要想到定位，当别人问我，css的position定位有哪些取值，分别表示什么意思？呃.....

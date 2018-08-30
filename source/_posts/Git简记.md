@@ -1,7 +1,8 @@
 ---
 title: Git简记
 date: 2018-08-27 21:04:26
-tags:
+tags: git
+categories: git
 ---
 
 ### 0. 前言

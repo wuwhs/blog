@@ -2,6 +2,7 @@
 title: flex 布局
 date: 2018-07-23 15:39:55
 tags: css
+categories: css
 ---
 **flex弹性布局相关属性**
 

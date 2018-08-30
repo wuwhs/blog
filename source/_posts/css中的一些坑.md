@@ -2,6 +2,7 @@
 title: css中的一些坑
 date: 2018-08-27 18:42:30
 tags: css
+categories: css
 ---
 #### 1、如果子元素全部设置为浮动，则父元素是塌陷的
 1. 在元素末尾加块级空元素设置clear:both；

@@ -2,6 +2,7 @@
 title: 区分substring、substr和slice
 date: 2018-08-27 19:42:30
 tags: javascript
+categories: javascript
 ---
 
 1. 参数为正数的情况

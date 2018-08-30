@@ -2,6 +2,7 @@
 title: JavaScript思维导图
 date: 2018-08-27 19:42:30
 tags: javascript
+categories: javascript
 ---
 
 > 《JavaScript高级程序》已过一遍，梳理js基础知识点，思维导图是极有帮助的，搜了一下，还真有整理得很全的，收藏一波。

@@ -2,6 +2,7 @@
 title: 纯css三角形及其应用
 date: 2018-08-27 19:42:30
 tags: css
+categories: css
 ---
 
 ### 前言
@@ -9,10 +10,9 @@ tags: css
 对于气泡对话框或者Popover与内容连接部分会有小三角形效果，可能在以前直接用图片去实现，其实用纯css即可实现，下面要实现的效果分别是微信对话框和面包屑，以此回顾记录一下。
 
 **效果如下**：
+![](/gb/纯css三角形及其应用/0.bmp)
 
-![微信对话框](https://note.youdao.com/yws/public/resource/bb7792e904a30442f11cb6c88c33cce8/xmlnote/BD6E839095B849EFBEA5AFE6A7E2247C/12809)
-
-![面包屑导航](https://note.youdao.com/yws/public/resource/bb7792e904a30442f11cb6c88c33cce8/xmlnote/33924A875DE149758DA23FBB4BD91C38/12808)
+![](/gb/纯css三角形及其应用/1.bmp)
 
 ### css写三角形原理
 
@@ -28,7 +28,7 @@ tags: css
 }
 ```
 效果
-![](https://note.youdao.com/yws/public/resource/bb7792e904a30442f11cb6c88c33cce8/xmlnote/8F89F04D2280419B95C64241D69B7EDE/12821)
+![](/gb/纯css三角形及其应用/2.bmp)
 
 可以发现分别观察四边框是按类似等边梯形绘制的，如果进一步把宽高设小，甚至设为0，就会呈现为三角形，于是
 
@@ -44,7 +44,7 @@ tags: css
 
 效果
 
-![](https://note.youdao.com/yws/public/resource/bb7792e904a30442f11cb6c88c33cce8/xmlnote/8F89F04D2280419B95C64241D69B7EDE/12821)
+![](/gb/纯css三角形及其应用/3.bmp)
 
 果然是这样的，下面要做的是把其中某个三角形单独提取出来显示，其他都显示为`transparent`，于是就有了
 
@@ -61,7 +61,7 @@ tags: css
 
 效果
 
-![](https://note.youdao.com/yws/public/resource/bb7792e904a30442f11cb6c88c33cce8/xmlnote/A130A3C87396415BB1FBC0AC3D397EE9/12820)
+![](/gb/纯css三角形及其应用/4.bmp)
 
 一个指向右边的三角形大功告成，要其他方向的三角形，只需改变透明的边框即可。
 
@@ -69,7 +69,7 @@ tags: css
 
 有时我们不需要整个实心的三角形，而只需要类似与`>`不同方向箭头的效果，例如popover气泡框效果。这样就需要两个三角形通过重叠错位来实现这样的效果，重叠三角形B颜色和气泡框背景色一样，被重叠三角形A颜色和气泡框边框颜色一样。
 
-![](https://note.youdao.com/yws/public/resource/bb7792e904a30442f11cb6c88c33cce8/xmlnote/FDBF1452678842C2B759F975D2E83170/12908)
+![](/gb/纯css三角形及其应用/5.bmp)
 
 #### 实现微信对话框效果
 两个三角形重叠错位，意味着要两个元素，但是这样一来就增加了这个小功能的复杂度，其实可以利用标签的伪类元素`:before`和`:after`来充当元素画出两个三角形。
@@ -115,7 +115,7 @@ css部分
 
 效果
 
-![微信对话框](https://note.youdao.com/yws/public/resource/bb7792e904a30442f11cb6c88c33cce8/xmlnote/BD6E839095B849EFBEA5AFE6A7E2247C/12809)
+![](/gb/纯css三角形及其应用/6.bmp)
 
 
 #### 实现面包屑效果
@@ -178,6 +178,6 @@ css部分
 
 效果
 
-![面包屑导航](https://note.youdao.com/yws/public/resource/bb7792e904a30442f11cb6c88c33cce8/xmlnote/33924A875DE149758DA23FBB4BD91C38/12808)
+![](/gb/纯css三角形及其应用/7.bmp)
 
 当然，还是css3通过旋转实现的方法，简单粗暴，到后面在补充了。还有什么好方法欢迎提出哈。

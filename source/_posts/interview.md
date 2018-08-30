@@ -2,6 +2,7 @@
 title: 前端面试
 date: 2018-08-27 19:42:30
 tags: 面试
+categories: 面试
 ---
 
 task1：上下高度固定，中间自适应

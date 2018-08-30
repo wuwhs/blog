@@ -1,7 +1,8 @@
 ---
 title: 深入理解BFC
 date: 2018-08-27 19:42:30
-tags: css
+tags: css BFC
+categories: css
 ---
 
 ## 1、相关定义

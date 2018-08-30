@@ -2,6 +2,7 @@
 title: js数据类型转化
 date: 2018-08-27 19:42:30
 tags: javascript
+categories: javascript
 ---
 
 #### 数据类型转化表

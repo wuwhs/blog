@@ -2,6 +2,7 @@
 title: HTTP协议总结（整理版）
 date: 2018-08-27 19:42:30
 tags: http
+categories: 其它
 ---
 
 # 一、基本概念

@@ -2,6 +2,7 @@
 title: 对MVC、MVP和MVVM的简单认识
 date: 2018-08-27 19:42:30
 tags: 设计模式
+categories: 其它
 ---
 
 ### 1. 先聊一下MVC

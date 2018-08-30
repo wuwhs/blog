@@ -1,7 +1,8 @@
 ---
 title: 前端面试之html
 date: 2018-08-27 19:42:30
-tags: html
+tags: [面试, html]
+categories: 面试
 ---
 
 ### `Doctype`作用？标准模式与兼容模式各有什么区别？

@@ -1,7 +1,8 @@
 ---
 title: HTTP缓存机制
 date: 2018-08-27 19:42:30
-tags: http
+tags: [http, 缓存]
+categories: 其它
 ---
 
 只关注前端方面缓存机制的，可能只清楚在HTML页meta标签处理

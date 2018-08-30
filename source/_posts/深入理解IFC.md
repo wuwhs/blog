@@ -1,7 +1,8 @@
 ---
 title: 深入理解IFC
 date: 2018-08-27 19:42:30
-tags: css
+tags: css IFC
+categories: css
 ---
 
 ## 概念规则

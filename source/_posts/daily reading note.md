@@ -2,6 +2,7 @@
 title: daily reading note
 date: 2018-08-27 19:42:30
 tags: javascript
+categories: javascript
 ---
 ### 记录日常看书、看博客小记
 

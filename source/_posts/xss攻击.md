@@ -1,7 +1,8 @@
 ---
 title: xss攻击
 date: 2018-08-27 19:42:30
-tags: 安全
+tags: [安全, xss]
+categories: 其它
 ---
 
 XSS（cross-site scripting跨域脚本攻击）攻击是最常见的web攻击，其重点是“跨域”和“客户端执行”。XSS攻击分为三种，分别是：
