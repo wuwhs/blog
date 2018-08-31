@@ -1,6 +1,6 @@
 ---
 title: vue-cli中遇到的坑
-date: 2018-08-30 20:42:30
+date: 2017-08-08 09:00:30
 tags: vue-cli
 categories: vue
 ---

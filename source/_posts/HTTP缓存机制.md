@@ -1,6 +1,6 @@
 ---
 title: HTTP缓存机制
-date: 2018-08-27 19:42:30
+date: 2018-04-18 12:40:30
 tags: [http, 缓存]
 categories: 其它
 ---

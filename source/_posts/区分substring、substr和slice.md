@@ -1,6 +1,6 @@
 ---
 title: 区分substring、substr和slice
-date: 2018-08-27 19:42:30
+date: 2017-11-08 09:00:30
 tags: javascript
 categories: javascript
 ---

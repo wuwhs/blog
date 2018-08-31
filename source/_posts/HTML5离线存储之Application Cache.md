@@ -1,6 +1,6 @@
 ---
 title: HTML5离线存储之Application Cache
-date: 2018-08-27 19:42:30
+date: 2018-05-23 19:40:30
 tags: [html5, 缓存]
 categories: html
 ---

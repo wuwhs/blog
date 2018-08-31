@@ -1,6 +1,6 @@
 ---
 title: daily reading note
-date: 2018-08-27 19:42:30
+date: 2017-04-02 19:00:00
 tags: javascript
 categories: javascript
 ---
