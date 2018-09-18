@@ -23,7 +23,7 @@ position有六个属性值：static、relative、absolute、fixed、sticky和inh
 ##### 方式一：浮动布局
 缺点：html结构不正确,当包含区域宽度小于左右框之和，右边框会被挤下来
 
-```
+```css
 <style>
     .tree-columns-layout.float .left {
         float: left;
@@ -64,7 +64,7 @@ position有六个属性值：static、relative、absolute、fixed、sticky和inh
 缺点：要求父级要有非static定位，如果没有，左右框容易偏移出去
 
 
-```
+```css
 <style>
     .tree-columns-layout.position {
         position: relative;
@@ -111,7 +111,7 @@ position有六个属性值：static、relative、absolute、fixed、sticky和inh
 缺点：没什么缺点，恐惧table
 
 
-```
+```css
 <style>
     .tree-columns-layout.table {
         display: table;
@@ -156,7 +156,7 @@ position有六个属性值：static、relative、absolute、fixed、sticky和inh
 缺点：兼容性
 
 
-```
+```css
 <style>
     .tree-columns-layout.flex {
         display: flex;
@@ -196,7 +196,7 @@ position有六个属性值：static、relative、absolute、fixed、sticky和inh
 
 缺点：兼容性 Firefox 52, Safari 10.1, Chrome 57, Opera 44
 
-```
+```css
 <style>
     .tree-columns-layout.grid {
         display: grid;
@@ -233,7 +233,7 @@ position有六个属性值：static、relative、absolute、fixed、sticky和inh
 
 缺点：需要多加一层标签，html顺序不对，占用了布局框的margin属性
 
-```
+```css
 <style>
     .tree-columns-layout.cup:after {
         clear: both;
@@ -280,4 +280,5 @@ position有六个属性值：static、relative、absolute、fixed、sticky和inh
     </article>
 </section>
 ```
-![image](https://note.youdao.com/yws/public/resource/b9cdada69234d36736d09235b516171c/xmlnote/5F7E4A6A67BA437A919D98F64BDDA2B6/7750)
+
+![实现效果](/gb/搞定css三列布局/demo.jpg)
