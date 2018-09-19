@@ -8,6 +8,7 @@ categories: css
 > 谈到布局，首先就要想到定位，当别人问我，css的position定位有哪些取值，分别表示什么意思？呃.....
 
 ### 定位
+
 position有六个属性值：static、relative、absolute、fixed、sticky和inherit。
 
 - static（默认）：元素框正常生成。块级元素生成一个矩形框，作为文档流的一部分；行内元素则会创建一个或多个行框，置于父级元素中。
@@ -21,6 +22,7 @@ position有六个属性值：static、relative、absolute、fixed、sticky和inh
 三列布局，其中一列宽度自适应，在PC端最常用之一，搞定了三列布局，其他一样的套路。
 
 ##### 方式一：浮动布局
+
 缺点：html结构不正确,当包含区域宽度小于左右框之和，右边框会被挤下来
 
 ```css
@@ -62,7 +64,6 @@ position有六个属性值：static、relative、absolute、fixed、sticky和inh
 #### 方式二：定位布局
 
 缺点：要求父级要有非static定位，如果没有，左右框容易偏移出去
-
 
 ```css
 <style>
