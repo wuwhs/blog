@@ -22,7 +22,6 @@ import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 ```
 
-
 在页面简单使用三个组件，看看效果。
 
 ```html

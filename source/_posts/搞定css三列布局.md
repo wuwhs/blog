@@ -21,7 +21,7 @@ position有六个属性值：static、relative、absolute、fixed、sticky和inh
 
 三列布局，其中一列宽度自适应，在PC端最常用之一，搞定了三列布局，其他一样的套路。
 
-##### 方式一：浮动布局
+#### 方式一：浮动布局
 
 缺点：html结构不正确,当包含区域宽度小于左右框之和，右边框会被挤下来
 
@@ -111,7 +111,6 @@ position有六个属性值：static、relative、absolute、fixed、sticky和inh
 
 缺点：没什么缺点，恐惧table
 
-
 ```css
 <style>
     .tree-columns-layout.table {
@@ -156,7 +155,6 @@ position有六个属性值：static、relative、absolute、fixed、sticky和inh
 
 缺点：兼容性
 
-
 ```css
 <style>
     .tree-columns-layout.flex {
@@ -193,6 +191,7 @@ position有六个属性值：static、relative、absolute、fixed、sticky和inh
 </section>
 
 ```
+
 #### 方式五：grid栅格布局
 
 缺点：兼容性 Firefox 52, Safari 10.1, Chrome 57, Opera 44

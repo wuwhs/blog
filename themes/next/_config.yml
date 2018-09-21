@@ -523,7 +523,7 @@ gitment:
   github_repo: wuwhs.github.io # MUST HAVE, The name of the repo you use to store Gitment comments
   client_id: 05a1c78379a7d64939ca # MUST HAVE, Github client id for the Gitment
   client_secret: 919ba729526f67646651e2800517b55121c3f1ff # EITHER this or proxy_gateway, Github access secret token for the Gitment
-  proxy_gateway: # Address of api proxy, See: https://github.com/aimingoo/intersect
+  proxy_gateway: https://github.com # Address of api proxy, See: https://github.com/aimingoo/intersect
   redirect_protocol: # Protocol of redirect_uri with force_redirect_protocol when mint enabled
 
 # Baidu Share
