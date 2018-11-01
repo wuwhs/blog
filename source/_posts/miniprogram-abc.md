@@ -57,4 +57,28 @@ categories: 小程序
 3. `Page.prototype.setData(Object data, Function callback)`，`data`以`key: value`的形式给出。妻子 `key` 可以以数据路径的形式给出，支持改变数组中的某一项或对象的某个属性，如 `arr[2].msg`，并且不需要在 `this.data` 中预先定义。
 4. 直接修改 `this.data` 而不调用 `this.setData` 是无法改变页面的状态的，还会造成数据不一致。
 
-页面路由https://developers.weixin.qq.com/miniprogram/dev/component/navigator.html
+页面路由
+
+- 打开新页面， `wx.navigateTo` 或 `<navigator open-type="navigateTo"/>`
+- 页面重定向， `wx.redirectTo` 或 `<navigator open-type="redirectTo"/>`
+- 页面返回，`wx.navigateBack` 或 `<navigator open-type="navigateBack"/>`
+- Tab 切换，`wx.switchTap` 或 `<navigator open-type="switchTab"/>`
+- 重启动， `wx.reLaunch` 或 `<navigator open-type="reLaunch"/>`
+
+文件作用域
+
+JavaScript 文件中声明的变量和函数只在该文件中有效；不同文件中可以声明相同的名字的变量和函数，互不影响。
+
+模块化
+
+可以将一些公共代码抽离成一个单独的 js 文件，作为一个模块。模块只有通过 `module.exports` 或者 `exports` 才能对外暴露接口。
+
+> `exports` 是 `module.exports` 的一个引用
+
+自定义组件
+
+类似于也页面，由`wxml`、`wxss`、`js`和`json`4个文件组成，只不过要在`json`文件中声明（`component: true`）
+
+> 组件的生命周期：`created`、`attached`、`ready`、`moved`、`detached`，可以放在组件属性`lifetimes`下，也可以放在`methods`下，也可以组件根下。
+
+组件间通讯
