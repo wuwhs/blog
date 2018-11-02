@@ -82,3 +82,11 @@ JavaScript 文件中声明的变量和函数只在该文件中有效；不同文
 > 组件的生命周期：`created`、`attached`、`ready`、`moved`、`detached`，可以放在组件属性`lifetimes`下，也可以放在`methods`下，也可以组件根下。
 
 组件间通讯
+
+Behavior
+
+类似其它语言中的`mixin`、`traits`
+
+组件间关系
+
+视图层
