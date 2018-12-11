@@ -5,16 +5,28 @@ tags: 小程序
 categories: 小程序
 ---
 
-小程序目录结构
+学习一门新程序语言，
+
+初始化一个普通小程序目录结构
 
 ```js
---|-- pages 页面
-  |-- resources 资源
-  |-- utils 小程序公用方法
-  |-- app.js 小程序逻辑
-  |-- app.json 小程序公共配置
-  |-- app.wxss 小程序公共样式表
-  |-- project.config.json 小程序项目配置
+--|-- pages
+    |-- index
+      |-- index.js // 首页js文件
+      |-- index.json // 首页json文件
+      |-- index.wxml // 首页wxml文件
+      |-- index.wxss // 首页wxss文件
+    |-- logs
+      |-- logs.js // 日志页js文件
+      |-- logs.json // 日志页json文件
+      |-- logs.wxml // 日志页wxml文件
+      |-- logs.wxss // 日志页wxss文件
+  |-- utils
+    |-- util.js // 小程序公用方法
+  |-- app.js // 小程序逻辑
+  |-- app.json // 小程序公共配置
+  |-- app.wxss // 小程序公共样式表
+  |-- project.config.json // 小程序项目配置
 
 > 每一个页面由四个文件组成，分别是`js`、`wxml`、`json`、`wxss`，为了方便开发者减少配置，描述页面的四个文件必须具有相同的路径与文件名
 
@@ -90,3 +102,37 @@ Behavior
 组件间关系
 
 视图层
+
+`import` 在文件中使用目标文件定义的 `template`
+`include` 可以将目标文件除了 `<template/>`、`<wxs/>` 外的整个代码引入，相当于拷贝到 `include` 位置
+
+`<block/>` 并不是一个组件，它仅仅是一个包装元素，不会在页面中做任何渲染，只接受控制属性
+
+事件
+
+`bind` 事件绑定不会阻止冒泡事件向上冒泡，`catch` 事件绑定可以阻止冒泡事件向上冒泡，`capture-bind`事件捕获，`capture-catch`阻止事件捕获
+
+`<canvas>` 中的触摸事件不可冒泡，所以没有 `currentTarget`
+
+`dataset` 以 `data-` 开头，多个单词由连字符 `-` 链接，不能有大写（大写会自动转成小写）
+
+WXSS
+
+- `rpx(responsive pixel)`
+- 小程序用 `iphone6` 作为视觉稿的标准，750rpx = 375px = 750物理像素，1rpx = 0.5px = 1物理像素
+
+`cover-view`覆盖在原生组件之上的文本视图，可覆盖的原生组件包括`map`、`video`、`canvas`、`camera`、`live-player`、`live-pusher`，只支持嵌套`cover-view`、`cover-image`
+
+WXS
+
+`<wxs>` 模块只能在定义模块的 `WXML` 文件中被访问。使用 `<include>` 或 `<import>` 时， `<wxs>` 模块不会被引用到对应的 `WXML` 文件中
+
+`<template>` 标签中，只能使用定义该 `<template>` 的 `WXML` 文件中定义的 `<wxs>` 模块
+
+`Date`对象，需要使用 `getDate` 函数，返回一个当前时间的对象
+
+`RegExp`对象，使用 `getRegExp` 函数
+
+使用 `constructor` 属性判断数据类型
+
+云开发
