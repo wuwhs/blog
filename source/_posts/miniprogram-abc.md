@@ -7,7 +7,11 @@ categories: 小程序
 
 学习一门新程序语言，
 
-初始化一个普通小程序目录结构
+小程序开发的安装、注册和接入等流程就不罗列了，在[小程序接入指南](https://developers.weixin.qq.com/miniprogram/introduction/index.html)已经写得很清楚了，以下只对开发过程常用到得一些概念进行简单梳理
+
+# 初始化项目目录结构
+
+安装好[开发者工具](https://developers.weixin.qq.com/miniprogram/dev/devtools/download.html)，填好申请到的`AppID`，选好项目目录，初始化一个普通小程序目录结构，得到：
 
 ```js
 --|-- pages
@@ -27,10 +31,186 @@ categories: 小程序
   |-- app.json // 小程序公共配置
   |-- app.wxss // 小程序公共样式表
   |-- project.config.json // 小程序项目配置
-
-> 每一个页面由四个文件组成，分别是`js`、`wxml`、`json`、`wxss`，为了方便开发者减少配置，描述页面的四个文件必须具有相同的路径与文件名
-
 ```
+可以看到，项目文件主要分为`.json`、`.wxml`，`.wxss`和`.js`类型，每一个页面由四个文件组成，为了方便开发者减少配置，描述页面的四个文件必须具有相同的路径与文件名。
+
+# JSON配置
+
+## 小程序配置 app.json
+
+[app.json配置](https://developers.weixin.qq.com/miniprogram/dev/framework/config.html)是当前小程序的全局配置，包括小程序的所有页面路径、界面表现、网络超时时间、底部 tab 等。
+
+## 工具配置 project.config.json
+
+[工具配置](https://developers.weixin.qq.com/miniprogram/dev/devtools/projectconfig.html)在小程序的根目录，对工具做的任何配置都会写入这个文件，使得只要载入同一个项目代码包，开发则工具会自动恢复当时你开发项目时的个性设置。
+
+## 页面配置 page.json
+
+[页面配置](https://developers.weixin.qq.com/miniprogram/dev/framework/config.html#%E9%A1%B5%E9%9D%A2%E9%85%8D%E7%BD%AE) 是小程序页面相关的配置，让开发者可以独立定义每个页面的一些属性，比如顶部颜色，是否下拉等。
+
+# WXML 模板
+
+[`WXML`](https://developers.weixin.qq.com/miniprogram/dev/framework/view/wxml/index.html) 充当类似 `HTML` 的角色，有标签，有属性，但是还是有些区别：
+
+1. 标签名不一样。
+  写 `HTML` 常用标签 `<div>`，`<p>`，`<span>`等，而小程序中标签更像是封装好的组件，比如`<scroll-view>`, `<swiper>`, `<map>`，提供相应的基础能力给开发者使用。
+
+2. 提供 `wx:if`，`{{}}`等模板语法。
+  小程序将渲染和逻辑分离，类似于`React`，`Vue`的`MVVM`开发模式，而不是让 `JS` 操作 `DOM`。
+
+下面针对小程序的数据绑定、列表渲染、条件渲染、模板、事件和应用跟Vue类比加深记忆。
+
+## 数据绑定
+
+`WXML` 中的动态数据均来自对应 `Page`（或 `Component`） 的 `data`，而在Vue中来自当前组件。
+
+小程序和Vue的数据绑定都使用 `Mustache` 语法，双括号将变量包起来。区别是Vue中使用`Mustache` 语法不能作用在 `HTML` 特性上
+
+```html
+<div v-bind:id="'list-' + id">{{msg}}</div>
+```
+
+而小程序作用在标签属性上
+
+```html
+<view id="item-{{id}}">{{msg}}</view>
+```
+
+## 列表渲染
+
+Vue中使用 `v-for` 指令根据一组数组的选项列表，也可以通过一个对象的属性迭代进行渲染，使用 `(item, index) in items` 或 `(item, index) of items` 形式特殊语法。
+
+```html
+<ul>
+  <li v-for="(item, index) in items">
+    {{ index }} - {{ item.message }}
+  </li>
+</ul>
+```
+
+渲染包含多个元素，利用 `<template>`元素
+
+```html
+<ul>
+  <template v-for="(item, index) in items">
+    <li>{{ index }} - {{ item.message }}</li>
+    <li class="divider" role="presentation"></li>
+  </template>
+</ul>
+```
+
+而在小程序中使用 `wx:for` 控制属性绑定一个数组（其实对象也可以），默认数组的当前项的下标变量为 `index` ，当前项变量为 `item`。
+
+```html
+<view wx:for="{{items}}"> {{index}} - {{item.message}} </view>
+```
+
+也可以用 `wx:for-item` 指定数组当前元素的变量名，用 `wx:for-index` 指定数组当前下标的变量名。
+
+```html
+<view wx:for="{{items}}" wx:for-index="idx" wx:for-item="itemName">
+  {{idx}}: {{itemName.message}}
+</view>
+```
+
+渲染一个包含多节点的结构块，利用 `<block>` 标签
+
+```html
+<block wx:for="{{items}}">
+  <view> {{index}} - {{item.message}} </view>
+  <view class="divider" role="presentation"></view>
+</block>
+```
+
+## 条件渲染
+
+Vue 中使用`v-if`、`v-else-if`、`v-else`指令条件渲染，多个元素使用`<template>`包裹，而小程序中使用`wx:if`、`wx:elseif`、`wx:else`来条件渲染，多个组件标签使用`<block>`包裹。
+
+## 模板
+
+在Vue中定义模板一种方式是在 `<script>` 元素中，带上 `text/x-template` 的类型，然后通过一个id将模板引用过去。
+
+定义模板：
+
+```html
+<script type="text/x-template" id="hello-world-template">
+  <p>Hello hello hello</p>
+  <p>{{msg}}</p>
+</script>
+```
+
+使用模板：
+
+```js
+Vue.component('hello-world', {
+  template: '#hello-world-template',
+  data () {
+    return {
+      msg: 'this is a template'
+    }
+  }
+})
+```
+
+而在小程序中，在 `<template>` 中使用 `name` 属性作为模板名称，使用 `is` 属性声明需要使用的模板，然后将模板所需的 `data` 传入。
+
+定义模板：
+
+```html
+<template name="hello-world-template">
+  <view>Hello hello hello</view>
+  <view>{{msg}}</view>
+</template>
+```
+
+使用模板：
+
+```html
+<template is="hello-world-template" data="{{...item}}"></template>
+```
+
+```js
+Page({
+  data: {
+    item: {
+      msg: 'this is a template'
+    }
+  }
+})
+```
+
+## 事件
+
+
+
+
+# WXSS 样式
+
+WXSS(WeiXin Style Sheets) 具有 CSS 大部分的特性，也做了一些扩充和修改：
+
+## 尺寸单位rpx
+
+支持新的尺寸单位 `rpx`，根据屏幕宽度自适应，规定屏幕宽为750rpx，免去开发换算的烦恼（采用浮点计算，和预期结果会有点偏差）。
+
+设备 | rpx换算px（屏宽/750） | px换算rpx（750/屏宽）
+-- | -- | --
+iPhone5 | 1rpx = 0.42px | 1px = 2.34rpx
+iPhone6 | 1rpx = 0.5px | 1px = 2rpx
+iPhone6 Plus | 1rpx = 0.552px | 1px = 1.81rpx
+
+iPhone6上，换算相对最简单，1rpx = 0.5px = 1物理像素，建议设计师以 iPhone6为设计稿。
+
+## 样式导入
+
+使用 `@import` 语句导入外联样式表，注意路径为相对路径。
+
+### 全局样式与局部样式
+
+`app.wxss`中的样式为全局样式，在 `Page` （或 `Component`） 的 `wxss`文件中定义的样式为局部样式，自作用在对应页面，并会覆盖 `app.wxss` 中相同选择器。
+
+
+# JS 逻辑交互
+
 
 `App(Object)`初始化注册一个小程序，`Object`参数指定小程序的生命周期回调。
 > `App()`必须在`app.js`中调用，有且只能调用一次
