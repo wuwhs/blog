@@ -32,6 +32,7 @@ categories: 小程序
   |-- app.wxss // 小程序公共样式表
   |-- project.config.json // 小程序项目配置
 ```
+
 可以看到，项目文件主要分为`.json`、`.wxml`，`.wxss`和`.js`类型，每一个页面由四个文件组成，为了方便开发者减少配置，描述页面的四个文件必须具有相同的路径与文件名。
 
 # JSON配置
@@ -55,7 +56,7 @@ categories: 小程序
 1. 标签名不一样。
   写 `HTML` 常用标签 `<div>`，`<p>`，`<span>`等，而小程序中标签更像是封装好的组件，比如`<scroll-view>`, `<swiper>`, `<map>`，提供相应的基础能力给开发者使用。
 
-2. 提供 `wx:if`，`{{}}`等模板语法。
+2. 提供 `wx:if`，&#123;&#123;&#125;&#125;等模板语法。
   小程序将渲染和逻辑分离，类似于`React`，`Vue`的`MVVM`开发模式，而不是让 `JS` 操作 `DOM`。
 
 下面针对小程序的数据绑定、列表渲染、条件渲染、模板、事件和应用跟Vue类比加深记忆。
@@ -181,12 +182,74 @@ Page({
 
 ## 事件
 
+在Vue 中，用 `v-on` 指令监听 `DOM` 事件，并在触发时运行一些 `JavaScript` 代码，对于阻止事件冒泡、事件捕获分别提供事件修饰符`.stop`和`.capture`的形式
 
+```html
+<!-- 阻止单击事件继续传播 -->
+<a v-on:click.stop="doThis"></a>
+<!-- 添加事件监听器时使用事件捕获模式 -->
+<!-- 即元素自身触发的事件先在此处理，然后才交由内部元素进行处理 -->
+<div v-on:click.capture="doThis">...</div>
+```
 
+而在小程序中，绑定事件以 `key`，`value` 的形式，`key` 以 `bind` 或 `catch` 开头，然后跟上事件的类型，如 `bindtap`、`catchtouchstart`，也可紧跟一个冒号形式，如 `bind:tap`、`catch:touchstart`。`bind` 事件绑定不会阻止冒泡事件向上冒泡，`catch` 事件绑定可以阻止冒泡事件向上冒泡。
+
+```html
+<!-- 单击事件冒泡继续传播 -->
+<view bindtap="doThis">bindtap</view>
+<!-- 阻止单击事件冒泡继续传播 -->
+<view catchtap="doThis">bindtap</view>
+```
+
+采用 `capture-bind`、`capture-catch` 分别捕获事件和中断捕获并取消冒泡。
+
+```html
+<!-- 捕获单击事件继续传播 -->
+<view capture-bind:tap="doThis">bindtap</view>
+<!-- 捕获单击事件阻止继续传播，并且阻止冒泡 -->
+<view capture-catch="doThis">bindtap</view>
+```
+
+## 引用
+
+在 Vue 中引用用于组件的服用引入
+
+```js
+import ComponentA from './ComponentA'
+import ComponentC from './ComponentC'
+```
+
+在小程序中，`WXML` 提供两种引用方式 `import` 和 `include`。
+
+在 item.wxml 中定义了一个叫item的template：
+
+```html
+<!-- item.wxml -->
+<template name="item">
+  <text>{{text}}</text>
+</template>
+```
+
+在 index.wxml 中引用了 item.wxml，就可以使用item模板：
+
+```html
+<import src="item.wxml" /> <template is="item" data="{{text: 'forbar'}}" />
+```
+
+`include` 可以将目标文件除了 `<template>` `<wxs>` 外整个代码引入:
+
+```html
+<!-- index.wxml -->
+<include src="header.wxml" /> <view> body </view> <include src="footer.wxml" />
+<!-- header.wxml -->
+<view> header </view>
+<!-- footer.wxml -->
+<view> footer </view>
+```
 
 # WXSS 样式
 
-WXSS(WeiXin Style Sheets) 具有 CSS 大部分的特性，也做了一些扩充和修改：
+WXSS(WeiXin Style Sheets) 具有 CSS 大部分的特性，也做了一些扩充和修改。
 
 ## 尺寸单位rpx
 
@@ -198,7 +261,7 @@ iPhone5 | 1rpx = 0.42px | 1px = 2.34rpx
 iPhone6 | 1rpx = 0.5px | 1px = 2rpx
 iPhone6 Plus | 1rpx = 0.552px | 1px = 1.81rpx
 
-iPhone6上，换算相对最简单，1rpx = 0.5px = 1物理像素，建议设计师以 iPhone6为设计稿。
+iPhone6上，换算相对最简单，1rpx = 0.5px = 1物理像素，建议设计师以 iPhone6 为设计稿。
 
 ## 样式导入
 
@@ -208,8 +271,76 @@ iPhone6上，换算相对最简单，1rpx = 0.5px = 1物理像素，建议设计
 
 `app.wxss`中的样式为全局样式，在 `Page` （或 `Component`） 的 `wxss`文件中定义的样式为局部样式，自作用在对应页面，并会覆盖 `app.wxss` 中相同选择器。
 
+# 页面注册
 
-# JS 逻辑交互
+小程序是以 `Page(Object)` 构造页面独立环境，app加载后，初始化某个页面，类似于 Vue 的实例化过程，有自己的初始数据、生命周期和事件处理回调函数。
+
+## 初始化数据
+
+和Vue一样，在构造实例属性上都有一个 `data` 对象，作为初始数据。
+
+Vue 中修改 `data` 中某个属性值直接赋值即可，而在小程序中需要使用 `Page` 的实例方法 `setData(Object data, Function callback)` 才起作用，不需要在 `this.data` 中预先定义，单次设置数据大小不得超过1024kb。
+
+支持以数据路径的形式改变数组某项或对象某项属性：
+
+```js
+// 对于对象或数组字段，可以直接修改一个其下的子字段，这样做通常比修改整个对象或数组更好
+  this.setData({
+    'array[0].text': 'changed data'
+  })
+```
+
+## 生命周期回调函数
+
+每个 Vue 实例在被创建时都要经过一系列的初始化过程，每一个阶段都有相应钩子函数被调用，`created` `mounted` `updated` `destroyed`。
+
+![vueLifecycle](/gb/miniprogram-abc/vue-lifecycle.png.png)
+
+对于小程序生命周期，分为 `Page` 的生命周期和 `Component` 的生命周期。
+
+`Page` 的生命周期回调函数有：
+
+- `onLoad` 生命周期回调-监听页面加载
+- `onShow` 生命周期回调-监听页面显示
+- `onReady` 生命周期回调-监听页面初次渲染完成
+- `onHide` 生命周期回调-监听页面隐藏
+- `onUnload` 生命周期回调-监听页面卸载
+- `onPullDownRefresh`监听用户下拉动作
+- `onReachBotton` 页面上拉触底事件的处理函数
+- `onShareAppMessage` 用户点击右上角转发
+- `onPageScroll` 页面滚动触发事件的处理函数
+- `onTabItemTap` 当前是 `tab` 页时，点击 `tab` 触发
+
+`Component` 的生命周期有：
+
+- `created` 在组件实例刚刚被创建时执行
+- `attached` 在组件实例进入页面节点树时执行
+- `ready` 在组件在视图层布局完成后执行
+- `moved` 在组件实例被移动到节点树另一个位置时执行
+- `detached` 在组件实例被从页面节点树移除时执行
+- `error` 每当组件方法抛出错误时执行
+- `show` 组件所在的页面被展示时执行
+- `hide` 组件所在的页面被隐藏时执行
+- `resize` 组件所在的页面尺寸变化时执行
+
+![vueLifecycle](/gb/miniprogram-abc/mina-lifecycle.png)
+
+# wxs
+
+`WXS（WeiXin Script）`是小程序的一套脚本语言，结合 `WXML`，可以构建出页面的结构。`wxs` 的运行环境和其他 `JavaScript` 代码是隔离的，`wxs` 中不能调用其他 `JavaScript` 文件中定义的函数，也不能调用小程序提供的API。从语法上看，大部分和 `JavaScript`是一样的，以下列出一些注意点和差别：
+
+- `<wxs>` 模块只能在定义模块的 `WXML` 文件中被访问。使用 `<include>` 或 `<import>` 时， `<wxs>` 模块不会被引用到对应的 `WXML` 文件中；
+- `<template>` 标签中，只能使用定义该`<template>` 的 `WXML` 文件中定义的 `<wxs>` 模块；
+- `Date`对象，需要使用 `getDate` 函数，返回一个当前时间的对象；
+- `RegExp`对象，使用 `getRegExp` 函数；
+- 使用 `constructor` 属性判断数据类型。
+
+# 组件间通信
+
+小程序组件间通信和Vue 组件间通信很相似
+
+
+
 
 
 `App(Object)`初始化注册一个小程序，`Object`参数指定小程序的生命周期回调。
@@ -278,41 +409,3 @@ JavaScript 文件中声明的变量和函数只在该文件中有效；不同文
 Behavior
 
 类似其它语言中的`mixin`、`traits`
-
-组件间关系
-
-视图层
-
-`import` 在文件中使用目标文件定义的 `template`
-`include` 可以将目标文件除了 `<template/>`、`<wxs/>` 外的整个代码引入，相当于拷贝到 `include` 位置
-
-`<block/>` 并不是一个组件，它仅仅是一个包装元素，不会在页面中做任何渲染，只接受控制属性
-
-事件
-
-`bind` 事件绑定不会阻止冒泡事件向上冒泡，`catch` 事件绑定可以阻止冒泡事件向上冒泡，`capture-bind`事件捕获，`capture-catch`阻止事件捕获
-
-`<canvas>` 中的触摸事件不可冒泡，所以没有 `currentTarget`
-
-`dataset` 以 `data-` 开头，多个单词由连字符 `-` 链接，不能有大写（大写会自动转成小写）
-
-WXSS
-
-- `rpx(responsive pixel)`
-- 小程序用 `iphone6` 作为视觉稿的标准，750rpx = 375px = 750物理像素，1rpx = 0.5px = 1物理像素
-
-`cover-view`覆盖在原生组件之上的文本视图，可覆盖的原生组件包括`map`、`video`、`canvas`、`camera`、`live-player`、`live-pusher`，只支持嵌套`cover-view`、`cover-image`
-
-WXS
-
-`<wxs>` 模块只能在定义模块的 `WXML` 文件中被访问。使用 `<include>` 或 `<import>` 时， `<wxs>` 模块不会被引用到对应的 `WXML` 文件中
-
-`<template>` 标签中，只能使用定义该 `<template>` 的 `WXML` 文件中定义的 `<wxs>` 模块
-
-`Date`对象，需要使用 `getDate` 函数，返回一个当前时间的对象
-
-`RegExp`对象，使用 `getRegExp` 函数
-
-使用 `constructor` 属性判断数据类型
-
-云开发
