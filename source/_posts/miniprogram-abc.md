@@ -1,13 +1,21 @@
 ---
-title: 小程序入门
+title: 从入门到上线一个天气小程序
 date: 2018-10-31 14:36:53
 tags: 小程序
 categories: 小程序
 ---
 
-学习一门新程序语言，
+# 前言
 
-小程序开发的安装、注册和接入等流程就不罗列了，在[小程序接入指南](https://developers.weixin.qq.com/miniprogram/introduction/index.html)已经写得很清楚了，以下只对开发过程常用到得一些概念进行简单梳理
+学习了一段时间小程序，大致过了两遍开发文档，抽空做个自己的天气预报小程序，全当是练手，在这记录下。小程序开发的安装、注册和接入等流程就不罗列了，在[小程序接入指南](https://developers.weixin.qq.com/miniprogram/introduction/index.html)已经写得很清楚了，以下只对开发过程常用到得一些概念进行简单梳理，类比 `Vue` 加强记忆，最后选取个人项目天气小程序中要注意的几点来说明。
+
+![minWeather](/gb/miniprogram-abc/mina-weather1.gif)
+
+欢迎扫码体验
+
+![minWeather](/gb/miniprogram-abc/mina-qrcode.jpg)
+
+源码请戳[这里](https://github.com/wuwhs/minxiuWeather)，欢迎start~
 
 # 初始化项目目录结构
 
@@ -59,13 +67,13 @@ categories: 小程序
 2. 提供 `wx:if`，&#123;&#123;&#125;&#125;等模板语法。
   小程序将渲染和逻辑分离，类似于`React`，`Vue`的`MVVM`开发模式，而不是让 `JS` 操作 `DOM`。
 
-下面针对小程序的数据绑定、列表渲染、条件渲染、模板、事件和应用跟Vue类比加深记忆。
+下面针对小程序的数据绑定、列表渲染、条件渲染、模板、事件和应用跟 `Vue` 类比加深记忆。
 
 ## 数据绑定
 
-`WXML` 中的动态数据均来自对应 `Page`（或 `Component`） 的 `data`，而在Vue中来自当前组件。
+`WXML` 中的动态数据均来自对应 `Page`（或 `Component`） 的 `data`，而在 `Vue`中来自当前组件。
 
-小程序和Vue的数据绑定都使用 `Mustache` 语法，双括号将变量包起来。区别是Vue中使用`Mustache` 语法不能作用在 `HTML` 特性上
+小程序和Vue的数据绑定都使用 `Mustache` 语法，双括号将变量包起来。区别是 `Vue` 中使用`Mustache` 语法不能作用在 `HTML` 特性上
 
 ```html
 <div v-bind:id="'list-' + id">{{msg}}</div>
@@ -79,7 +87,7 @@ categories: 小程序
 
 ## 列表渲染
 
-Vue中使用 `v-for` 指令根据一组数组的选项列表，也可以通过一个对象的属性迭代进行渲染，使用 `(item, index) in items` 或 `(item, index) of items` 形式特殊语法。
+`Vue` 中使用 `v-for` 指令根据一组数组的选项列表，也可以通过一个对象的属性迭代进行渲染，使用 `(item, index) in items` 或 `(item, index) of items` 形式特殊语法。
 
 ```html
 <ul>
@@ -125,11 +133,11 @@ Vue中使用 `v-for` 指令根据一组数组的选项列表，也可以通过�
 
 ## 条件渲染
 
-Vue 中使用`v-if`、`v-else-if`、`v-else`指令条件渲染，多个元素使用`<template>`包裹，而小程序中使用`wx:if`、`wx:elseif`、`wx:else`来条件渲染，多个组件标签使用`<block>`包裹。
+`Vue` 中使用`v-if`、`v-else-if`、`v-else`指令条件渲染，多个元素使用`<template>`包裹，而小程序中使用`wx:if`、`wx:elseif`、`wx:else`来条件渲染，多个组件标签使用`<block>`包裹。
 
 ## 模板
 
-在Vue中定义模板一种方式是在 `<script>` 元素中，带上 `text/x-template` 的类型，然后通过一个id将模板引用过去。
+在 `Vue` 中定义模板一种方式是在 `<script>` 元素中，带上 `text/x-template` 的类型，然后通过一个id将模板引用过去。
 
 定义模板：
 
@@ -182,7 +190,7 @@ Page({
 
 ## 事件
 
-在Vue 中，用 `v-on` 指令监听 `DOM` 事件，并在触发时运行一些 `JavaScript` 代码，对于阻止事件冒泡、事件捕获分别提供事件修饰符`.stop`和`.capture`的形式
+在 `Vue` 中，用 `v-on` 指令监听 `DOM` 事件，并在触发时运行一些 `JavaScript` 代码，对于阻止事件冒泡、事件捕获分别提供事件修饰符`.stop`和`.capture`的形式
 
 ```html
 <!-- 阻止单击事件继续传播 -->
@@ -212,7 +220,7 @@ Page({
 
 ## 引用
 
-在 Vue 中引用用于组件的服用引入
+在 `Vue` 中引用用于组件的服用引入
 
 ```js
 import ComponentA from './ComponentA'
@@ -277,9 +285,9 @@ iPhone6上，换算相对最简单，1rpx = 0.5px = 1物理像素，建议设计
 
 ## 初始化数据
 
-和Vue一样，在构造实例属性上都有一个 `data` 对象，作为初始数据。
+和 `Vue` 一样，在构造实例属性上都有一个 `data` 对象，作为初始数据。
 
-Vue 中修改 `data` 中某个属性值直接赋值即可，而在小程序中需要使用 `Page` 的实例方法 `setData(Object data, Function callback)` 才起作用，不需要在 `this.data` 中预先定义，单次设置数据大小不得超过1024kb。
+`Vue` 中修改 `data` 中某个属性值直接赋值即可，而在小程序中需要使用 `Page` 的实例方法 `setData(Object data, Function callback)` 才起作用，不需要在 `this.data` 中预先定义，单次设置数据大小不得超过1024kb。
 
 支持以数据路径的形式改变数组某项或对象某项属性：
 
@@ -292,9 +300,9 @@ Vue 中修改 `data` 中某个属性值直接赋值即可，而在小程序中�
 
 ## 生命周期回调函数
 
-每个 Vue 实例在被创建时都要经过一系列的初始化过程，每一个阶段都有相应钩子函数被调用，`created` `mounted` `updated` `destroyed`。
+每个 `Vue` 实例在被创建时都要经过一系列的初始化过程，每一个阶段都有相应钩子函数被调用，`created` `mounted` `updated` `destroyed`。
 
-![vueLifecycle](/gb/miniprogram-abc/vue-lifecycle.png.png)
+![vueLifecycle](/gb/miniprogram-abc/vue-lifecycle.jpg)
 
 对于小程序生命周期，分为 `Page` 的生命周期和 `Component` 的生命周期。
 
@@ -339,73 +347,237 @@ Vue 中修改 `data` 中某个属性值直接赋值即可，而在小程序中�
 
 小程序组件间通信和Vue 组件间通信很相似
 
+## 父组件传值到子组件
 
+在 `Vue` 中，父组件定义一些自定义特性，子组件通过 `props` 实例属性获取，也可通过 `wm.$refs` 可以获取子组件获取子组件所有属性和方法。
 
+```html
+<!-- 父组件 -->
+<blog-post title="A title"></blog-post>
+```
 
+```js
+<!-- 子组件 -->
+<h3>{{ postTitle }}</h3>
+export default {
+  props: ['postTitle']
+}
+```
 
-`App(Object)`初始化注册一个小程序，`Object`参数指定小程序的生命周期回调。
-> `App()`必须在`app.js`中调用，有且只能调用一次
+同样的，在小程序中，父组件定义一些特性，子组件通过 `properties` 实例属性获取，不同的是，提供了 `observer` 回调函数，可以监听传递值的变化。父组件还可以通过 `this.selectComponent` 方法获取子组件实例对象，这样就可以直接访问组件的任意数据和方法。
 
---生命周期--
+```js
+Component({
+  properties: {
+    myProperty: { // 属性名
+      type: String, // 类型（必填），目前接受的类型包括：String, Number, Boolean, Object, Array, null（表示任意类型）
+      value: '', // 属性初始值（可选），如果未指定则会根据类型选择一个
+      observer(newVal, oldVal, changedPath) {
+        // 属性被改变时执行的函数（可选），也可以写成在methods段中定义的方法名字符串, 如：'_propertyChange'
+        // 通常 newVal 就是新设置的数据， oldVal 是旧数据
+      }
+    },
+    myProperty2: String // 简化的定义方式
+  }
+})
+```
 
-- `onLaunch` 小程序初始化完成
-- `onShow` 小程序启动，或从后台进入前台显示
-- `onHide` 小程序从前台进入后台时
-- `onError` 小程序发生脚本错误，或者api调用失败时触发，会带上错误信息
-- `onPageNotFound` 小程序要打开的页面不存在时触发，会带上页面信息回调该函数
+## 子组件传值到父组件
 
-`getApp()`全局获取小程序`App`实例
+在Vue 中通过自定义事件系统触发 `vm.$emit( eventName, […args] )` 回调传参实现。
 
-`Page(Object)` 函数用来注册一个页面。
+```html
+<!-- 子组件 -->
+<button v-on:click="$emit('enlarge-text')">
+  Enlarge text
+</button>
+```
 
-`Object`指定页面的初始数据、生命周期、事件处理函数等
+```html
+<!-- 父组件 -->
+<blog-post
+  ...
+  v-on:enlarge-text="postFontSize += 0.1"
+></blog-post>
+```
 
-- `data` 页面初始数据
-- `onLoad` 生命周期回调-监听页面加载
-- `onShow` 生命周期回调-监听页面显示
-- `onReady` 生命周期回调-监听页面初次渲染完成
-- `onHide` 生命周期回调-监听页面隐藏
-- `onUnload` 生命周期回调-监听页面卸载
-- `onPullDownRefresh`监听用户下拉动作
-- `onReachBotton` 页面上拉触底事件的处理函数
-- `onShareAppMessage` 用户点击右上角转发
-- `onPageScroll` 页面滚动触发事件的处理函数
-- `onTabItemTap` 当前是 `tab` 页时，点击 `tab` 触发
-- 其它 可以添加任意函数和数据
+同样的，在小程序中也是通过触发自定义事件 `triggerEvent` 回调传参形式实现子组件向父组件传递数据。
 
-注意点：
+```html
+<!-- page.wxml -->
+<my-component bindcustomevent="pageEventListener2"></my-component>
+```
 
-1. `onShareAppMessage` 用户点击右上角转发或者点击页面转发按钮（ `<button>` 组件 `open-type="share"` ），只有定义了此事件处理函数，右上角菜单才会显示“转发”按钮
-2. `Page`对象原型上的 `setData` 函数用于将数据从逻辑层发送到视图层（异步），同时改变对应的 `this.data` 的值（同步）。
-3. `Page.prototype.setData(Object data, Function callback)`，`data`以`key: value`的形式给出。妻子 `key` 可以以数据路径的形式给出，支持改变数组中的某一项或对象的某个属性，如 `arr[2].msg`，并且不需要在 `this.data` 中预先定义。
-4. 直接修改 `this.data` 而不调用 `this.setData` 是无法改变页面的状态的，还会造成数据不一致。
+```js
+// my-component.js
+Component({
+  methods: {
+    onTap () {
+      this.triggerEvent('customevent', {})
+    }
+  }
+})
+```
 
-页面路由
+# 天气预报小程序
 
-- 打开新页面， `wx.navigateTo` 或 `<navigator open-type="navigateTo"/>`
-- 页面重定向， `wx.redirectTo` 或 `<navigator open-type="redirectTo"/>`
-- 页面返回，`wx.navigateBack` 或 `<navigator open-type="navigateBack"/>`
-- Tab 切换，`wx.switchTap` 或 `<navigator open-type="switchTab"/>`
-- 重启动， `wx.reLaunch` 或 `<navigator open-type="reLaunch"/>`
+说了很多小程序开发的基础准备，下面就结合个人实际练手项目——天气预报小程序简单说明。
 
-文件作用域
+## 物料准备
 
-JavaScript 文件中声明的变量和函数只在该文件中有效；不同文件中可以声明相同的名字的变量和函数，互不影响。
+从需求结果导向，天气程序首先要能获取到当前所在地天气状况，再次可以自由选择某地，知道其天气状况。这样就需要有获取天气的API和搜索地址API。
 
-模块化
+- 搜集了很多免费天气API，最终选中[和风天气](https://www.heweather.com/)，原因很简单，它提供认证个人开发者申请，拥有更多使用功能和调用次数。
+- 地址搜索和城市选择能力选用微信自家产品[腾讯位置服务微信小程序JavaScript SDK](https://lbs.qq.com/qqmap_wx_jssdk/index.html)。
 
-可以将一些公共代码抽离成一个单独的 js 文件，作为一个模块。模块只有通过 `module.exports` 或者 `exports` 才能对外暴露接口。
+开发前物料（服务能力）准备好了，接下来就是撸小程序了！
 
-> `exports` 是 `module.exports` 的一个引用
+## 首页获取用户信息、布局相关
 
-自定义组件
+### 布局
 
-类似于也页面，由`wxml`、`wxss`、`js`和`json`4个文件组成，只不过要在`json`文件中声明（`component: true`）
+微信小程序的样式已支持大部分 `CSS` 特性，不用再去考虑太多传统浏览器兼容性问题了，布局方便直接选用 `flex` 布局。
+比如：
 
-> 组件的生命周期：`created`、`attached`、`ready`、`moved`、`detached`，可以放在组件属性`lifetimes`下，也可以放在`methods`下，也可以组件根下。
+```css
+/**app.wxss**/
+page {
+  background: #f6f6f6;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+```
 
-组件间通讯
+### 获取用户信息
 
-Behavior
+首页首次加载获取用户，通常会弹窗提示是否允许获取用户信息，用户点击允许获取授权，才能成功获取用户信息，展示用户名和用户头像等，小程序为了优化用户体验，使用 `wx.getUserInfo` 接口直接弹出授权框的开发方式将逐步不再支持。目前开发环境不弹窗了，正式版暂不受影响。提倡使用 `button` 组件，指定 `open-type` 为 `getUserInfo`类型，用户主动点击后才弹窗。
+天气小程序获取用户头像和用户名采用的是另一种方式，使用`open-data` 可以直接获取用户基础信息，不用弹窗提示。
 
-类似其它语言中的`mixin`、`traits`
+```html
+  <!-- 用户信息 -->
+  <view class="userinfo">
+    <open-data type="userAvatarUrl" class="userinfo-avatar"/>
+    <text class="userinfo-nickname">{{greetings}}，</text>
+    <open-data type="userNickName"/>
+</view>
+```
+
+## 城市拼音首字母锚点
+
+> 上下滑动城市列表，当滑过当前可视区的城市拼音首字母，右侧字母索引栏对应的字母也会切换到高亮显示。
+
+要满足当前的这个场景需求，首先要为城市列表的拼音首字母标题添加标志（`id`），当`<scroll-view>`滚动触发时获取各个标志位距离视窗顶部的位置，此处用到小程序 `WXML` 节点API `NodesRef.boundingClientRect(function callback)` 获取布局位置，类似于 `DOM` 的 `getBoundingClientRect`。距离大小为最小负数的标志位是当前刚滑过的，右侧索引栏对应字母应当高亮。
+
+```html
+<!-- searchGeo.wxml -->
+<scroll-view bindscroll="scroll" scroll-y="{{true}}">
+  <!-- 城市列表... -->
+</scroll-view>
+```
+
+```js
+Page({
+  // ...
+  // 城市列表滚动
+  scroll () {
+    wx.createSelectorQuery().selectAll('.city-list-title')
+      .boundingClientRect((rects) => {
+        let index = rects.findIndex((item) => {
+          return item.top >= 0
+        })
+        if (index === -1) {
+          index = rects.length
+        }
+        this.setIndex(index - 1)
+      }).exec()
+  },
+  // ...
+
+```
+
+> 点击右侧字母索引栏的字母，城市列表自动滑动使得对应字母标题可视
+
+满足这个需求场景，可以利用 `<scroll-view>` 组件的 `scroll-into-view` 属性，由于已有拼音首字母标题添加标志（`id`），只需将当前点击的字母对应的元素`id`滚动到可视即可。需要注意：
+
+- 频繁 `setData` 造成性能问题，在这里过滤重复赋值；
+- 由于设置了 `<scroll-view>` 为动画滚动效果，滚动到标志元素位置需要时间，途中可能会经过其它标志元素，不能立即设置索引焦点，要有一定延时（还没找到其它好解决方案，暂时这样）
+
+```js
+// 点击索引条
+  tapIndexItem (event) {
+    let id = event.currentTarget.dataset.item
+    this.setData({
+      scrollIntoViewId: `title_${id === '#' ? 0 : id}`
+    })
+
+    // 延时设置索引条焦点
+    setTimeout(() => {
+      this.setData({
+        barIndex: this.data.indexList.findIndex((item) => item === id)
+      })
+    }, 500)
+  },
+```
+
+![minWeather](/gb/miniprogram-abc/mina-weather2.gif)
+
+## 频繁触发节流处理
+
+频繁输入，或者频繁滚动，回调触发会造成性能问题，而其接口也有限定调用频率，这样就需要做节流处理。节流是再频繁触发的情况下，在大于一定时间间隔才允许触发。
+
+```js
+// 节流
+const throttle = function(fn, delay) {
+  let lastTime = 0
+  return function () {
+    let nowTime = Date.now()
+    if (nowTime - lastTime > delay || !lastTime) {
+      fn.apply(this, arguments)
+      lastTime = nowTime
+    }
+  }
+}
+```
+
+具体对一些场景，比如腾讯位置服务提供的关键字搜索地址，就限定5次/key/秒，很容易就超了，可以做节流处理
+
+```js
+Page({
+  // ...
+  // 输入搜索关键字
+  input: util.throttle(function () {
+    let val = arguments[0].detail.value
+    if (val === '') {
+      this.setData({
+        suggList: []
+      })
+      this.changeSearchCls()
+      return false
+    }
+
+    api.getSuggestion({
+      keyword: val
+    })
+      .then((res) => {
+        this.setData({
+          suggList: res
+        })
+        this.changeSearchCls()
+      })
+      .catch((err) => {
+        console.error(err)
+      })
+  }, 500),
+  // ...
+})
+
+```
+
+![minWeather](/gb/miniprogram-abc/mina-weather3.gif)
+
+对于上面城市列表滚动，获取标志元素位置也应用节流处理。
+
+# 总结
+
+小程序的基本入门学习门槛不高，小程序的设计应该借鉴了很多现在流行的框架，如果有 `React` 或 `Vue` 的基础会有很多似曾相识的感觉，当然，在深入的探索过程还有很多“坑”要跨越，本文只是简单的梳理，具体问题还能多看[文档](https://developers.weixin.qq.com/miniprogram/dev/index.html)和[小程序社区](https://developers.weixin.qq.com/)，还有什么错误欢迎指正哈，完~
