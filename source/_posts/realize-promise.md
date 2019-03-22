@@ -1,7 +1,8 @@
 ---
 title: Promise的实现
 date: 2019-02-18 17:51:11
-tags:
+tags: [javascript, ES6]
+categories: ES6
 ---
 
 用过 Promise，但是总是有点似懂非懂的感觉，也看过很多文章，还是搞不懂 Promise的 实现原理，后面自己边看文章，边调试代码，终于慢慢的有感觉了，下面就按自己的理解来实现一个 Promise。

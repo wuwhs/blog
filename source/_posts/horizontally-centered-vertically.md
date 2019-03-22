@@ -21,7 +21,7 @@ categories: css
 </div>
 ```
 
-![水平且垂直居中方法](https://wuwhs.github.io//gb/horizontally-centered-vertically/0.bmp)
+![水平且垂直居中方法](/gb/horizontally-centered-vertically/0.bmp)
 
 # 基本思想
 
