@@ -89,46 +89,4 @@ const isIOS = /iphone|ipad|ipod/.test(ua)
 const isAndroid = /andriod/.test(ua)
 ```
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>键盘兼容</title>
-</head>
-<body>
-  <header class="header">键盘兼容</header>
-  <div>
-    <input type="text" class="input">
-  </div>
-  <footer class="footer"></footer>
-
-  <script>
-    const ua = window.navigator.userAgent.toLocaleLowerCase()
-    const isIOS = /iphone|ipad|ipod/.test(ua)
-    const isAndriod = /andriod/.test(ua)
-
-    const $input = document.querySelector('.input')
-
-    // 键盘弹起
-    $input.addEventListener('focus', () => {
-      console.log('键盘弹起啦！')
-    }, false)
-
-    // 键盘收起
-    if (isIOS) {
-      $input.addEventListener('blur', () => {
-        console.log('键盘收起啦！')
-      }, false)
-    }
-
-    if (isAndriod) {
-      document.addEventListener('resize', () => {
-        const originHeight = document.documentElement.clientHeight
-        console.log('')
-      }, false)
-    }
-  </script>
-</body>
-</html>
+实验证明，`IOS` 的 `height` 没有发生变化，`scrollTop` 发生变化，页面可以滚动，且始终保证输入框处于可视区域中。`Android` 页面高度变小，页面可以上下滚动，`fixed` 元素的 `bottom` 属性的基线为键盘。页面是否可以滚动由处于正常文档流中元素决定，高度大于键盘弹起页面调整后的高度就会产生滚动条，否则没有滚动条。
