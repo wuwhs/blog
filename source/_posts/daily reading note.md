@@ -140,6 +140,20 @@ PS：在不包含滚动条的页面而言，scrollWidth与clientWidth，scrollHe
 var docHeight = Math.max(document.documentElement.scrollHeight, doucument.documentElment.clientHeight);
 ```
 
+html4.0 的 `DTD`
+
+```html
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+```
+
+html5 的 `DTD`
+
+```html
+<!DOCTYPE html>
+```
+
+在文档使用了 `DTD` 时，`document.body.scrollHeight` 值为0，没有用 `DTD` 时不为0
+
 **确定元素大小**
 
 getBoundingClientRect()方法，返回一个对象，包括四个属性：left、top、right和bottom。这些属性给出了元素相对视口的位置。
@@ -3025,4 +3039,42 @@ console.log(ins.getAddress());
 
 —— 2018/1/19
 
+---
+**输入框弹起数字键盘**
+
+```html
+<input type="tel" novalidate="novalidate" pattern="[0-9]*" id="q2" value="" name="q2" verify="学号">
+```
+
+`type="tel"`
+
+- 优点是iOS和Android的键盘表现都差不多
+- 缺点是那些字母好多余，虽然我没有强迫症但还是感觉怪怪的啊。
+
+`type="number"`
+
+- 优点是Android下实现的一个真正的数字键盘
+- 缺点一：iOS下不是九宫格键盘，输入不方便
+- 缺点二：旧版Android（包括微信所用的X5内核）在输入框后面会有超级鸡肋的小尾巴，好在Android 4.4.4以后给去掉了。
+
+不过对于缺点二，我们可以用webkit私有的伪元素给fix掉：
+
+```css
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    appearance: none;
+    margin: 0;
+}
+```
+
+`pattern`
+
+pattern用于验证表单输入的内容，通常HTML5的type属性，比如email、tel、number、data类、url等，已经自带了简单的数据格式验证功能了，加上pattern后，前端部分的验证更加简单高效了。
+
+``
+
+`novalidate`
+
+novalidate 属性规定当提交表单时不对其进行验证。
 ---
