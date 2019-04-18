@@ -3,24 +3,39 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>聊天输入框</title>
   <style>
+    html,
+    body {
+      height: 100%;
+    }
+
     body {
       margin: 0;
-      overflow: auto;
-      /* overscroll-behavior-y: none; */
+      position: relative;
       -webkit-overflow-scrolling: touch;
-      height: 100vh;
     }
 
     .chat__content {
-      /* height: calc(100vh - 40px); */
+      height: calc(100% - 40px);
       margin-bottom: 40px;
-
       overflow-y: auto;
       overflow-x: hidden;
+    }
+
+    .chat__content p {
+      display: inline-block;
+      background-color: #ff706f;
+      color: #fff;
+      font-size: 13px;
+      line-height: 22px;
+      padding: 11px 15px 10px 16px;
+      border-radius: 17px;
+      word-break: break-word;
+      border-top-left-radius: 0;
+      min-width: 20px;
     }
 
     .input__content {
@@ -45,9 +60,9 @@
 
     .input__content .input {
       flex-grow: 1;
-      height: 30px;
-      line-height: 30px;
       word-break: break-all;
+      font-size: 14px;
+      padding-left: 10px;
     }
 
     .input__content button {
@@ -55,31 +70,73 @@
       height: 36px;
       flex-grow: 0;
       flex-shrink: 0;
+      border-radius: 2px;
+      border: none;
+    }
+
+    .input__content .input:focus,
+    .input__content button:focus {
+      outline: none;
     }
   </style>
 </head>
 
 <body>
   <div class="chat__content">
-    <p>一些聊天内容1</p>
-    <p>一些聊天内容2</p>
-    <p>一些聊天内容3</p>
-    <p>一些聊天内容4</p>
-    <p>一些聊天内容5</p>
-    <p>一些聊天内容6</p>
-    <p>一些聊天内容7</p>
-    <p>一些聊天内容8</p>
-    <p>一些聊天内容9</p>
-    <p>一些聊天内容10</p>
-    <p>一些聊天内容11</p>
-    <p>一些聊天内容12</p>
-    <p>一些聊天内容13</p>
-    <p>一些聊天内容14</p>
-    <p>一些聊天内容15</p>
-    <p>一些聊天内容16</p>
-    <p>一些聊天内容17</p>
-    <p>一些聊天内容18</p>
-    <p>一些聊天内容19</p>
+    <div>
+      <p>一些聊天内容1</p>
+    </div>
+    <div>
+      <p>一些聊天内容2</p>
+    </div>
+    <div>
+      <p>一些聊天内容3</p>
+    </div>
+    <div>
+      <p>一些聊天内容4</p>
+    </div>
+    <div>
+      <p>一些聊天内容5</p>
+    </div>
+    <div>
+      <p>一些聊天内容6</p>
+    </div>
+    <div>
+      <p>一些聊天内容7</p>
+    </div>
+    <div>
+      <p>一些聊天内容8</p>
+    </div>
+    <div>
+      <p>一些聊天内容9</p>
+    </div>
+    <div>
+      <p>一些聊天内容10</p>
+    </div>
+    <div>
+      <p>一些聊天内容10</p>
+    </div>
+    <div>
+      <p>一些聊天内容11</p>
+    </div>
+    <div>
+      <p>一些聊天内容12</p>
+    </div>
+    <div>
+      <p>一些聊天内容13</p>
+    </div>
+    <div>
+      <p>一些聊天内容14</p>
+    </div>
+    <div>
+      <p>一些聊天内容15</p>
+    </div>
+    <div>
+      <p>一些聊天内容16</p>
+    </div>
+    <div>
+      <p>一些聊天内容17</p>
+    </div>
   </div>
   <div class="input__content">
     <div class="input" contenteditable="true"></div>
@@ -87,84 +144,94 @@
   </div>
 
   <script src="./js/vconsole.min.js"></script>
-  <script src="./js/inobounce.js"></script>
   <script>
-    new VConsole()
+    // new VConsole()
 
     // 判断设备类型
-    const judgeDeviceType = function () {
-      const ua = window.navigator.userAgent.toLocaleLowerCase()
-      const isIOS = /iphone|ipad|ipod/.test(ua)
-      const isAndriod = /andriod/.test(ua)
+    var judgeDeviceType = function () {
+      var ua = window.navigator.userAgent.toLocaleLowerCase();
+      var isIOS = /iphone|ipad|ipod/.test(ua);
+      var isAndroid = /android/.test(ua);
+      var isMiuiBrowser = /miuibrowser/.test(ua);
+
       return {
-        isIOS,
-        isAndriod
+        isIOS: isIOS,
+        isAndroid: isAndroid,
+        isMiuiBrowser: isMiuiBrowser
       }
     }()
 
     // 获取到焦点元素滚动到可视区
-    const activeElementScrollIntoView = function (activeElement, delay) {
-      const editable = activeElement.getAttribute('contenteditable')
+    function activeElementScrollIntoView(activeElement, delay) {
+      var editable = activeElement.getAttribute('contenteditable')
 
       // 输入框、textarea或富文本获取焦点后没有将该元素滚动到可视区
       if (activeElement.tagName == 'INPUT' || activeElement.tagName == 'TEXTAREA' || editable === '' || editable) {
         setTimeout(() => {
-          console.log('scrollIntoView...')
-          // activeElement.scrollIntoView(true)
-          console.log('typeof activeElement.scrollIntoViewIfNeeded: ', typeof activeElement.scrollIntoViewIfNeeded)
-          typeof activeElement.scrollIntoViewIfNeeded === 'function' ? activeElement.scrollIntoViewIfNeeded() : activeElement.scrollIntoView()
+          activeElement.scrollIntoView();
         }, delay)
       }
     }
 
     // 监听输入框的软键盘弹起和收起事件
-    const listenKeybord = function ($input) {
-      // IOS&Andriod 键盘弹起：IOS 和 Android 输入框获取焦点键盘弹起
-      $input.addEventListener('focus', function () {
-        console.log('键盘弹起啦！')
-
-        activeElementScrollIntoView(this, 1000)
-      }, false)
-
-      // IOS 键盘收起：IOS 点击输入框以外区域或点击收起按钮，输入框都会失去焦点，键盘会收起，
+    function listenKeybord($input) {
       if (judgeDeviceType.isIOS) {
+        // IOS 键盘弹起：IOS 和 Android 输入框获取焦点键盘弹起
+        $input.addEventListener('focus', function () {
+          console.log('IOS 键盘弹起啦！');
+          activeElementScrollIntoView(this, 1000);
+        }, false)
+
+        // IOS 键盘收起：IOS 点击输入框以外区域或点击收起按钮，输入框都会失去焦点，键盘会收起，
         $input.addEventListener('blur', () => {
-          console.log('键盘收起啦！')
+          console.log('IOS 键盘收起啦！');
 
-          let wechatInfo = window.navigator.userAgent.match(/MicroMessenger\/([\d\.]+)/i)
-          let wechatVersion = wechatInfo[1]
+          // 微信浏览器版本6.7.4+IOS12会出现键盘收起后，视图被顶上去了没有下来
+          /* var wechatInfo = window.navigator.userAgent.match(/MicroMessenger\/([\d\.]+)/i);
+          if (!wechatInfo) return;
 
-          // let u = navigator.userAgent.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/)
-          let version = (navigator.appVersion).match(/OS (\d+)_(\d+)_?(\d+)?/)
-          console.log('version:', version)
-          console.log('wechatVersion.replace:', +wechatVersion.replace(/\./g, ''))
-          console.log('+version[1]:', +version[1])
+          var wechatVersion = wechatInfo[1];
+          var version = (navigator.appVersion).match(/OS (\d+)_(\d+)_?(\d+)?/);
 
           if (+wechatVersion.replace(/\./g, '') >= 674 && +version[1] >= 12) {
-            console.log('max:', Math.max(document.body.clientHeight, document.documentElement.clientHeight))
-            window.scrollTo(0, Math.max(document.body.clientHeight, document.documentElement.clientHeight))
-          }
+            window.scrollTo(0, Math.max(document.body.clientHeight, document.documentElement.clientHeight));
+          } */
         })
       }
 
       // Andriod 键盘收起：Andriod 键盘弹起或收起页面高度会发生变化，以此为依据获知键盘收起
-      if (judgeDeviceType.isAndriod) {
-        const originHeight = document.documentElement.clientHeight || document.body.clientHeight
-        document.addEventListener('resize', () => {
-          const resizeHeight = document.documentElement.clientHeight || document.body.clientHeight
+      if (judgeDeviceType.isAndroid) {
+        var originHeight = document.documentElement.clientHeight || document.body.clientHeight;
+
+        window.addEventListener('resize', function () {
+          var resizeHeight = document.documentElement.clientHeight || document.body.clientHeight;
           if (originHeight < resizeHeight) {
-            console.log('Andriod 键盘收起啦！')
+            console.log('Android 键盘收起啦！');
+
+            // 修复小米浏览器下，输入框依旧被输入法遮挡问题
+            if (judgeDeviceType.isMiuiBrowser) {
+              document.body.style.marginBottom = '0px';
+            }
+          } else {
+            console.log('Android 键盘弹起啦！');
+
+            // 修复小米浏览器下，输入框依旧被输入法遮挡问题
+            if (judgeDeviceType.isMiuiBrowser) {
+              document.body.style.marginBottom = '40px';
+            }
+            activeElementScrollIntoView($input, 1000);
           }
+
+          originHeight = resizeHeight;
         }, false)
       }
     }
 
-    const $inputs = document.querySelectorAll('.input')
-    for (let item of $inputs) {
-      listenKeybord(item)
+    var $inputs = document.querySelectorAll('.input');
+
+    for (var i = 0; i < $inputs.length; i++) {
+      listenKeybord($inputs[i]);
     }
-
-
 
   </script>
 </body>
