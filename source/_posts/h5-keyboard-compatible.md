@@ -7,12 +7,138 @@ categories: javascript
 
 # 前言
 
-在做 `H5` 聊天项目中，踩过其中一大坑：输入框获取焦点，软键盘弹起，要求输入框吸附在输入法框上。需求很明确，看似很简单，其实不然。从实验过一些机型，发现主要表现以下问题：
+在做 `H5` 聊天项目中，踩过其中一大坑：输入框获取焦点，软键盘弹起，要求输入框吸附（或顶）在输入法框上。需求很明确，看似很简单，其实不然。从实验过一些机型上看，发现主要存在以下问题：
 
-- 软键盘弹起，在 `Android` 和 `IOS` 页面上 `webview` 表现不同。
-- 有第三方输入法高度计算偏差问题，导致在有些输入法弹起，将输入框挡住一部分。
-- 某些浏览器内核+操作系统，软件盘顶起输入框
+- 在 `Android` 和 `IOS` 上，获知软键盘弹起和收起状态存在差异，且页面 `webview` 表现不同。
+- 在 `IOS` 上，使用第三方输入法，高度计算存在偏差，导致在有些输入法弹起，将输入框挡住一部分。
+- 在`IOS12` 上，微信版本 `v6.7.4` 及以上，输入框获取焦点，键盘弹起，页面（`webview`）整体往上滚动，当键盘收起后，不回到原位，导致键盘原来所在位置是空白的。
+- 在有些浏览器上使用一些操作技巧，还是存在输入框被输入法遮挡。
 
+下面就上述发现的问题，逐个探索一下解决方案。
+
+# 获知软键盘弹起和收起状态
+
+获知软键盘的弹起还是收起状态很重要，后面的兼容处理都要以此为前提。然而，`H5` 并没有直接监听软键盘的原生事件，只能通过软键盘弹起或收起，引发页面其他方面的表现间接监听，曲线救国。并且，在 `IOS` 和 `Android` 上的表现不尽相同。
+
+## `IOS` 软键盘弹起表现
+
+在 `IOS` 上，输入框（`input`、`textarea` 或 富文本）获取焦点，键盘弹起，页面（`webview`）并没有被压缩，或者说高度（`height`）没有改变，只是页面（`webview`）整体往上滚了，且最大滚动高度（`scrollTop`）为软键盘高度。
+
+## `Android` 软键盘弹起表现
+
+同样，在 `Android` 上，输入框获取焦点，键盘弹起，但是页面（`webview`）高度会发生改变，一般来说，高度为可视区高度（原高度减去软键盘高度），除了因为页面内容被撑开可以产生滚动，`webview` 本身不能滚动。
+
+## `IOS` 软键盘收起表现
+
+触发软键盘上的“收起”按钮键盘或者输入框以外的页面区域时，输入框失去焦点，软键盘收起。
+
+## `Android` 软键盘收起表现
+
+触发输入框以外的区域时，输入框失去焦点，软键盘收起。但是，触发键盘上的收起按钮键盘时，输入框并不会失去焦点，同样软键盘收起。
+
+## 监听软键盘弹起和收起
+
+综合上面键盘弹起和收起在 `IOS` 和 `Android` 上的不同表现，我们可以分开进行如下处理来监听软键盘的弹起和收起：
+
+- 在 `IOS` 上，监听输入框的 `focus` 事件来获知软键盘弹起，监听输入框的 `blur` 事件获知软键盘收起。
+- 在 `Android` 上，监听 `webview` 高度会变化，高度变小获知软键盘弹起，否则软键盘收起。
+
+```js
+// 判断设备类型
+var judgeDeviceType = function () {
+  var ua = window.navigator.userAgent.toLocaleLowerCase();
+  var isIOS = /iphone|ipad|ipod/.test(ua);
+  var isAndroid = /android/.test(ua);
+  var isMiuiBrowser = /miuibrowser/.test(ua);
+
+  return {
+    isIOS: isIOS,
+    isAndroid: isAndroid,
+    isMiuiBrowser: isMiuiBrowser
+  }
+}()
+
+// 获取到焦点元素滚动到可视区
+function activeElementScrollIntoView(activeElement, delay) {
+  var editable = activeElement.getAttribute('contenteditable')
+
+  // 输入框、textarea或富文本获取焦点后没有将该元素滚动到可视区
+  if (activeElement.tagName == 'INPUT' || activeElement.tagName == 'TEXTAREA' || editable === '' || editable) {
+    setTimeout(() => {
+      activeElement.scrollIntoView();
+    }, delay)
+  }
+}
+
+// 监听输入框的软键盘弹起和收起事件
+function listenKeybord($input) {
+  if (judgeDeviceType.isIOS) {
+    // IOS 键盘弹起：IOS 和 Android 输入框获取焦点键盘弹起
+    $input.addEventListener('focus', function () {
+      console.log('IOS 键盘弹起啦！');
+      activeElementScrollIntoView(this, 1000);
+    }, false)
+
+    // IOS 键盘收起：IOS 点击输入框以外区域或点击收起按钮，输入框都会失去焦点，键盘会收起，
+    $input.addEventListener('blur', () => {
+      console.log('IOS 键盘收起啦！');
+
+      // 微信浏览器版本6.7.4+IOS12会出现键盘收起后，视图被顶上去了没有下来
+      /* var wechatInfo = window.navigator.userAgent.match(/MicroMessenger\/([\d\.]+)/i);
+      if (!wechatInfo) return;
+
+      var wechatVersion = wechatInfo[1];
+      var version = (navigator.appVersion).match(/OS (\d+)_(\d+)_?(\d+)?/);
+
+      if (+wechatVersion.replace(/\./g, '') >= 674 && +version[1] >= 12) {
+        window.scrollTo(0, Math.max(document.body.clientHeight, document.documentElement.clientHeight));
+      } */
+    })
+  }
+
+  // Andriod 键盘收起：Andriod 键盘弹起或收起页面高度会发生变化，以此为依据获知键盘收起
+  if (judgeDeviceType.isAndroid) {
+    var originHeight = document.documentElement.clientHeight || document.body.clientHeight;
+
+    window.addEventListener('resize', function () {
+      var resizeHeight = document.documentElement.clientHeight || document.body.clientHeight;
+      if (originHeight < resizeHeight) {
+        console.log('Android 键盘收起啦！');
+
+        // 修复小米浏览器下，输入框依旧被输入法遮挡问题
+        if (judgeDeviceType.isMiuiBrowser) {
+          document.body.style.marginBottom = '0px';
+        }
+      } else {
+        console.log('Android 键盘弹起啦！');
+
+        // 修复小米浏览器下，输入框依旧被输入法遮挡问题
+        if (judgeDeviceType.isMiuiBrowser) {
+          document.body.style.marginBottom = '40px';
+        }
+        activeElementScrollIntoView($input, 1000);
+      }
+
+      originHeight = resizeHeight;
+    }, false)
+  }
+}
+
+var $inputs = document.querySelectorAll('.input');
+
+for (var i = 0; i < $inputs.length; i++) {
+  listenKeybord($inputs[i]);
+}
+
+```
+
+
+# 兼容第三方输入法
+
+
+# 兼容 `IOS12` + `V6.7.4+`
+
+#
 
 
 
