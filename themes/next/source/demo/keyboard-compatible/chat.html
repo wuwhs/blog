@@ -167,7 +167,7 @@
 
       // 输入框、textarea或富文本获取焦点后没有将该元素滚动到可视区
       if (activeElement.tagName == 'INPUT' || activeElement.tagName == 'TEXTAREA' || editable === '' || editable) {
-        setTimeout(() => {
+        setTimeout(function () {
           activeElement.scrollIntoView();
         }, delay)
       }
@@ -187,7 +187,7 @@
           console.log('IOS 键盘收起啦！');
 
           // 微信浏览器版本6.7.4+IOS12会出现键盘收起后，视图被顶上去了没有下来
-          /* var wechatInfo = window.navigator.userAgent.match(/MicroMessenger\/([\d\.]+)/i);
+          var wechatInfo = window.navigator.userAgent.match(/MicroMessenger\/([\d\.]+)/i);
           if (!wechatInfo) return;
 
           var wechatVersion = wechatInfo[1];
@@ -195,7 +195,7 @@
 
           if (+wechatVersion.replace(/\./g, '') >= 674 && +version[1] >= 12) {
             window.scrollTo(0, Math.max(document.body.clientHeight, document.documentElement.clientHeight));
-          } */
+          }
         })
       }
 

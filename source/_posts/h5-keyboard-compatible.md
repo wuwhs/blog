@@ -49,26 +49,12 @@ var judgeDeviceType = function () {
   var ua = window.navigator.userAgent.toLocaleLowerCase();
   var isIOS = /iphone|ipad|ipod/.test(ua);
   var isAndroid = /android/.test(ua);
-  var isMiuiBrowser = /miuibrowser/.test(ua);
 
   return {
     isIOS: isIOS,
-    isAndroid: isAndroid,
-    isMiuiBrowser: isMiuiBrowser
+    isAndroid: isAndroid
   }
 }()
-
-// 获取到焦点元素滚动到可视区
-function activeElementScrollIntoView(activeElement, delay) {
-  var editable = activeElement.getAttribute('contenteditable')
-
-  // 输入框、textarea或富文本获取焦点后没有将该元素滚动到可视区
-  if (activeElement.tagName == 'INPUT' || activeElement.tagName == 'TEXTAREA' || editable === '' || editable) {
-    setTimeout(() => {
-      activeElement.scrollIntoView();
-    }, delay)
-  }
-}
 
 // 监听输入框的软键盘弹起和收起事件
 function listenKeybord($input) {
@@ -76,23 +62,13 @@ function listenKeybord($input) {
     // IOS 键盘弹起：IOS 和 Android 输入框获取焦点键盘弹起
     $input.addEventListener('focus', function () {
       console.log('IOS 键盘弹起啦！');
-      activeElementScrollIntoView(this, 1000);
+      // IOS 键盘弹起后操作
     }, false)
 
     // IOS 键盘收起：IOS 点击输入框以外区域或点击收起按钮，输入框都会失去焦点，键盘会收起，
     $input.addEventListener('blur', () => {
       console.log('IOS 键盘收起啦！');
-
-      // 微信浏览器版本6.7.4+IOS12会出现键盘收起后，视图被顶上去了没有下来
-      /* var wechatInfo = window.navigator.userAgent.match(/MicroMessenger\/([\d\.]+)/i);
-      if (!wechatInfo) return;
-
-      var wechatVersion = wechatInfo[1];
-      var version = (navigator.appVersion).match(/OS (\d+)_(\d+)_?(\d+)?/);
-
-      if (+wechatVersion.replace(/\./g, '') >= 674 && +version[1] >= 12) {
-        window.scrollTo(0, Math.max(document.body.clientHeight, document.documentElement.clientHeight));
-      } */
+      // IOS 键盘收起后操作
     })
   }
 
@@ -104,19 +80,10 @@ function listenKeybord($input) {
       var resizeHeight = document.documentElement.clientHeight || document.body.clientHeight;
       if (originHeight < resizeHeight) {
         console.log('Android 键盘收起啦！');
-
-        // 修复小米浏览器下，输入框依旧被输入法遮挡问题
-        if (judgeDeviceType.isMiuiBrowser) {
-          document.body.style.marginBottom = '0px';
-        }
+        // Android 键盘收起后操作
       } else {
         console.log('Android 键盘弹起啦！');
-
-        // 修复小米浏览器下，输入框依旧被输入法遮挡问题
-        if (judgeDeviceType.isMiuiBrowser) {
-          document.body.style.marginBottom = '40px';
-        }
-        activeElementScrollIntoView($input, 1000);
+        // Android 键盘弹起后操作
       }
 
       originHeight = resizeHeight;
@@ -129,109 +96,144 @@ var $inputs = document.querySelectorAll('.input');
 for (var i = 0; i < $inputs.length; i++) {
   listenKeybord($inputs[i]);
 }
-
 ```
 
+## 弹起软键盘始终让输入框滚动到可视区
 
-# 兼容第三方输入法
+有时我们会做一个输入表单，有很多输入项，输入框获取焦点，弹起软键盘。当输入框位于页面下部位置时，在 `IOS` 上，会将 `webview` 整体往上滚一段距离，使得该获取焦点的输入框自动处于可视区，而在 `Android` 则不会这样，它只会改变页面高度，而不会去滚动到当前焦点元素到可视区。
+由于上面已经实现监听 `IOS` 和 `Android` 键盘弹起和收起，在这里，只需在 `Android` 键盘弹起后，将焦点元素滚动（`scrollIntoView()`）到可视区。查看效果，可以戳[这里](/demo/keyboard-compatible/input.html)。
 
+```js
+// 获取到焦点元素滚动到可视区
+function activeElementScrollIntoView(activeElement, delay) {
+  var editable = activeElement.getAttribute('contenteditable')
+
+  // 输入框、textarea或富文本获取焦点后没有将该元素滚动到可视区
+  if (activeElement.tagName == 'INPUT' || activeElement.tagName == 'TEXTAREA' || editable === '' || editable) {
+    setTimeout(function () {
+      activeElement.scrollIntoView();
+    }, delay)
+  }
+}
+
+// ...
+// Android 键盘弹起后操作
+activeElementScrollIntoView($input, 1000);
+// ...
+```
+
+## 唤起纯数字软键盘
+
+上面的表单输入框有要求输入电话号码，类似这样就要弹出一个数字软键盘了，既然说到了软键盘兼容，在这里就安插一下。比较好的解决方案如下：
+
+```html
+<p>请输入手机号</p>
+<input type="tel" novalidate="novalidate" pattern="[0-9]*" class="input">
+```
+
+- `type="tel"`， 是 `HTML5` 的一个属性，表示输入框类型为电话号码，在 `Android` 和 `IOS` 上表现差不多，都会有数字键盘，但是也会有字母，略显多余。
+- `pattern="[0-9]"`， `pattern` 用于验证表单输入的内容，通常 `HTML5` 的 `type` 属性，比如 `email`、`tel`、`number`、`data` 类、`url` 等，已经自带了简单的数据格式验证功能了，加上 `pattern` 后，前端部分的验证更加简单高效了。`IOS` 中，只有 `[0-9]\*` 才可以调起九宫格数字键盘，`\d` 无效，`Android 4.4` 以下（包括X5内核），两者都调起数字键盘。
+- `novalidate="novalidate"`，`novalidate` 属性规定当提交表单时不对其进行验证，由于 `pattern` 校验兼容性不好，可以不让其校验，只让其唤起纯数字键盘，校验工作由 `js` 去做。
 
 # 兼容 `IOS12` + `V6.7.4+`
 
-#
+如果你在用 `IOS12` 和 `V6.7.4+`版本的微信浏览器打开上面表单输入的 `demo` ，就会惊奇的发现键盘收起后，原本被滚动顶起的页面并没有回到底部位置，导致原来键盘弹起的位置“空”了。其实这是 `Apple` 在 `IOS` 的 `bug`，会出现在所有的 `Xcode10` 打包的 `IOS12` 的设备上。微信官方已给出[解决方案](https://developers.weixin.qq.com/community/develop/doc/00044ae90742f8c82fb78fcae56800)，只需在软键盘收起后，将页面（`webview`）滚回到窗口最底部位置（`clientHeight`位置）。修复后的上面表单输入 `demo` 可以戳[这里](/demo/keyboard-compatible/input-fix-ios12-wx6.7.4.html)
 
+```js
+console.log('IOS 键盘收起啦！');
 
+// 微信浏览器版本6.7.4+IOS12会出现键盘收起后，视图被顶上去了没有下来
+var wechatInfo = window.navigator.userAgent.match(/MicroMessenger\/([\d\.]+)/i);
+if (!wechatInfo) return;
 
+var wechatVersion = wechatInfo[1];
+var version = (navigator.appVersion).match(/OS (\d+)_(\d+)_?(\d+)?/);
 
+if (+wechatVersion.replace(/\./g, '') >= 674 && +version[1] >= 12) {
+  window.scrollTo(0, Math.max(document.body.clientHeight, document.documentElement.clientHeight));
+}
 
+```
 
+# 兼容第三方输入法
 
-
-
-
-
-
-
-在 `H5` 项目中，我们经常会遇到页面中存在单个甚至多个 `input/textarea` 输入框与底部固定元素布局情况。在 `input/textarea` 输入框获取焦点时，会自动触发键盘弹起，而键盘弹起在 `IOS` 与 `Android` 的 `webview` 中表现并不一致，同时当我们主动触发键盘收起时同样存在差异化。而无论如何，我们希望功能流畅的同时，尽量保持用户体验一致性。
-
-# 键盘弹起的不同表现
-
-## IOS 键盘弹起表现
-
-`IOS` 的键盘处在窗口的最上层，当键盘弹起时， `webview` 的高度 `height` 并没有改变，只是 `scrollTop` 发生变化，页面可以滚动。且页面可以滚动的最大限度为弹出键盘的高度，而只有键盘弹起时页面恰好也滚动到最底部时， `scrollTop` 的变化值为键盘的高度，其它情况下则无法获取。这就导致在 `IOS` 情况下难以获取键盘的真实高度。
-
-## Android 键盘弹起表现
-
-`webview` 中流出空间，该空间小于等于键盘空间，变化的高度差会随着布局而不同，有人认为 `键盘高度 + 页面高度 = 原页面高度` 是错误的误导，只有在某种很巧合的布局情况下才可套用。
-
-# 键盘收起的不同表现
-
-## IOS 键盘收起表现
-
-触发键盘上的按钮收起键盘或者输入框以外的页面区域时，输入框失去焦点，因此会触发输入框的 `blur` 事件。
-
-## Android 键盘收起表现
-
-触发键盘上的按钮收起键盘时，输入框并不会失去焦点，因此不会触发页面的 `blur` 事件；触发输入框以外的区域时，输入框失去焦点，触发输入框的 `blur` 事件。
-
-## 监听键盘弹起和收起
-
-在 `H5` 中目前没有接口可以直接监听键盘事件，但我们可以分析键盘弹起和收起的触发过程及表现形式，来判断键盘是弹出还是收起状态。
-
-- 键盘弹起。输入框获取焦点时会自动触发键盘的弹起动作，因此，我们可以监听输入框 `focus` 事件，在里面实现键盘弹出后所需的页面逻辑。在 `IOS` 及 `Andriod` 中表现一致。
-- 键盘收起。当触发页面其他区域收起键盘，我们可以监听输入框的 `blur` 事件，在里面实现键盘收起后所需的页面逻辑。而在通过键盘按钮收起键盘时，在 `IOS` 和 `Andriod` 端存在差异：
-  - 在 `IOS` 上触发了输入框 `blur` 事件，仍然通过该办法监听
-  - 在 `Andriod` 上不会触发 `blur` 事件，当时 `webview` 高度会变化，可以通过监听 `webview height` 的变化判断键盘是否收起。
-
-下面举例说明，其中页面中含有一个输入框：
+上面说了那么多，其实已经把 `H5` 聊天输入框的坑填了一大半了，接下来就先看下聊天输入框的基本HTML结构
 
 ```html
-<div class="txd">
-  Welcome to TXD!
+<div class="chat__content">
+  <div>
+    <p>一些聊天内容1</p>
+  </div>
+  <!-- 省略几千行聊天内容 -->
 </div>
-<div class="input">
-  <input id="input" type="tel" />
+<div class="input__content">
+  <div class="input" contenteditable="true"></div>
+  <button>发送</button>
 </div>
 ```
 
-`IOS` 和 `Andriod` 键盘弹起
+样式
 
-```js
-const $input = document.getElementById('input')
-$input.addEventListener('focus', () => {
-  // 处理键盘弹出后所需页面逻辑
-}, false)
+```css
+/* 省略一些样式 */
+.chat__content {
+  height: calc(100% - 40px);
+  margin-bottom: 40px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.input__content {
+  display: flex;
+  height: 40px;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  align-items: center;
+}
+/* 省略一些样式 */
 ```
 
-`IOS` 键盘收起：
+很简单，就是划分内容区和输入区，输入区是绝对定位，按照上面表单输入 `demo` 的做法，确实大部分 `Android` 浏览器是没问题的，但是测试在 `IOS` 上，`UC` 浏览器配合原生输入法和第三方输入法（比如搜狗输入法），输入框都会被完全挡住，`QQ` 浏览器或微信浏览器，配合第三方输入法，输入框会被遮住一半。
+
+在 `UC` 浏览器上，软键盘弹起后，浏览器上面的标题栏高度就有个高度变小延时动态效果，这样导致 `webview` 往下滚了一点，底部输入框滚到了非可视区。而对于第三方输入法，猜测本身是由于输入法面板弹起后高度计算有误，导致 `webview` 初始滚动定位有误。其实这两点都是 `webview` 滚动不到位造成的。可以让软键盘弹起后，让焦点元素再次滚到可视区，强迫 `webview` 滚到位。
 
 ```js
-const $input = document.getElementById('input')
-$input.addEventListener('blur', () => {
-  // 处理键盘收起后所需页面逻辑
-}, false)
+console.log('Android 键盘弹起啦！');
+activeElementScrollIntoView($input, 1000);
 ```
 
-`Andriod` 键盘弹出和收起：
+# 兼容 `Android` 小米浏览器的
+
+在 `Android` 的小米浏览器上，应用上面的方案，发现聊天输入框还是被遮挡得严严实实，`scrollIntoView()` 仍然纹丝不动。所以猜测，其实是滚到低了，软键盘弹起，页面实现高度大于可视区高度，这样只能在软键盘弹起后，强行增加页面高度，使输入可以显示出来。
 
 ```js
-const originHeight = document.documentElement.clientHeight || document.body.clientHeight
-window.addEventListener('resize', () => {
-  const resizeHeight = document.documentElement.clientHeight || document.body.clientHeight
-  if (resizeHeight < originHeight) {
-    // 键盘弹起所需页面逻辑
-  } else {
-    // 键盘弹起后所需逻辑
-  }
-}, false)
+// Andriod 键盘收起：Andriod 键盘弹起或收起页面高度会发生变化，以此为依据获知键盘收起
+if (judgeDeviceType.isAndroid) {
+  var originHeight = document.documentElement.clientHeight || document.body.clientHeight;
+
+  window.addEventListener('resize', function () {
+    var resizeHeight = document.documentElement.clientHeight || document.body.clientHeight;
+    if (originHeight < resizeHeight) {
+      console.log('Android 键盘收起啦！');
+
+      // 修复小米浏览器下，输入框依旧被输入法遮挡问题
+      if (judgeDeviceType.isMiuiBrowser) {
+        document.body.style.marginBottom = '0px';
+      }
+    } else {
+      console.log('Android 键盘弹起啦！');
+
+      // 修复小米浏览器下，输入框依旧被输入法遮挡问题
+      if (judgeDeviceType.isMiuiBrowser) {
+        document.body.style.marginBottom = '40px';
+      }
+      activeElementScrollIntoView($input, 1000);
+    }
+
+    originHeight = resizeHeight;
+  }, false)
+}
+
 ```
-
-通过 `userAgent` 来判断决定使用哪种方法：
-
-```js
-const ua = window.navigator.userAgent.toLocaleLowerCase()
-const isIOS = /iphone|ipad|ipod/.test(ua)
-const isAndroid = /andriod/.test(ua)
-```
-
-实验证明，`IOS` 的 `height` 没有发生变化，`scrollTop` 发生变化，页面可以滚动，且始终保证输入框处于可视区域中。`Android` 页面高度变小，页面可以上下滚动，`fixed` 元素的 `bottom` 属性的基线为键盘。页面是否可以滚动由处于正常文档流中元素决定，高度大于键盘弹起页面调整后的高度就会产生滚动条，否则没有滚动条。
