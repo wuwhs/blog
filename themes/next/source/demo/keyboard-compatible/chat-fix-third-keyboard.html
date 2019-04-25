@@ -3,69 +3,149 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>可能这些是你想要的H5键盘兼容方案</title>
+  <title>聊天输入框</title>
   <style>
-    html, body {
+    html,
+    body {
       height: 100%;
     }
 
     body {
       margin: 0;
-      text-align: center;
+      position: relative;
+      -webkit-overflow-scrolling: touch;
     }
 
-    .header {
-      padding: 20px 0;
-      box-shadow: 0 1px 1px #dddddd;
+    .chat__content {
+      height: calc(100% - 40px);
+      margin-bottom: 40px;
+      overflow-y: auto;
+      overflow-x: hidden;
     }
 
-    .content {
-      margin-top: 100px;
-      margin: 100px 0 80px;
+    .chat__content p {
+      display: inline-block;
+      background-color: #ff706f;
+      color: #fff;
+      font-size: 13px;
+      line-height: 22px;
+      padding: 11px 15px 10px 16px;
+      border-radius: 17px;
+      word-break: break-word;
+      border-top-left-radius: 0;
+      min-width: 20px;
     }
 
-    .content input {
-      border-radius: 4px;
-      border: 1px solid #dddddd;
-      height: 26px;
-      line-height: 26px;
-    }
-
-    .footer {
-      position: fixed;
+    .input__content {
+      display: flex;
+      height: 40px;
+      position: absolute;
       left: 0;
       right: 0;
       bottom: 0;
-      padding: 20px 0;
-      box-shadow: 0 -1px 1px #dddddd;
+      align-items: center;
     }
 
-    .header,
-    .footer {
-      background-color: #42b983;
-      color: #ffffff;
+    .input__content::after {
+      content: "";
+      position: absolute;
+      border: 1px solid #cccccc;
+      top: 0;
+      left: 0;
+      right: 0;
+      transform: scaleY(.5);
+    }
+
+    .input__content .input {
+      flex-grow: 1;
+      word-break: break-all;
+      font-size: 14px;
+      padding-left: 10px;
+    }
+
+    .input__content button {
+      width: 50px;
+      height: 36px;
+      flex-grow: 0;
+      flex-shrink: 0;
+      border-radius: 2px;
+      border: none;
+    }
+
+    .input__content .input:focus,
+    .input__content button:focus {
+      outline: none;
     }
   </style>
 </head>
 
 <body>
-  <header class="header">I am Header</header>
-  <div class="content">
-    <p>请输入用户名</p>
-    <input type="text" class="input">
-    <p>请输入手机号</p>
-    <input type="number" novalidate="novalidate" class="input">
-    <p>请输入密码</p>
-    <input type="password" class="input">
-    <p>请重新输入密码</p>
-    <input type="password" class="input">
+  <div class="chat__content">
+    <div>
+      <p>一些聊天内容1</p>
+    </div>
+    <div>
+      <p>一些聊天内容2</p>
+    </div>
+    <div>
+      <p>一些聊天内容3</p>
+    </div>
+    <div>
+      <p>一些聊天内容4</p>
+    </div>
+    <div>
+      <p>一些聊天内容5</p>
+    </div>
+    <div>
+      <p>一些聊天内容6</p>
+    </div>
+    <div>
+      <p>一些聊天内容7</p>
+    </div>
+    <div>
+      <p>一些聊天内容8</p>
+    </div>
+    <div>
+      <p>一些聊天内容9</p>
+    </div>
+    <div>
+      <p>一些聊天内容10</p>
+    </div>
+    <div>
+      <p>一些聊天内容10</p>
+    </div>
+    <div>
+      <p>一些聊天内容11</p>
+    </div>
+    <div>
+      <p>一些聊天内容12</p>
+    </div>
+    <div>
+      <p>一些聊天内容13</p>
+    </div>
+    <div>
+      <p>一些聊天内容14</p>
+    </div>
+    <div>
+      <p>一些聊天内容15</p>
+    </div>
+    <div>
+      <p>一些聊天内容16</p>
+    </div>
+    <div>
+      <p>一些聊天内容17</p>
+    </div>
   </div>
-  <footer class="footer">I am Footer</footer>
+  <div class="input__content">
+    <div class="input" contenteditable="true"></div>
+    <button>发送</button>
+  </div>
+
   <script src="./js/vconsole.min.js"></script>
   <script>
-    // new VConsole();
+    // new VConsole()
 
     // 判断设备类型
     var judgeDeviceType = function () {
@@ -99,7 +179,7 @@
         // IOS 键盘弹起：IOS 和 Android 输入框获取焦点键盘弹起
         $input.addEventListener('focus', function () {
           console.log('IOS 键盘弹起啦！');
-          // activeElementScrollIntoView(this, 1000);
+          activeElementScrollIntoView(this, 1000);
         }, false)
 
         // IOS 键盘收起：IOS 点击输入框以外区域或点击收起按钮，输入框都会失去焦点，键盘会收起，
@@ -150,7 +230,7 @@
     var $inputs = document.querySelectorAll('.input');
 
     for (var i = 0; i < $inputs.length; i++) {
-      listenKeybord($inputs[i])
+      listenKeybord($inputs[i]);
     }
 
   </script>

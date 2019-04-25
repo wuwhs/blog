@@ -179,7 +179,6 @@
         // IOS 键盘弹起：IOS 和 Android 输入框获取焦点键盘弹起
         $input.addEventListener('focus', function () {
           console.log('IOS 键盘弹起啦！');
-          activeElementScrollIntoView(this, 1000);
         }, false)
 
         // IOS 键盘收起：IOS 点击输入框以外区域或点击收起按钮，输入框都会失去焦点，键盘会收起，
@@ -207,18 +206,8 @@
           var resizeHeight = document.documentElement.clientHeight || document.body.clientHeight;
           if (originHeight < resizeHeight) {
             console.log('Android 键盘收起啦！');
-
-            // 修复小米浏览器下，输入框依旧被输入法遮挡问题
-            if (judgeDeviceType.isMiuiBrowser) {
-              document.body.style.marginBottom = '0px';
-            }
           } else {
             console.log('Android 键盘弹起啦！');
-
-            // 修复小米浏览器下，输入框依旧被输入法遮挡问题
-            if (judgeDeviceType.isMiuiBrowser) {
-              document.body.style.marginBottom = '40px';
-            }
             activeElementScrollIntoView($input, 1000);
           }
 
