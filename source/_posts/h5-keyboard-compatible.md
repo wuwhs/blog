@@ -158,7 +158,9 @@ var wechatVersion = wechatInfo[1];
 var version = (navigator.appVersion).match(/OS (\d+)_(\d+)_?(\d+)?/);
 
 if (+wechatVersion.replace(/\./g, '') >= 674 && +version[1] >= 12) {
-  window.scrollTo(0, Math.max(document.body.clientHeight, document.documentElement.clientHeight));
+  setTimeout(function () {
+    window.scrollTo(0, Math.max(document.body.clientHeight, document.documentElement.clientHeight));
+  })
 }
 
 ```

@@ -78,6 +78,30 @@
     .input__content button:focus {
       outline: none;
     }
+
+    .prompt {
+      display: none;
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 40px;
+      background-color: #fff;
+      padding: 20px 10px;
+    }
+
+    .prompt-list {
+      margin: 0;
+      padding: 0;
+    }
+
+    .prompt-list li {
+      margin: 0;
+      padding: 0;
+      text-align: center;
+      list-style: none;
+      line-height: 1.5;
+      -webkit-tap-highlight-color: #cccccc;
+    }
   </style>
 </head>
 
@@ -138,6 +162,21 @@
       <p>一些聊天内容17</p>
     </div>
   </div>
+
+  <section class="prompt">
+    <ul class="prompt-list">
+      <li>1</li>
+      <li>2</li>
+      <li>3</li>
+      <li>4</li>
+      <li>5</li>
+      <li>6</li>
+      <li>7</li>
+      <li>8</li>
+    </ul>
+  </section>
+
+
   <div class="input__content">
     <div class="input" contenteditable="true"></div>
     <button>发送</button>
@@ -145,7 +184,7 @@
 
   <script src="./js/vconsole.min.js"></script>
   <script>
-    // new VConsole()
+    new VConsole();
 
     // 判断设备类型
     var judgeDeviceType = function () {
@@ -178,16 +217,22 @@
     // 监听输入框的软键盘弹起和收起事件
     function listenKeybord($input) {
       if (judgeDeviceType.isIOS) {
+        var $prompt = document.querySelector('.prompt');
         // IOS 键盘弹起：IOS 和 Android 输入框获取焦点键盘弹起
         $input.addEventListener('focus', function () {
           console.log('IOS 键盘弹起啦！');
           // Safari 浏览器，`scrollIntoView` 参数设为 `false`，才使得聊天输入框刚好吸附在输入法上，为 `true` 会往上走一点
           activeElementScrollIntoView(this, 1000, !judgeDeviceType.isSafari);
+          setTimeout(function () {
+            $prompt.style.display = 'block';
+            $prompt.scrollIntoView();
+          }, 1100)
         }, false)
 
         // IOS 键盘收起：IOS 点击输入框以外区域或点击收起按钮，输入框都会失去焦点，键盘会收起，
         $input.addEventListener('blur', () => {
           console.log('IOS 键盘收起啦！');
+          $prompt.style.display = 'none';
 
           // 微信浏览器版本6.7.4+IOS12会出现键盘收起后，视图被顶上去了没有下来
           var wechatInfo = window.navigator.userAgent.match(/MicroMessenger\/([\d\.]+)/i);
@@ -233,9 +278,16 @@
     }
 
     var $inputs = document.querySelectorAll('.input');
+    var $lis = document.querySelector('.prompt-list').querySelectorAll('li');
 
     for (var i = 0; i < $inputs.length; i++) {
       listenKeybord($inputs[i]);
+    }
+
+    for (var j = 0; j < $lis.length; j++) {
+      $lis[j].addEventListener('click', function () {
+        console.log('点钱点击了提示' + this.target.innerText);
+      })
     }
   </script>
 </body>
