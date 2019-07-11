@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>mutation observer</title>
+</head>
+<body>
+  <div id="tar"></div>
+  <script>
+    var $tar = document.getElementById('tar');
+    var num = 0;
+    var mutationObserver = new MutationObserver(function (mutations) {
+      console.log(mutations);
+    })
+
+
+    mutationObserver.observe($tar, {
+      childList: true, // 子节点的变动（新增、删除或者更改）
+      // attributes: true, // 属性的变动
+      // characterData: true, // 节点内容或节点文本的变动
+      subtree: true, // 是否将观察器应用于该节点的所有后代节点
+      // attributeFilter: ['class', 'style'], // 观察特定属性
+      // attributeOldValue: true, // 观察 attributes 变动时，是否需要记录变动前的属性值
+      // characterDataOldValue: true // 观察 characterData 变动，是否需要记录变动前的值
+    })
+
+    /* var $div1 = document.createElement('div');
+    $div1.innerText = 'div1';
+    $tar.appendChild($div1);
+    $tar.childNodes[0].remove(); */
+
+    var $div2 = document.createElement('div');
+    $div2.innerText = 'div2';
+
+    var $div3 = document.createElement('div');
+    $div3.innerText = 'div3';
+
+    $tar.appendChild($div2);
+    // $tar.replaceChild($div3, $div2);
+
+    $tar.childNodes[0].textContent = '改变子节点的后代';
+
+
+    /* var editor = document.createElement('div');
+    editor.contentEditable = 'true';
+    editor.textContent = 'just a simple editor';
+    $tar.appendChild(editor); */
+    // mutationObserver.disconnect();
+
+    /* var record = mutationObserver.takeRecords();
+    console.log('record1: ', record); */
+
+
+  </script>
+</body>
+</html>
