@@ -1,13 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>mutation observer</title>
+  <script src="./js/ResizeObserver.js"></script>
 </head>
+
 <body>
-  <div id="tar"></div>
+  <div id="tar" contentEditable></div>
   <script>
     var $tar = document.getElementById('tar');
     var num = 0;
@@ -52,7 +55,20 @@
     /* var record = mutationObserver.takeRecords();
     console.log('record1: ', record); */
 
+    const ro = new ResizeObserver((entries, observer) => {
+      for (const entry of entries) {
+        const { left, top, width, height } = entry.contentRect;
+
+        console.log('Element:', entry.target);
+        console.log(`Element's size: ${width}px x ${height}px`);
+        console.log(`Element's paddings: ${top}px ; ${left}px`);
+      }
+    });
+
+    ro.observe($tar);
+
 
   </script>
 </body>
+
 </html>
