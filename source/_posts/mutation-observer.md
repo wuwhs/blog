@@ -50,3 +50,114 @@ var observer = new MutationObserver(function (mutations, observer){
 ```
 
 ### MutationObserver 实例的 observe() 方法
+
+`observe` 方法用来执行监听，接受两个参数：
+
+1. 第一个参数，被观察的 `DOM` 节点；
+2. 第二个参数，一个配置对象，指定所要观察特征。
+
+```js
+var $tar = document.getElementById('tar');
+var option = {
+  childList: true, // 子节点的变动（新增、删除或者更改）
+  attributes: true, // 属性的变动
+  characterData: true, // 节点内容或节点文本的变动
+
+  subtree: true, // 是否将观察器应用于该节点的所有后代节点
+  attributeFilter: ['class', 'style'], // 观察特定属性
+  attributeOldValue: true, // 观察 attributes 变动时，是否需要记录变动前的属性值
+  characterDataOldValue: true // 观察 characterData 变动，是否需要记录变动前的值
+}
+mutationObserver.observe($tar, option);
+```
+
+`option` 中，必须有 `childList`、`attributes`和`characterData`中一种或多种，否则会报错。其中各个属性意思如下：
+
+- `childList` 布尔值，表示是否应用到子节点的变动（新增、删除或者更改）；
+- `attributes` 布尔值，表示是否应用到属性的变动；
+- `characterData` 布尔值，表示是否应用到节点内容或节点文本的变动；
+- `subtree` 布尔值，表示是否应用到是否将观察器应用于该节点的所有后代节点；
+- `attributeFilter` 数组，表示观察特定属性；
+- `attributeOldValue` 布尔值，表示观察 `attributes` 变动时，是否需要记录变动前的属性值；
+- `characterDataOldValue` 布尔值，表示观察 `characterData` 变动，是否需要记录变动前的值；
+
+#### childList 和 subtree 属性
+
+`childList` 属性表示是否应用到子节点的变动（新增、删除或者更改），监听不到子节点后代节点变动。
+
+```js
+var mutationObserver = new MutationObserver(function (mutations) {
+  console.log(mutations);
+})
+
+mutationObserver.observe($tar, {
+  childList: true, // 子节点的变动（新增、删除或者更改）
+})
+
+var $div1 = document.createElement('div');
+$div1.innerText = 'div1';
+
+// 新增子节点
+$tar.appendChild($div1); // 能监听到
+
+// 删除子节点
+$tar.childNodes[0].remove(); // 能监听到
+
+var $div2 = document.createElement('div');
+$div2.innerText = 'div2';
+
+var $div3 = document.createElement('div');
+$div3.innerText = 'div3';
+
+// 新增子节点
+$tar.appendChild($div2); // 能监听到
+
+// 替换子节点
+$tar.replaceChild($div3, $div2); // 能监听到
+
+// 新增孙节点
+$tar.childNodes[0].appendChild(document.createTextNode('新增孙文本节点')); // 监听不到
+```
+
+#### attributes 和 attributeFilter 属性
+
+`attributes` 属性表示是否应用到 `DOM` 节点属性的值变动的监听。而 `attributeFilter` 属性是用来过滤要监听的属性 `key`。
+
+```js
+// ...
+mutationObserver.observe($tar, {
+  attributes: true, // 属性的变动
+  attributeFilter: ['class', 'style'], // 观察特定属性
+})
+// ...
+// 改变 style 属性
+$tar.style.height = '100px'; // 能监听到
+// 改变 className
+$tar.className = 'tar'; // 能监听到
+// 改变 dataset
+$tar.dataset = 'abc'; // 监听不到
+```
+
+#### characterData 属性
+
+`characterData` 属性表示是否应用到节点内容或节点文本的变动。
+
+```js
+mutationObserver.observe($tar, {
+  childList: true, // 子节点的变动（新增、删除或者更改）
+  subtree: true, // 是否将观察器应用于该节点的所有后代节点
+})
+
+var $text5 = document.createTextNode('新增文本节点5');
+var $text6 = document.createTextNode('新增文本节点6');
+
+// 新增文本节点
+$tar.appendChild($text5); // 能监听到
+// 替换文本节点
+$tar.replaceChild($text6, $text5); // 能监听到
+// 删除文本节点
+$tar.removeChild($text6); // 能监听到
+
+```
+
+#### characterData 属性
