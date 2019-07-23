@@ -138,26 +138,117 @@ $tar.className = 'tar'; // 能监听到
 $tar.dataset = 'abc'; // 监听不到
 ```
 
-#### characterData 属性
+#### characterData 和 `subtree` 属性
 
-`characterData` 属性表示是否应用到节点内容或节点文本的变动。
+`characterData` 属性表示是否应用到节点内容或节点文本的变动。`subtree` 是否将观察器应用于该节点的所有后代节点。为了更好观察节点文本变化，将两者结合应用到富文本监听上是不错的选择。
+
+简单的富文本，比如
+
+```html
+<div id="tar" contentEditable>A simple editor</div>
+```
 
 ```js
+var $tar = document.getElementById('tar');
+var MutationObserver = window.MutationObserver || window.webkitMutationObserver || window.MozMutationObserver;
+var mutationObserver = new MutationObserver(function (mutations) {
+  console.log(mutations);
+})
 mutationObserver.observe($tar, {
-  childList: true, // 子节点的变动（新增、删除或者更改）
+  characterData: true, // 节点内容或节点文本的变动
   subtree: true, // 是否将观察器应用于该节点的所有后代节点
 })
+```
 
+### takeRecords()、disconnect() 方法
+
+`MutationObserver` 实例上还有两个方法，`takeRecords()` 用来清空记录队列并返回变动记录的数组。`disconnect()` 用来停止观察。调用该方法后，`DOM` 再发生变动，也不会触发观察器。
+
+```js
 var $text5 = document.createTextNode('新增文本节点5');
 var $text6 = document.createTextNode('新增文本节点6');
 
 // 新增文本节点
-$tar.appendChild($text5); // 能监听到
-// 替换文本节点
-$tar.replaceChild($text6, $text5); // 能监听到
-// 删除文本节点
-$tar.removeChild($text6); // 能监听到
+$tar.appendChild($text5);
+var record = mutationObserver.takeRecords();
 
+console.log('record: ', record); // 返回 记录新增文本节点操作，并清空监听队列
+
+// 替换文本节点
+$tar.replaceChild($text6, $text5);
+
+mutationObserver.disconnect(); // 此处以后的不再监听
+
+// 删除文本节点
+$tar.removeChild($text6); // 监听不到
 ```
 
-#### characterData 属性
+前面还有两个属性 `attributeOldValue` 和 `characterDataOldValue` 没有说，其实是影响 `takeRecords()` 方法返回结果。如果设置了这两个属性，就会对应返回对象中 `oldValue` 为记录之前旧的 `attribute` 和 `data`值。
+
+比如将原来的 `className` 的值 `aaa` 替换成 `tar`，`oldValue` 记录为 `aaa`。
+
+```js
+record: [{
+  addedNodes: NodeList []
+  attributeName: "class"
+  attributeNamespace: null
+  nextSibling: null
+  oldValue: "aaa"
+  previousSibling: null
+  removedNodes: NodeList []
+  target: div#tar.tar
+  type: "attributes"
+}]
+```
+
+### MutationObserver 的应用
+
+
+
+
+
+
+
+```js
+/**
+ * 监听元素高度变化，更新滚动容器
+ */
+Vue.directive('observe-element-height', {
+    bind (el, binding) {
+        const MutationObserver = window.MutationObserver || window.webkitMutationObserver || window.MozMutationObserver;
+        let recordHeight = 0;
+
+        el.__observer__ = new MutationObserver((mutations) => {
+            console.log('lalalala...')
+            mutations.forEach((mutation) => {
+                console.log('mutation: ', mutation)
+            })
+            let height = window.getComputedStyle(el).getPropertyValue('height');
+            if (height === recordHeight) {
+                return;
+            }
+            recordHeight = height;
+            EventBus.$emit('handleRefreshScroll');
+            EventBus.$emit('handleSetScrollPosition', {
+                isToBottom: binding.modifiers.isToBottom
+            })
+        });
+
+        el.__observer__.observe(el, {
+            // childList: true,
+            subtree: true,
+            attributes: true,
+            // attributeFilter: ['style']
+        })
+    },
+    unbind (el) {
+        if (el.__observer__) {
+            el.__observer__.disconnect();
+            el.__observer__.takeRecords();
+            el.__observer__ = null;
+        }
+    }
+})
+
+
+```
