@@ -160,6 +160,8 @@ mutationObserver.observe($tar, {
 })
 ```
 
+![characterData节点内容或节点文本的变动](/gb/mutation-observer/listen-data.gif)
+
 ### takeRecords()、disconnect() 方法
 
 `MutationObserver` 实例上还有两个方法，`takeRecords()` 用来清空记录队列并返回变动记录的数组。`disconnect()` 用来停止观察。调用该方法后，`DOM` 再发生变动，也不会触发观察器。
@@ -183,7 +185,7 @@ mutationObserver.disconnect(); // 此处以后的不再监听
 $tar.removeChild($text6); // 监听不到
 ```
 
-前面还有两个属性 `attributeOldValue` 和 `characterDataOldValue` 没有说，其实是影响 `takeRecords()` 方法返回结果。如果设置了这两个属性，就会对应返回对象中 `oldValue` 为记录之前旧的 `attribute` 和 `data`值。
+前面还有两个属性 `attributeOldValue` 和 `characterDataOldValue` 没有说，其实是影响 `takeRecords()` 方法返回 `MutationRecord` 实例。如果设置了这两个属性，就会对应返回对象中 `oldValue` 为记录之前旧的 `attribute` 和 `data`值。
 
 比如将原来的 `className` 的值 `aaa` 替换成 `tar`，`oldValue` 记录为 `aaa`。
 
@@ -203,52 +205,109 @@ record: [{
 
 ### MutationObserver 的应用
 
+一个容器本身以及内部元素的属性变化，节点变化和文本变化是影响该容器高宽的重要因素（当然还有其他因素），以上了解了 `MutationObserver` API 的一些细节，可以实现监听容器宽高的变化。
 
+```js
+var $tar = document.getElementById('tar');
+var MutationObserver = window.MutationObserver || window.webkitMutationObserver || window.MozMutationObserver;
 
+var recordHeight = 0;
+var mutationObserver = new MutationObserver(function (mutations) {
+  console.log(mutations);
 
+  let height = window.getComputedStyle($tar).getPropertyValue('height');
+  if (height === recordHeight) {
+    return;
+  }
+  recordHeight = height;
+  console.log('高度变化了');
+  // 之后更新外部容器等操作
+})
 
+mutationObserver.observe($tar, {
+  childList: true, // 子节点的变动（新增、删除或者更改）
+  attributes: true, // 属性的变动
+  characterData: true, // 节点内容或节点文本的变动
+  subtree: true // 是否将观察器应用于该节点的所有后代节点
+})
+```
 
+### 漏网之鱼：动画（animation）改变容器高（宽）
+
+除了容器内部元素节点、属性变化，还有 css3 动画会影响容器高宽，由于动画并不会造成元素属性的变化，所以 `MutationObserver` API 是监听不到的。
+
+将 `#tar` 容器加入以下 `css` 动画
+
+```css
+@keyframes changeHeight {
+  to {
+    height: 300px;
+  }
+}
+
+#tar {
+  background-color: aqua;
+  border: 1px solid #ccc;
+  animation: changeHeight 2s ease-in 1s;
+}
+```
+
+![MutationObserver监听不到动画改变高宽](/gb/mutation-observer/animation.gif)
+
+可以看出，没有打印输出，是监听不到动画改变高宽的。所以，在这还需对这条“漏网之鱼”进行处理。处理很简单，只需在动画停止事件触发时监听高宽变化即可。在这里用 `Vue` 自定义指令处理如下：
 
 ```js
 /**
  * 监听元素高度变化，更新滚动容器
  */
 Vue.directive('observe-element-height', {
-    bind (el, binding) {
-        const MutationObserver = window.MutationObserver || window.webkitMutationObserver || window.MozMutationObserver;
-        let recordHeight = 0;
+  insert (el, binding) {
+    const MutationObserver = window.MutationObserver || window.webkitMutationObserver || window.MozMutationObserver
+    let recordHeight = 0
+    const onHeightChange = _.throttle(function () { // _.throttle 节流函数
+      let height = window.getComputedStyle(el).getPropertyValue('height');
+      if (height === recordHeight) {
+        return
+      }
+      recordHeight = height
+      console.log('高度变化了')
+      // 之后更新外部容器等操作
+    }, 500)
 
-        el.__observer__ = new MutationObserver((mutations) => {
-            console.log('lalalala...')
-            mutations.forEach((mutation) => {
-                console.log('mutation: ', mutation)
-            })
-            let height = window.getComputedStyle(el).getPropertyValue('height');
-            if (height === recordHeight) {
-                return;
-            }
-            recordHeight = height;
-            EventBus.$emit('handleRefreshScroll');
-            EventBus.$emit('handleSetScrollPosition', {
-                isToBottom: binding.modifiers.isToBottom
-            })
-        });
+    el.__onHeightChange__ = onHeightChange
 
-        el.__observer__.observe(el, {
-            // childList: true,
-            subtree: true,
-            attributes: true,
-            // attributeFilter: ['style']
-        })
-    },
-    unbind (el) {
-        if (el.__observer__) {
-            el.__observer__.disconnect();
-            el.__observer__.takeRecords();
-            el.__observer__ = null;
-        }
+    el.addEventListener('animationend', onHeightChange)
+
+    el.__observer__ = new MutationObserver((mutations) => {
+      onHeightChange()
+    });
+
+    el.__observer__.observe(el, {
+      childList: true,
+      subtree: true,
+      characterData: true,
+      attributes: true
+    })
+  },
+  unbind (el) {
+    if (el.__observer__) {
+      el.__observer__.disconnect()
+      el.__observer__ = null
     }
+    el.removeEventListener('animationend', el.__onHeightChange__)
+    el.__onHeightChange__ = null
+  }
 })
-
-
 ```
+
+![animationend事件监听动画改变高宽](/gb/mutation-observer/listen-animation.gif)
+
+### ResizeObserver
+
+既然对容器区域宽高监听有硬性需求，那么是否有相关规范呢？答案是有的，`ResizeObserver` 接口可以监听到 `Element` 的内容区域或 `SVGElement` 的边界框改变。内容区域则需要减去内边距 `padding`。目前还是实验性的一个接口，各大浏览器[对ResizeObserver兼容性](https://www.caniuse.com/#search=ResizeObserver)不够，实际应用需谨慎。
+
+![ResizeObserver](/gb/mutation-observer/resize-observer.png)
+
+### ResizeObserver Polyfill
+
+实验性的 `API` 不足，总有 `Polyfill` 来弥补。

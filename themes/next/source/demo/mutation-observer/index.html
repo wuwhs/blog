@@ -7,41 +7,58 @@
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>mutation observer</title>
   <!-- <script src="./js/ResizeObserver.js"></script> -->
+  <script src="./js/lodash.js"></script>
   <style>
-    /* @keyframes changeHeight {
+
+
+    #tar {
+      background-color:aqua;
+      border: 1px solid #ccc;
+      animation: changeheight 2s ease-in 1s;
+    }
+
+    @keyframes changeheight {
       to {
         height: 300px;
       }
     }
-
-    #tar {
-      border: 1px solid #ccc;
-      animation: changeHeight 1s ease-in 1s;
-    } */
   </style>
 </head>
 
 <body>
   <div id="tar" class="aaa" contentEditable>A simple editor</div>
   <script>
-    var $tar = document.getElementById('tar');
-    var num = 0;
+    /* var $tar = document.getElementById('tar');
     var MutationObserver = window.MutationObserver || window.webkitMutationObserver || window.MozMutationObserver;
 
+    var recordHeight = 0;
+    var onHeightChange = _.throttle(function () {
+      console.log('change...')
+      var height = window.getComputedStyle($tar).getPropertyValue('height');
+      if (height === recordHeight) {
+        return;
+      }
+      recordHeight = height;
+      console.log('高度变化了');
+      // 之后更新外部容器等操作
+    }, 3000)
+
+    document.addEventListener('transitionend', onHeightChange);
 
     var mutationObserver = new MutationObserver(function (mutations) {
       console.log(mutations);
+      onHeightChange();
     })
 
     mutationObserver.observe($tar, {
       childList: true, // 子节点的变动（新增、删除或者更改）
       attributes: true, // 属性的变动
-      // characterData: true, // 节点内容或节点文本的变动
-      // subtree: true, // 是否将观察器应用于该节点的所有后代节点
+      characterData: true, // 节点内容或节点文本的变动
+      subtree: true, // 是否将观察器应用于该节点的所有后代节点
       // attributeFilter: ['class', 'style'], // 观察特定属性
-      attributeOldValue: true, // 观察 attributes 变动时，是否需要记录变动前的属性值
+      // attributeOldValue: true, // 观察 attributes 变动时，是否需要记录变动前的属性值
       // characterDataOldValue: true // 观察 characterData 变动，是否需要记录变动前的值
-    })
+    }) */
 
     /* var $div1 = document.createElement('div');
     $div1.innerText = 'div1';
@@ -64,7 +81,7 @@
     // 替换子节点
     $tar.replaceChild($div3, $div2); // 能监听到 */
 
-    var $text5 = document.createTextNode('新增文本节点5');
+    /* var $text5 = document.createTextNode('新增文本节点5');
     var $text6 = document.createTextNode('新增文本节点6');
     $tar.className = 'tar';
     // 新增文本节点
@@ -79,7 +96,7 @@
     // mutationObserver.disconnect(); // 此处以后的不再监听
 
     // 删除文本节点
-    $tar.removeChild($text6); // 监听不到
+    $tar.removeChild($text6); // 监听不到 */
 
     /* setTimeout(() => {
       // 改变 style 属性
@@ -102,18 +119,19 @@
 
     /* var record = mutationObserver.takeRecords();
     console.log('record1: ', record); */
-
-    /* const ro = new ResizeObserver((entries, observer) => {
-      for (const entry of entries) {
+    // console.log('ResizeObserver: ', window.re)
+    // var ro = new re(function(entries, observer) {
+      /* for (const entry of entries) {
         const { left, top, width, height } = entry.contentRect;
 
         console.log('Element:', entry.target);
         console.log(`Element's size: ${width}px x ${height}px`);
         console.log(`Element's paddings: ${top}px ; ${left}px`);
-      }
-    });
+      } */
+      // console.log('Element:', entries);
+    // });
 
-    ro.observe($tar); */
+    // ro.observe($tar);
 
 
   </script>
