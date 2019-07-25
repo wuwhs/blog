@@ -4,10 +4,6 @@ date: 2019-07-11 18:22:34
 tags: [javascript, html]
 ---
 
-# 如何优雅监听容器高度变化
-
-啦啦啦
-
 ## 前言
 
 老鸟：怎样去监听 `DOM` 元素的高度变化呢？
@@ -28,6 +24,10 @@ tags: [javascript, html]
 ## MutationObserver
 
 `Mutation Observer API` 用来监视 `DOM` 变动。`DOM` 的任何变动，比如节点的增减、属性的变动、文本内容的变动，这个 `API` 都可以得到通知。
+
+![MutationObserver](/gb/mutation-observer/mutation-observer.png)
+
+PS `Mutation Observer API` 已经有很不多的浏览器兼容性，如果对IE10及以下没有要求的话。
 
 ### MutationObserver 特点
 
@@ -232,7 +232,7 @@ mutationObserver.observe($tar, {
 })
 ```
 
-### 漏网之鱼：动画（animation）改变容器高（宽）
+## 漏网之鱼：动画（animation、transform）改变容器高（宽）
 
 除了容器内部元素节点、属性变化，还有 css3 动画会影响容器高宽，由于动画并不会造成元素属性的变化，所以 `MutationObserver` API 是监听不到的。
 
@@ -254,7 +254,7 @@ mutationObserver.observe($tar, {
 
 ![MutationObserver监听不到动画改变高宽](/gb/mutation-observer/animation.gif)
 
-可以看出，没有打印输出，是监听不到动画改变高宽的。所以，在这还需对这条“漏网之鱼”进行处理。处理很简单，只需在动画停止事件触发时监听高宽变化即可。在这里用 `Vue` 自定义指令处理如下：
+可以看出，没有打印输出，是监听不到动画改变高宽的。所以，在这还需对这条“漏网之鱼”进行处理。处理很简单，只需在动画（`transitionend`、`animationend`）停止事件触发时监听高宽变化即可。在这里用 `Vue` 自定义指令处理如下：
 
 ```js
 /**
@@ -278,6 +278,8 @@ Vue.directive('observe-element-height', {
 
     el.addEventListener('animationend', onHeightChange)
 
+    el.addEventListener('transitionend', onHeightChange)
+
     el.__observer__ = new MutationObserver((mutations) => {
       onHeightChange()
     });
@@ -295,6 +297,7 @@ Vue.directive('observe-element-height', {
       el.__observer__ = null
     }
     el.removeEventListener('animationend', el.__onHeightChange__)
+    el.removeEventListener('transitionend', el.__onHeightChange__)
     el.__onHeightChange__ = null
   }
 })
@@ -302,12 +305,90 @@ Vue.directive('observe-element-height', {
 
 ![animationend事件监听动画改变高宽](/gb/mutation-observer/listen-animation.gif)
 
-### ResizeObserver
+## ResizeObserver
 
 既然对容器区域宽高监听有硬性需求，那么是否有相关规范呢？答案是有的，`ResizeObserver` 接口可以监听到 `Element` 的内容区域或 `SVGElement` 的边界框改变。内容区域则需要减去内边距 `padding`。目前还是实验性的一个接口，各大浏览器[对ResizeObserver兼容性](https://www.caniuse.com/#search=ResizeObserver)不够，实际应用需谨慎。
 
 ![ResizeObserver](/gb/mutation-observer/resize-observer.png)
 
-### ResizeObserver Polyfill
+## ResizeObserver Polyfill
 
 实验性的 `API` 不足，总有 `Polyfill` 来弥补。
+
+1. `ResizeObserver Polyfill` 利用事件冒泡，在顶层 `document` 上监听动画 `transitionend`；
+2. 简体 `window` 的 `resize` 事件；
+3. 其次用 `MutationObserver` 监听 `document` 元素；
+4. 兼容IE11以下 通过 `DOMSubtreeModified` 监听 `document` 元素。
+
+利用`MapShim` （类似ES6中 `Map`） 数据结构，`key` 为被监听元素，`value` 为 `ResizeObserver` 实例，映射监听关系，顶层 `document` 或 `window` 监听到触发事件，通过绑定元素即可监听元素尺寸变化。部分源码如下：
+
+```js
+/**
+ * Initializes DOM listeners.
+ *
+ * @private
+ * @returns {void}
+ */
+ResizeObserverController.prototype.connect_ = function () {
+    // Do nothing if running in a non-browser environment or if listeners
+    // have been already added.
+    if (!isBrowser || this.connected_) {
+        return;
+    }
+    // Subscription to the "Transitionend" event is used as a workaround for
+    // delayed transitions. This way it's possible to capture at least the
+    // final state of an element.
+    document.addEventListener('transitionend', this.onTransitionEnd_);
+    window.addEventListener('resize', this.refresh);
+    if (mutationObserverSupported) {
+        this.mutationsObserver_ = new MutationObserver(this.refresh);
+        this.mutationsObserver_.observe(document, {
+            attributes: true,
+            childList: true,
+            characterData: true,
+            subtree: true
+        });
+    }
+    else {
+        document.addEventListener('DOMSubtreeModified', this.refresh);
+        this.mutationEventsAdded_ = true;
+    }
+    this.connected_ = true;
+};
+```
+
+PS:不过，这里貌似作者没有对 `animation` 做处理，也就是 `animation` 改变元素尺寸还是监听不到。不知道是不是我没有全面的考虑，这点已向作者提了[issue](https://github.com/que-etc/resize-observer-polyfill/issues/60)。
+
+## 用 iframe 模拟 window 的 resize
+
+`window` 的 `resize` 没有兼容性问题，按照这个思路，可以用隐藏的 `iframe` 模拟 `window` 撑满要监听得容器元素，当容器尺寸变化时，自然会 `iframe` 尺寸也会改变，通过`contentWindow.onresize()` 就能监听得到。
+
+```js
+function observeResize(element, handler) {
+  let frame = document.createElement('iframe');
+  const CSS = 'position:absolute;left:0;top:-100%;width:100%;height:100%;margin:1px 0 0;border:none;opacity:0;visibility:hidden;pointer-events:none;';
+  frame.style.cssText = CSS;
+  frame.onload = () => {
+    frame.contentWindow.onresize = () => {
+      handler(element);
+    };
+  };
+  element.appendChild(frame);
+  return frame;
+}
+
+let element = document.getElementById('main');
+// listen for resize
+observeResize(element, () => {
+  console.log('new size: ', {
+    width: element.clientWidth,
+    height: element.clientHeight
+  });
+});
+```
+
+采用这种方案常用插件有 [iframe-resizer](https://www.npmjs.com/package/iframe-resizer)、[resize-sensor](https://www.npmjs.com/package/resize-sensor)等。不过这种方案不是特别优雅，需要插入 `iframe` 元素，还需将父元素定位，可能在页面上会有其他意想不到的问题，仅作为供参考方案吧。
+
+## 总结
+
+最后，要优雅地监听元素的宽高变化，不要去根据交互行为而是从元素本身去监听，了解 `MutationObserver` 接口是重点，其次要考虑到元素动画可能造成宽高变化，兼容IE11以下，通过 `DOMSubtreeModified` 监听。用 iframe 模拟 window 的 `resize` 属于一种供参考方案。做的功课有点少，欢迎指正，完~
