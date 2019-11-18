@@ -119,13 +119,13 @@ ps:在Firefox中返回结果为`NaN`，因为第一个{}被当作一个代码块
 ```
 var a = {
   valueOf: function () {
-     return1;
+     return 1;
   },
   toString: function () {
      return'123'
   }
 }
-console.log(rue == a) // true;
+console.log(true == a) // true;
 
 ```
     1. 首先，x与y类型不同，x为boolean类型，则进行ToNumber转换为1,为number类型

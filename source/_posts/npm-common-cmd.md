@@ -16,7 +16,7 @@ npm install 模块名 -g
 npm install 模块名
 
 // 一次安装多个模块
-npm install 模块1 模块2 模块3
+npm install 模块名1 模块名2 模块名3
 
 // 安装开发时依赖包
 npm install 模块名 --save-dev
@@ -160,7 +160,7 @@ npm -v
 ### 查看某个模块的 bugs 列表
 
 ```js
-npm bugs
+npm bugs 模块名
 ```
 
 ### 打开某个模块的仓库界面
