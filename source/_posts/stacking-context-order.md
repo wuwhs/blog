@@ -35,4 +35,79 @@ tags: [css]
 
 ### display: flex|inline-flex 与层叠上下文
 
-父级是 `display: flex` 或者 `display: inline-flex;`，子元素的 `z-index` 不是 `auto`，此时，这个子元素为层叠上下文元素。
+> 父级是 `display: flex` 或者 `display: inline-flex;`，子元素的 `z-index` 不是 `auto`，此时，这个子元素（注意这里是子元素）为层叠上下文元素。
+
+HTML 代码
+
+```html
+<div class="wrapper">
+    <div class="gray">
+        小灰
+        <div class="red">小红</div>
+    </div>
+</div>
+```
+
+CSS代码
+
+```css
+.wrapper {
+    display: flex;
+}
+
+.gray {
+    z-index: 1;
+    width: 200px;
+    height: 300px;
+    text-align: center;
+    background-color: gray;
+}
+
+.red {
+    z-index: -1;
+    width: 300px;
+    height: 200px;
+    text-align: center;
+    background-color: brown;
+    position: relative;
+}
+```
+
+这样，由于小灰的父级的 `display: flex;`，自身的 `z-index` 不为 `auto`，因此变成了层叠上下文元素，原本小红垫底变成了小灰垫底了。
+
+### opacity 与层叠上下文
+
+> 如果元素的 `opacity` 不为1，这个元素为层叠上下文元素
+
+HTML 代码
+
+```html
+<div class="gray">
+    小灰
+    <div class="red">小红</div>
+</div>
+```
+
+CSS代码
+
+```css
+.gray {
+    z-index: 1;
+    width: 200px;
+    height: 300px;
+    text-align: center;
+    background-color: gray;
+    opacity: 0.5;
+}
+
+.red {
+    z-index: -1;
+    width: 300px;
+    height: 200px;
+    text-align: center;
+    background-color: brown;
+    position: relative;
+}
+```
+
+![opacity](/gb/stacking-context-order/opacity.png)

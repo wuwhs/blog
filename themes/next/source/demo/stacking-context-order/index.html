@@ -6,7 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>stacking-context-order</title>
-
+    <style>
+        body {
+            padding: 100px;
+        }
+    </style>
 </head>
 
 <body>
@@ -50,12 +54,12 @@
         </div>
     </section> -->
 
-    <hr>
 
     <section>
         <style>
             .wrapper {
                 /* display: flex; */
+                /* background-image: url("./jz.png"); */
             }
 
             .gray {
@@ -64,7 +68,12 @@
                 height: 300px;
                 text-align: center;
                 background-color: gray;
-                opacity: 0.98;
+                /* opacity: 0.5; */
+                /* transform: rotate(30deg); */
+                /* mix-blend-mode: darken; */
+                /* filter: blur(5px); */
+                /* will-change: transform; */
+
             }
 
             .red {
@@ -83,6 +92,34 @@
             </div>
         </div>
     </section>
+
+    <!-- <section>
+        <style>
+
+            .red {
+                position: absolute;
+                z-index: 2;
+                width: 300px;
+                height: 200px;
+                text-align: center;
+                background-color: brown;
+                mix-blend-mode: darken;
+            }
+
+            .gray {
+                position: relative;
+                z-index: 1;
+                width: 200px;
+                height: 300px;
+                text-align: center;
+                background-color: gray;
+                isolation: isolate;
+            }
+        </style>
+
+        <div class="red">小红</div>
+        <div class="gray">小灰</div>
+    </section> -->
 
 </body>
 
