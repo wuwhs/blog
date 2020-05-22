@@ -22,9 +22,9 @@ tags: [vue, javascript]
 
 以上这些模式存在以下问题：
 
-- 模版中的数据来源不清晰。举例来说，当一个组件中使用了多个 mixin 的时候，光看模版会很难分清一个属性到底是来自哪一个 mixin。HOC 也有类似的问题。
-- 命名空间冲突。由不同开发者开发的 mixin 无法保证不会正好用到一样的属性或是方法名。HOC 在注入的 props 中也存在类似问题。
-- 性能。HOC 和 Renderless Components 都需要额外的组件实例嵌套来封装逻辑，导致无谓的性能开销。
+- 模版中的数据来源不清晰。举例来说，当一个组件中使用了多个 `mixin` 的时候，光看模版会很难分清一个属性到底是来自哪一个 `mixin`。`HOC` 也有类似的问题。
+- 命名空间冲突。由不同开发者开发的 `mixin` 无法保证不会正好用到一样的属性或是方法名。`HOC` 在注入的 `props` 中也存在类似问题。
+- 性能。`HOC` 和 `Renderless Components` 都需要额外的组件实例嵌套来封装逻辑，导致无谓的性能开销。
 
 `Composition API` 受 `React Hooks` 的启发，提供了一个全新的逻辑复用方案，且不存在上述问题。使用基于函数的 `API`，我们可以将相关联的代码抽取到一个 `"composition function"（组合函数）`中 —— 该函数封装了相关联的逻辑，并将需要暴露给组件的状态以响应式的数据源的方式返回出来。这里是一个用组合函数来封装鼠标位置侦听逻辑的例子：
 
@@ -331,3 +331,259 @@ export default {
 ### isref()
 
 检查一个值是否为一个 `ref` 对象。
+
+### toRefs()
+
+把一个响应式对象转换成普通对象，该普通对象的每个 `property` 都是一个 `ref` ，和响应式对象 `property` 一一对应。并且，当想要从一个组合逻辑函数中返回响应式对象时，用 `toRefs` 是很有效的，该 `API` 让消费组件可以 解构 / 扩展（使用 `...` 操作符）返回的对象，并不会丢失响应性：
+
+```js
+import { reactive, toRefs } from '@vue/composition-api'
+
+export default {
+  setup() {
+    const state = reactive({
+      count: 0
+    })
+
+    const increment = () => {
+      state.count++
+    }
+
+    return {
+      ...toRefs(state), // 结构出来不丢失响应性
+      increment
+    }
+  },
+  template: `
+  <div>
+    <p>count: {{count}}</p>
+    <button @click="increment">+1</button>
+  </div>
+  `
+}
+```
+
+### computed()
+
+`computed()` 用来创建计算属性，`computed()` 函数的返回值是一个 `ref` 的实例。这个值模式是只读的：
+
+```js
+import { ref, computed } from '@vue/composition-api'
+
+export default {
+  setup() {
+    const count = ref(0)
+    const plusOne = computed(() => count.value + 1)
+    plusOne.value = 10
+    console.log('plusOne.value: ', plusOne.value)
+    console.log('count.value: ', count.value)
+  }
+}
+// 打印结果：
+// [Vue warn]: Computed property was assigned to but it has no setter.
+// plusOne.value: 1
+// count.value: 0
+```
+
+或者传入一个拥有 `get` 和 `set` 函数的对象，创建一个可手动修改的计算状态：
+
+```js
+import { ref, computed } from '@vue/composition-api'
+
+export default {
+  setup() {
+    const count = ref(0)
+    const plusOne = computed({
+      get: () => count.value + 1,
+      set: val => {
+        count.value = val - 1
+      }
+    })
+    plusOne.value = 10
+    console.log('plusOne.value: ', plusOne.value)
+    console.log('count.value: ', count.value)
+  }
+}
+// 打印结果：
+// plusOne.value: 10
+// count.value: 9
+```
+
+### watchEffect()
+
+`watchEffect()` 监测副作用函数。立即执行传入的一个函数，并响应式追踪其依赖，并在其依赖变更时重新运行该函数：
+
+```js
+import { ref, watchEffect } from '@vue/composition-api'
+
+export default {
+  setup() {
+    // 监视 ref 数据源
+    const count = ref(0)
+    // 监视依赖有变化，立刻执行
+    watchEffect(() => {
+      console.log('count.value: ', count.value)
+    })
+    const increment = () => {
+      count.value++
+    }
+    return {
+      count,
+      increment
+    }
+  },
+  template: `
+  <div>
+    <p>count: {{count}}</p>
+    <button @click="increment">+1</button>
+  </div>
+  `
+}
+```
+
+**停止侦听**。当 `watchEffect` 在组件的 `setup()` 函数或生命周期钩子被调用时， 侦听器会被链接到该组件的生命周期，并在组件卸载时自动停止。
+
+在一些情况下（比如超时就无需继续监听变化），也可以显式调用返回值以停止侦听：
+
+```js
+import { reactive, watchEffect } from '@vue/composition-api'
+
+export default {
+  setup() {
+    // 监视 reactive 数据源
+    const state = reactive({
+      count: 0
+    })
+    const stop = watchEffect(() => {
+      console.log('state.count: ', state.count)
+    })
+    setTimeout(() => {
+      stop()
+    }, 3000)
+    const increment = () => {
+      state.count++
+    }
+    return {
+      state,
+      increment
+    }
+  },
+  template: `
+  <div>
+    <p>count: {{state.count}}</p>
+    <button @click="increment">+1</button>
+  </div>
+  `
+}
+// 3秒后，不再打印
+```
+
+**清除副作用**。有时副作用函数会执行一些异步的副作用, 这些响应需要在其失效时清除（即完成之前状态已改变了）。所以侦听副作用传入的函数可以接收一个 `onInvalidate` 函数作入参, 用来注册清理失效时的回调。当以下情况发生时，这个失效回调会被触发:
+
+- 副作用即将重新执行时
+- 侦听器被停止 (如果在 setup() 或 生命周期钩子函数中使用了 watchEffect, 则在卸载组件时)
+
+我们之所以是通过传入一个函数去注册失效回调，而不是从回调返回它（如 `React useEffect` 中的方式），是因为返回值对于异步错误处理很重要。在执行数据请求时，副作用函数往往是一个异步函数，在实际应用中，在大于某个频率（请求padding状态）操作时，可以先取消之前操作，节约资源：
+
+```js
+import { ref, watchEffect } from '@vue/composition-api'
+export default {
+  setup() {
+    const keyword = ref('')
+    const asyncPrint = val => {
+      return setTimeout(() => {
+        console.log('user input: ', val)
+      }, 1000)
+    }
+
+    watchEffect(
+      onInvalidate => {
+        const timer = asyncPrint(keyword.value)
+        onInvalidate(() => clearTimeout(timer))
+        console.log('keyword change: ', keyword.value)
+      },
+      {
+        flush: 'post' // 默认'post'，同步'sync'，'pre'组件更新之前
+      }
+    )
+
+    return {
+      keyword
+    }
+  },
+  template: `
+  <div>
+    <input type="text"
+      v-model="keyword">
+  </div>
+  `
+}
+// 实现对用户输入“防抖”效果
+```
+
+### watch()
+
+`watch API` 完全等效于 `2.x` `this.$watch` （以及 `watch` 中相应的选项）。`watch` 需要侦听特定的数据源，并在回调函数中执行副作用。默认情况是懒执行的，也就是说仅在侦听的源变更时才执行回调。
+
+`watch()` 接收的第一个参数被称作 “数据源”，它可以是：
+
+- 一个返回任意值的函数
+- 一个包装对象
+- 一个包含上述两种数据源的数组
+
+第二个参数是回调函数。回调函数只有当数据源发生变动时才会被触发：
+
+```js
+watch(
+  // getter
+  () => count.value + 1,
+  // callback
+  (value, oldValue) => {
+    console.log('count + 1 is: ', value)
+  }
+)
+// -> count + 1 is: 1
+
+count.value++
+// -> count + 1 is: 2
+```
+
+上面提到第一个参数的“数据源”可以是一个包含函数和包装对象的数组，也就是可以同时监听多个数据源。同时，`watch` 和 `watchEffect` 在停止侦听, 清除副作用 (相应地 `onInvalidate` 会作为回调的第三个参数传入)，等方面行为一致。下面用上面“防抖”例子用 `watch` 改写：
+
+```js
+import { ref, watch } from '@vue/composition-api'
+export default {
+  setup() {
+    const keyword = ref('')
+    const asyncPrint = val => {
+      return setTimeout(() => {
+        console.log('user input: ', val)
+      })
+    }
+
+    watch(
+      keyword,
+      (newVal, oldVal, onCleanUp) => {
+        const timer = asyncPrint(keyword)
+        onCleanUp(() => clearTimeout(timer))
+      },
+      {
+        lazy: true // 默认未false，即初始监听回调函数执行了
+      }
+    )
+    return {
+      keyword
+    }
+  }，
+  template: `
+  <div>
+    <input type="text"
+      v-model="keyword">
+  </div>
+  `
+}
+```
+
+和 `2.x` 的 `$watch` 有所不同的是，`watch()` 的回调会在创建时就执行一次。这有点类似 `2.x watcher` 的 `immediate: true` 选项，但有一个重要的不同：默认情况下 `watch()` 的回调总是会在当前的 `renderer flush` 之后才被调用 —— 换句话说，`watch()`的回调在触发时，`DOM` 总是会在一个已经被更新过的状态下。 这个行为是可以通过选项来定制的。
+
+在 `2.x` 的代码中，我们经常会遇到同一份逻辑需要在 `mounted` 和一个 `watcher` 的回调中执行（比如根据当前的 `id` 抓取数据），`3.0` 的 `watch()` 默认行为可以直接表达这样的需求。
