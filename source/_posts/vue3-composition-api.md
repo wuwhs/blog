@@ -478,12 +478,23 @@ export default {
 // 3秒后，不再打印
 ```
 
-**清除副作用**。有时副作用函数会执行一些异步的副作用, 这些响应需要在其失效时清除（即完成之前状态已改变了）。所以侦听副作用传入的函数可以接收一个 `onInvalidate` 函数作入参, 用来注册清理失效时的回调。当以下情况发生时，这个失效回调会被触发:
+**清除副作用**。有时候当观察的数据源变化后，我们可能需要对之前所执行的副作用进行清理。举例来说，一个异步操作在完成之前数据就产生了变化，我们可能要撤销还在等待的前一个操作。为了处理这种情况，`watchEffect` 的回调会接收到一个参数是用来注册清理操作的函数。调用这个函数可以注册一个清理函数。清理函数会在下属情况下被调用：
 
 - 副作用即将重新执行时
-- 侦听器被停止 (如果在 setup() 或 生命周期钩子函数中使用了 watchEffect, 则在卸载组件时)
+- 侦听器被停止 (如果在 `setup()` 或 生命周期钩子函数中使用了 `watchEffect`, 则在卸载组件时)
 
-我们之所以是通过传入一个函数去注册失效回调，而不是从回调返回它（如 `React useEffect` 中的方式），是因为返回值对于异步错误处理很重要。在执行数据请求时，副作用函数往往是一个异步函数，在实际应用中，在大于某个频率（请求padding状态）操作时，可以先取消之前操作，节约资源：
+我们之所以是通过传入一个函数去注册失效回调，而不是从回调返回它（如 `React useEffect` 中的方式），是因为返回值对于异步错误处理很重要。
+
+```js
+const data = ref(null)
+watchEffect(async (id) => {
+  data.value = await fetchData(id)
+})
+```
+
+`async function` 隐性地返回一个 `Promise` - 这样的情况下，我们是无法返回一个需要被立刻注册的清理函数的。除此之外，回调返回的 `Promise` 还会被 `Vue   用于内部的异步错误处理。
+
+在实际应用中，在大于某个频率（请求padding状态）操作时，可以先取消之前操作，节约资源：
 
 ```js
 import { ref, watchEffect } from '@vue/composition-api'
@@ -587,3 +598,106 @@ export default {
 和 `2.x` 的 `$watch` 有所不同的是，`watch()` 的回调会在创建时就执行一次。这有点类似 `2.x watcher` 的 `immediate: true` 选项，但有一个重要的不同：默认情况下 `watch()` 的回调总是会在当前的 `renderer flush` 之后才被调用 —— 换句话说，`watch()`的回调在触发时，`DOM` 总是会在一个已经被更新过的状态下。 这个行为是可以通过选项来定制的。
 
 在 `2.x` 的代码中，我们经常会遇到同一份逻辑需要在 `mounted` 和一个 `watcher` 的回调中执行（比如根据当前的 `id` 抓取数据），`3.0` 的 `watch()` 默认行为可以直接表达这样的需求。
+
+### 生命周期钩子函数
+
+可以直接导入 `onXXX` 一族的函数来注册生命周期钩子。
+
+```js
+import { onMounted, onUpdated, onUnmounted } from '@vue/composition-api'
+
+const MyComponent = {
+  setup() {
+    onMounted(() => {
+      console.log('mounted!')
+    })
+    onUpdated(() => {
+      console.log('updated!')
+    })
+    onUnmounted(() => {
+      console.log('unmounted!')
+    })
+  },
+}
+```
+
+这些生命周期钩子注册函数只能在 `setup()` 期间同步使用， 因为它们依赖于内部的全局状态来定位当前组件实例（正在调用 `setup()` 的组件实例）, 不在当前组件下调用这些函数会抛出一个错误。
+
+组件实例上下文也是在生命周期钩子同步执行期间设置的，因此，在卸载组件时，在生命周期钩子内部同步创建的侦听器和计算状态也将自动删除。
+
+`2.x` 的生命周期函数与新版 `Composition API` 之间的映射关系：
+
+- ~~beforeCreate~~ -> 使用 setup()
+- ~~created~~ -> 使用 setup()
+- beforeMount -> onBeforeMount
+- mounted -> onMounted
+- beforeUpdate -> onBeforeUpdate
+- updated -> onUpdated
+- beforeDestroy -> onBeforeUnmount
+- destroyed -> onUnmounted
+- errorCaptured -> onErrorCaptured
+
+注意：`beforeCreate` 和 `created` 在 `Vue3` 中已经由 `setup` 替代。
+
+### 依赖注入
+
+`provide` 和 `inject` 提供依赖注入，功能类似 `2.x` 的 `provide/inject`。两者都只能在当前活动组件实例的 `setup()` 中调用。
+
+可以使用 `ref` 来保证 `provided` 和 `injected` 之间值的响应。
+
+父依赖注入，作为提供者，传给子组件：
+
+```js
+import { ref, provide } from '@vue/composition-api'
+import ComParent from './ComParent.vue'
+
+export default {
+  components: {
+    ComParent
+  },
+  setup() {
+    let treasure = ref('传国玉玺')
+    provide('treasure', treasure)
+    setTimeout(() => {
+      treasure.value = '尚方宝剑'
+    }, 1000)
+    return {
+      treasure
+    }
+  }
+}
+```
+
+子依赖注入，可作为使用者：
+
+```js
+import { inject } from '@vue/composition-api'
+import ComChild from './ComChild.vue'
+
+export default {
+  components: {
+    ComChild
+  },
+  setup() {
+    const treasure = inject('treasure')
+    return {
+      treasure
+    }
+  }
+}
+```
+
+孙组件依赖注入，作为使用者使用，当祖级依赖传入的值改变时，也能响应：
+
+```js
+import { inject } from '@vue/composition-api'
+
+export default {
+  setup() {
+    const treasure = inject('treasure')
+    return {
+      treasure
+    }
+  }
+}
+```
