@@ -8,6 +8,8 @@ tags: [vue, javascript]
 
 随着2020年4月份 `Vue3.0 beta` 发布，惊喜于其性能的提升，友好的 `TS` 支持（语法补全），改写`ES export`写法，利用`Tree shaking` 减少打包大小,`Composition API`，`Custom Renderer API` 新功能拓展及其`RECs` 文档的完善。当然，还有一些后续工作（`vuex`, `vue-router`, `cli`, `vue-test-utils`, `DevTools`, `Vetur`, `Nuxt`）待完成，当前还不稳定，正式在项目中使用（目前可以在小型新项目中），还需在[2020 Q2](https://github.com/vuejs/vue/projects/6#column-8291547)稳定版本之后。
 
+![vue3](https://wuwhs.github.io/gb/vue3-composition-api/vue3-beta.png)
+
 `Vue3.0` 的到来已只是时间问题，未雨绸缪，何不先来尝鲜一波新特性～
 
 ## 设计动机
@@ -63,7 +65,16 @@ const Component = {
 - 返回值可以被任意重命名，所以不存在命名空间冲突；
 - 没有创建额外的组件实例所带来的性能损耗。
 
-## `Composition API`
+### 类型推导
+
+`3.0` 的一个主要设计目标是增强对 `TypeScript` 的支持。
+基于函数的 API 天然对类型推导很友好，因为 `TS` 对函数的参数、返回值和泛型的支持已经非常完备。
+
+### 打包尺寸
+
+基于函数的 `API` 每一个函数都可以作为 `named ES export` 被单独引入，这使得它们对 `tree-shaking` 非常友好。没有被使用的 `API` 的相关代码可以在最终打包时被移除。同时，基于函数 `API` 所写的代码也有更好的压缩效率，因为所有的函数名和 `setup` 函数体内部的变量名都可以被压缩，但对象和 `class` 的属性/方法名却不可以。
+
+## Composition API
 
 > 除了渲染函数 API 和作用域插槽语法之外的所有内容都将保持不变，或者通过兼容性构建让其与 `2.x` 保持兼容
 
@@ -163,17 +174,20 @@ export default {
 
 类似 `data()`，`setup()` 可以返回一个对象，这个对象上的属性将会暴露给模版的渲染上下文：
 
-```js
+```html
+<template>
+  <div>{{ name }}</div>
+</template>
+
+<script>
 export default {
   setup() {
     return {
       name: 'zs'
     }
-  },
-  template: `
-    <div>{{ name }}</div>
-  `
+  }
 }
+</script>
 ```
 
 ### reactive()
@@ -182,7 +196,12 @@ export default {
 
 当（引用）数据直接改变不会让模版响应更新渲染：
 
-```js
+```html
+<template>
+  <div>count: {{state.count}}</div>
+</template>
+
+<script>
 export default {
   setup() {
     const state = { count: 0 }
@@ -190,17 +209,20 @@ export default {
       state.count++
     })
     return { state }
-  },
-  template: `
-  <div>count: {{state.count}}</div>
-  `
+  }
 }
 // 一秒后页面没有变化
+</script>
 ```
 
 `reactive` 创建的响应式数据对象，在对象属性发生变化时，模版是可以响应更新渲染的：
 
-```js
+```html
+<template>
+  <div>count: {{state.count}}</div>
+</template>
+
+<script>
 import { reactive } from '@vue/composition-api'
 
 export default {
@@ -212,19 +234,22 @@ export default {
     }, 1000)
 
     return { state }
-  },
-  template: `
-  <div>count: {{state.count}}</div>
-  `
+  }
 }
 // 一秒后页面数字从0变成1
+</script>
 ```
 
 ### ref()
 
 在 `Javascript` 中，原始类型（如 `String`，`Number`）只有值，没有引用。如果在一个函数中返回一个字符串变量，接收到这个字符串的代码只会获得一个值，是无法追踪原始变量后续的变化的。
 
-```js
+```html
+<template>
+  <div>count: {{state.count}}</div>
+</template>
+
+<script>
 import { ref } from '@vue/composition-api'
 
 export default {
@@ -236,19 +261,18 @@ export default {
     }, 1000)
 
     return { count }
-  },
-  template: `
-  <div>count: {{count}}</div>
-  `
+  }
 }
 // 页面没有变化
+</script>
 ```
 
 因此，包装对象 `ref()` 的意义就在于提供一个让我们能够在函数之间以引用的方式传递任意类型值的容器。这有点像 `React Hooks` 中的 `useRef` —— 但不同的是 `Vue` 的包装对象同时还是响应式的数据源。有了这样的容器，我们就可以在封装了逻辑的组合函数中将状态以引用的方式传回给组件。组件负责展示（追踪依赖），组合函数负责管理状态（触发更新）。
 
 `ref()` 返回的是一个 `value reference` （包装对象）。一个包装对象只有一个属性：.value ，该属性指向内部被包装的值。包装对象的值可以被直接修改。
 
-```js
+```html
+<script>
 import { ref } from '@vue/composition-api'
 
 export default {
@@ -262,11 +286,17 @@ export default {
 // 打印结果：
 // count.value: 0
 // count.value: 1
+</script>
 ```
 
 当包装对象被暴露给模版渲染上下文，或是被嵌套在另一个响应式对象中的时候，它会被自动展开 (unwrap) 为内部的值：
 
-```js
+```html
+<template>
+  <div>ref count: {{count}}</div>
+</template>
+
+<script>
 import { ref } from '@vue/composition-api'
 
 export default {
@@ -276,16 +306,19 @@ export default {
     return {
       count // 包装对象 value 属性自动展开
     }
-  },
-  template: `
-    <div>ref count: {{count}}</div>
-  `
+  }
 }
+</script>
 ```
 
 也可以用 `ref()` 包装对象作为 `reactive()` 创建的对象的属性值，同样属性值 `ref()` 包装对象也会模版上下文被展开：
 
-```js
+```html
+<template>
+  <div>reactive ref count: {{state.count}}</div>
+</template>
+
+<script>
 import { reactive, ref } from '@vue/composition-api'
 
 export default {
@@ -295,16 +328,19 @@ export default {
     return {
       state // 包装对象 value 属性自动展开
     }
-  },
-  template: `
-    <div>reactive ref count: {{state.count}}</div>
-  `
+  }
 }
+</script>
 ```
 
 在 `Vue 2.x` 中用实例上的 `$refs` 属性获取模版元素中 `ref` 属性标记 `DOM` 或组件信息，在这里用 `ref()` 包装对象也可以用来引用页面元素和组件；
 
-```js
+```html
+<template>
+  <div><p ref="text">Hello</p></div>
+</template>
+
+<script>
 import { ref } from '@vue/composition-api'
 
 export default {
@@ -316,12 +352,11 @@ export default {
     return {
       text
     }
-  },
-  template: `
-    <div><p ref="text">Hello</p></div>
-  `
-  // 打印结果：
-  // text: Hello
+  }
+}
+// 打印结果：
+// text: Hello
+</script>
 ```
 
 ### unref()
@@ -336,7 +371,15 @@ export default {
 
 把一个响应式对象转换成普通对象，该普通对象的每个 `property` 都是一个 `ref` ，和响应式对象 `property` 一一对应。并且，当想要从一个组合逻辑函数中返回响应式对象时，用 `toRefs` 是很有效的，该 `API` 让消费组件可以 解构 / 扩展（使用 `...` 操作符）返回的对象，并不会丢失响应性：
 
-```js
+```html
+<template>
+  <div>
+    <p>count: {{count}}</p>
+    <button @click="increment">+1</button>
+  </div>
+</template>
+
+<script>
 import { reactive, toRefs } from '@vue/composition-api'
 
 export default {
@@ -350,17 +393,12 @@ export default {
     }
 
     return {
-      ...toRefs(state), // 结构出来不丢失响应性
+      ...toRefs(state), // 解构出来不丢失响应性
       increment
     }
-  },
-  template: `
-  <div>
-    <p>count: {{count}}</p>
-    <button @click="increment">+1</button>
-  </div>
-  `
+  }
 }
+</script>
 ```
 
 ### computed()
@@ -413,7 +451,15 @@ export default {
 
 `watchEffect()` 监测副作用函数。立即执行传入的一个函数，并响应式追踪其依赖，并在其依赖变更时重新运行该函数：
 
-```js
+```html
+<template>
+  <div>
+    <p>count: {{count}}</p>
+    <button @click="increment">+1</button>
+  </div>
+</template>
+
+<script>
 import { ref, watchEffect } from '@vue/composition-api'
 
 export default {
@@ -431,21 +477,24 @@ export default {
       count,
       increment
     }
-  },
-  template: `
-  <div>
-    <p>count: {{count}}</p>
-    <button @click="increment">+1</button>
-  </div>
-  `
+  }
 }
+</script>
 ```
 
 **停止侦听**。当 `watchEffect` 在组件的 `setup()` 函数或生命周期钩子被调用时， 侦听器会被链接到该组件的生命周期，并在组件卸载时自动停止。
 
 在一些情况下（比如超时就无需继续监听变化），也可以显式调用返回值以停止侦听：
 
-```js
+```html
+<template>
+  <div>
+    <p>count: {{state.count}}</p>
+    <button @click="increment">+1</button>
+  </div>
+</template>
+
+<script>
 import { reactive, watchEffect } from '@vue/composition-api'
 
 export default {
@@ -467,15 +516,10 @@ export default {
       state,
       increment
     }
-  },
-  template: `
-  <div>
-    <p>count: {{state.count}}</p>
-    <button @click="increment">+1</button>
-  </div>
-  `
+  }
 }
-// 3秒后，不再打印
+// 3秒后，点击+1按钮不再打印
+</script>
 ```
 
 **清除副作用**。有时候当观察的数据源变化后，我们可能需要对之前所执行的副作用进行清理。举例来说，一个异步操作在完成之前数据就产生了变化，我们可能要撤销还在等待的前一个操作。为了处理这种情况，`watchEffect` 的回调会接收到一个参数是用来注册清理操作的函数。调用这个函数可以注册一个清理函数。清理函数会在下属情况下被调用：
@@ -494,10 +538,19 @@ watchEffect(async (id) => {
 
 `async function` 隐性地返回一个 `Promise` - 这样的情况下，我们是无法返回一个需要被立刻注册的清理函数的。除此之外，回调返回的 `Promise` 还会被 `Vue   用于内部的异步错误处理。
 
-在实际应用中，在大于某个频率（请求padding状态）操作时，可以先取消之前操作，节约资源：
+在实际应用中，在大于某个频率（请求 `padding`状态）操作时，可以先取消之前操作，节约资源：
 
-```js
+```html
+<template>
+  <div>
+    <input type="text"
+      v-model="keyword">
+  </div>
+</template>
+
+<script>
 import { ref, watchEffect } from '@vue/composition-api'
+
 export default {
   setup() {
     const keyword = ref('')
@@ -521,15 +574,10 @@ export default {
     return {
       keyword
     }
-  },
-  template: `
-  <div>
-    <input type="text"
-      v-model="keyword">
-  </div>
-  `
+  }
 }
 // 实现对用户输入“防抖”效果
+</script>
 ```
 
 ### watch()
@@ -561,8 +609,17 @@ count.value++
 
 上面提到第一个参数的“数据源”可以是一个包含函数和包装对象的数组，也就是可以同时监听多个数据源。同时，`watch` 和 `watchEffect` 在停止侦听, 清除副作用 (相应地 `onInvalidate` 会作为回调的第三个参数传入)，等方面行为一致。下面用上面“防抖”例子用 `watch` 改写：
 
-```js
+```html
+<template>
+  <div>
+    <input type="text"
+      v-model="keyword">
+  </div>
+</template>
+
+<script>
 import { ref, watch } from '@vue/composition-api'
+
 export default {
   setup() {
     const keyword = ref('')
@@ -585,14 +642,9 @@ export default {
     return {
       keyword
     }
-  }，
-  template: `
-  <div>
-    <input type="text"
-      v-model="keyword">
-  </div>
-  `
+  }
 }
+</script>
 ```
 
 和 `2.x` 的 `$watch` 有所不同的是，`watch()` 的回调会在创建时就执行一次。这有点类似 `2.x watcher` 的 `immediate: true` 选项，但有一个重要的不同：默认情况下 `watch()` 的回调总是会在当前的 `renderer flush` 之后才被调用 —— 换句话说，`watch()`的回调在触发时，`DOM` 总是会在一个已经被更新过的状态下。 这个行为是可以通过选项来定制的。
@@ -695,9 +747,36 @@ import { inject } from '@vue/composition-api'
 export default {
   setup() {
     const treasure = inject('treasure')
-    return {
-      treasure
-    }
+    console.log('treasure: ', treasure)
   }
 }
 ```
+
+## 缺点/潜在问题
+
+> 新的 `API` 使得动态地检视/修改一个组件的选项变得更困难（原来是一个对象，现在是一段无法被检视的函数体）。
+
+这可能是一件好事，因为通常在用户代码中动态地检视/修改组件是一类比较危险的操作，对于运行时也增加了许多潜在的边缘情况（特别是组件继承和使用 `mixin` 的情况下）。新 `API` 的灵活性应该在绝大部分情况下都可以用更显式的代码达成同样的结果。
+
+> 缺乏经验的用户可能会写出 “面条代码”，因为新 API 不像旧 `API` 那样强制将组件代码基于选项切分开来。
+
+![noodle code](https://wuwhs.github.io/gb/vue3-composition-api/noodle-code.png)
+
+基于函数的新 `API` 和基于选项的旧 `API` 之间的最大区别，就是新 `API` 让抽取逻辑变得非常简单 —— 就跟在普通的代码中抽取函数一样。也就是说，我们不必只在需要复用逻辑的时候才抽取函数，也可以单纯为了更好地组织代码去抽取函数。
+
+基于选项的代码只是看上去更整洁。一个复杂的组件往往需要同时处理多个不同的逻辑任务，每个逻辑任务所涉及的代码在选项 `API` 下是被分散在多个选项之中的。举例来说，从服务端抓取一份数据，可能需要用到 `props`, `data()`, `mounted` 和 `watch`。极端情况下，如果我们把一个应用中所有的逻辑任务都放在一个组件里，这个组件必然会变得庞大而难以维护，因为每个逻辑任务的代码都被选项切成了多个碎片分散在各处。
+
+对比之下，基于函数的 `API` 让我们可以把每个逻辑任务的代码都整理到一个对应的函数中。当我们发现一个组件变得过大时，我们会将它切分成多个更小的组件；同样地，如果一个组件的 `setup()` 函数变得很复杂，我们可以将它切分成多个更小的函数。而如果是基于选项，则无法做到这样的切分，因为用 `mixin` 只会让事情变得更糟糕。
+
+## 总结
+
+`Vue 3.0` 的 `API` 的调整其实并不大，熟悉 `2.x` 的童鞋就会有一种似曾相识的感觉，过渡成本极小。更多是源码层面的重构，让其更好用（从选项式到函数式，基于 `typescript` 重写，强制类型检查和提示补全），性能更强（重写了虚拟 `Dom` 的实现，采用原生 `Proxy` 监听）。
+
+本文案例代码可以戳[这里](https://github.com/wuwhs/vue3)
+
+本文参考了：
+
+[Vue Function-based API RFC](https://zhuanlan.zhihu.com/p/68477600)
+[Vue Composition API](https://composition-api.vuejs.org/api.html)
+[抄笔记：尤雨溪在Vue3.0 Beta直播里聊到了这些…](https://juejin.im/post/5e9f6b3251882573a855cd52)
+完～
