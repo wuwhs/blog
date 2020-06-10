@@ -4,6 +4,9 @@ date: 2020-06-07 23:24:10
 tags: [javacript]
 ---
 
+HTMLCanvasElement.toBlob() 方法创造Blob对象，用以展示canvas上的图片；这个图片文件可以被缓存或保存到本地，由用户代理端自行决定。如不特别指明，图片的类型默认为 image/png，分辨率为96dpi。第三个参数用于针对image/jpeg格式的图片进行输出图片的质量设置。
+[toBlob]([HTMLCanvasElement.toBlob()](https://developer.mozilla.org/zh-CN/docs/Web/API/HTMLCanvasElement/toBlob))
+
 Blob 对象表示一个不可变、原始数据的类文件对象。
 [blob](https://developer.mozilla.org/zh-CN/docs/Web/API/Blob)
 
@@ -15,13 +18,21 @@ HTMLCanvasElement.toDataURL() 方法返回一个包含图片展示的 data URI
 
 ## 前言
 
-公司的移动端业务需要在用户上传图片是由前端压缩图片大小，再上传到服务器，这样可以减少移动端上行流量，优化用户体验。
+公司的移动端业务需要在用户上传图片是由前端压缩图片大小，再上传到服务器，这样可以减少移动端上行流量，减少用户上传等待时长，优化用户体验。
 
-大多时候我们需要将一个 `File` 对象压缩之后再变为 `File` 对象传入到远程图片服务器；有时候我们也需要将一个 `base64` 字符串压缩之后再变为 `base64` 字符串传入到远程数据库；有时候后它还有可能是一块`canvas` 画布，或者是一个 `Image` 对象，或者直接就是一个图片的`url` 地址，我们需要将它们压缩上传到远程。一般的，它们有如下转化关系：
+本文将试图解决如下问题：
 
-![js-image-compress-flow-chat](/gb/js-image-compress/js-image-compress-flow-chat.png)
+- 弄清 `Image` 对象、`base64`、`Canvas` 和 `File（Blob）`之间的转化关系；
+- 图片压缩关键技巧
+- 超大图片压缩黑屏问题
 
-## 实现方案
+## 转化关系
+
+在实际应用中有可能使用的情境：大多时候我们直接读取用户上传的 `File` 对象，读写到画布（`canvas`）上，利用 `Canvas` 的 `API` 进行压缩，完成压缩之后再转成 `File（Blob）` 对象，上传到远程图片服务器；不妨有时候我们也需要将一个 `base64` 字符串压缩之后再变为 `base64` 字符串传入到远程数据库或者再转成  `File（Blob）` 对象。一般的，它们有如下转化关系：
+
+![js-image-compress-flow-chat](/gb/js-image-compress/js-image-compress.jpg)
+
+## 具体实现
 
 ### urltoImage(url,fn)
 
