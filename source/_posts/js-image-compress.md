@@ -34,9 +34,9 @@ HTMLCanvasElement.toDataURL() 方法返回一个包含图片展示的 data URI
 
 ## 具体实现
 
-### urltoImage(url,fn)
+### url2Image(url,fn)
 
-`urltoImage(url,fn)` 会通过一个 `url` 加载所需要的图片对象，其中 `url` 参数传入图片的 `url` , `fn` 为回调方法,包含一个 `Image` 对象的参数，代码如下：
+通过图片链接（`url`）获取图片 `Image` 对象，由于图片加载是一异步的，因此放到回调函数 `fn` 回传获取到的 `Image` 对象。
 
 ```js
 function urltoImage(url,fn){
@@ -45,44 +45,85 @@ function urltoImage(url,fn){
   img.onload = function(){
     fn(img);
   }
-};
+}
 ```
 
-### imagetoCanvas(image)
+### image2Canvas(image)
 
-`imagetoCanvas(image)` 会将一个 `Image` 对象转变为一个 `Canvas` 类型对象，其中 `image` 参数传入一个 `Image` 对象，代码如下：
+利用 [`drawImage`](https://developer.mozilla.org/zh-CN/docs/Web/API/CanvasRenderingContext2D/drawImage) `API` 将 `Image` 对象转化成 `Canvas` 对象。
+
+`drawImage` 有三种语法形式：
+
+> void ctx.drawImage(image, dx, dy);
+  void ctx.drawImage(image, dx, dy, dWidth, dHeight);
+  void ctx.drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
+
+参数：
+
+- `image` 绘制到上下文的元素；
+- `sx` 绘制选择框左上角以 `Image` 为基准 `X` 轴坐标；
+- `sy` 绘制选择框左上角以 `Image` 为基准 `Y` 轴坐标；
+- `sWidth` 绘制选择框宽度；
+- `sHeight` 绘制选择框宽度；
+- `dx` `Image` 的左上角在目标 `canvas` 上 `X` 轴坐标；
+- `dy` `Image` 的左上角在目标 `canvas` 上 `Y` 轴坐标；
+- `dWidth` `Image` 在目标 `canvas` 上绘制的宽度；
+- `dHeight` `Image` 在目标 `canvas` 上绘制的高度；
+
+![canvas-draw-image](/gb/js-image-compress/canvas-draw-image.jpg)
 
 ```js
 function imagetoCanvas(image){
-  var cvs = document.createElement("canvas");
-  var ctx = cvs.getContext('2d');
-  cvs.width = image.width;
-  cvs.height = image.height;
-  ctx.drawImage(image, 0, 0, cvs.width, cvs.height);
-  return cvs;
+  var canvas = document.createElement("canvas");
+  var ctx = canvas.getContext('2d');
+  canvas.width = image.naturalWidth;
+  canvas.height = image.naturalHeight;
+  ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+  return canvas;
 };
 ```
 
-### canvasResizetoFile(canvas,quality,fn)
+### canvas2File(canvas, quality, fn)
 
-`canvasResizetoFile(canvas,quality,fn)` 会将一个 `Canvas` 对象压缩转变为一个 `Blob` 类型对象；其中 `canvas` 参数传入一个 `Canvas` 对象; `quality` 参数传入一个 `0-1` 的 `number` 类型，表示图片压缩质量; `fn` 为回调方法，包含一个 `Blob` 对象的参数;代码如下：
+`toBlob(callback, [type], [encoderOptions])` 方法创造 `Blob` 对象，用以展示 `canvas` 上的图片；这个图片文件可以被缓存或保存到本地，由用户代理端自行决定。第二个参数指定图片格式，如不特别指明，图片的类型默认为 `image/png`，分辨率为 `96dpi`。第三个参数用于针对`image/jpeg` 格式的图片进行输出图片的质量设置。
 
 ```js
-function canvasResizetoFile(canvas,quality,fn){
+function canvas2File(canvas, quality, fn){
   canvas.toBlob(function(blob) {
     fn(blob);
-  },'image/jpeg',quality);
+  }, 'image/jpeg', quality);
+}
+```
+
+### canvas2DataUrl(canvas, quality)
+
+`canvasResizetoDataURL(canvas, quality)` 会将一个 `Canvas` 对象压缩转变为一个 `dataURL` 字符串,其中 `canvas` 参数传入一个 `Canvas` 对象; `quality` 参数传入一个 `0-1` 的`number` 类型，表示图片压缩质量;代码如下：
+
+```js
+function canvas2DataUrl(canvas, quality){
+  return canvas.toDataURL('image/jpeg',quality);
 };
 ```
 
-### canvasResizetoDataURL(canvas,quality)
-
-`canvasResizetoDataURL(canvas,quality)` 会将一个 `Canvas` 对象压缩转变为一个 `dataURL` 字符串,其中 `canvas` 参数传入一个 `Canvas` 对象; `quality` 参数传入一个 `0-1` 的`number` 类型，表示图片压缩质量;代码如下：
+兼容低版本浏览器，可以先将 `canvas` 转化成 `base64`，再将 `base64` 解码出来，最后拼接生成 `Blob`
 
 ```js
-methods.canvasResizetoDataURL = function(canvas,quality){
-  return canvas.toDataURL('image/jpeg',quality);
-};
+if (!HTMLCanvasElement.prototype.toBlob) {
+ Object.defineProperty(HTMLCanvasElement.prototype, 'toBlob', {
+  value: function (callback, type, quality) {
+
+    var binStr = atob( this.toDataURL(type, quality).split(',')[1] ),
+        len = binStr.length,
+        arr = new Uint8Array(len);
+
+    for (var i=0; i<len; i++ ) {
+     arr[i] = binStr.charCodeAt(i);
+    }
+
+    callback( new Blob( [arr], {type: type || 'image/png'} ) );
+  }
+ });
+}
 ```
 
 ### filetoDataURL(file,fn)
