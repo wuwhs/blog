@@ -50,7 +50,7 @@ function urltoImage(url,fn){
 
 ### image2Canvas(image)
 
-利用 [`drawImage`](https://developer.mozilla.org/zh-CN/docs/Web/API/CanvasRenderingContext2D/drawImage) `API` 将 `Image` 对象转化成 `Canvas` 对象。
+利用 [`drawImage()`](https://developer.mozilla.org/zh-CN/docs/Web/API/CanvasRenderingContext2D/drawImage) 方法将 `Image` 对象转化成 `Canvas` 对象。
 
 `drawImage` 有三种语法形式：
 
@@ -80,64 +80,38 @@ function imagetoCanvas(image){
   canvas.height = image.naturalHeight;
   ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
   return canvas;
-};
-```
-
-### canvas2File(canvas, quality, fn)
-
-`toBlob(callback, [type], [encoderOptions])` 方法创造 `Blob` 对象，用以展示 `canvas` 上的图片；这个图片文件可以被缓存或保存到本地，由用户代理端自行决定。第二个参数指定图片格式，如不特别指明，图片的类型默认为 `image/png`，分辨率为 `96dpi`。第三个参数用于针对`image/jpeg` 格式的图片进行输出图片的质量设置。
-
-```js
-function canvas2File(canvas, quality, fn){
-  canvas.toBlob(function(blob) {
-    fn(blob);
-  }, 'image/jpeg', quality);
 }
 ```
 
 ### canvas2DataUrl(canvas, quality)
 
-`canvasResizetoDataURL(canvas, quality)` 会将一个 `Canvas` 对象压缩转变为一个 `dataURL` 字符串,其中 `canvas` 参数传入一个 `Canvas` 对象; `quality` 参数传入一个 `0-1` 的`number` 类型，表示图片压缩质量;代码如下：
+`toDataURL(type, encoderOptions)` 方法返回一个包含图片展示的 [`data URI`](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/data_URIs) 。
+
+参数：
+
+- `type` 图片格式，默认为 `image/png`。
+- `encoderOptions` **在指定图片格式为 `image/jpeg` 或 `image/webp` 的情况下**，可以从 `0` 到 `1` 的区间内选择图片的质量。如果超出取值范围，将会使用默认值 `0.92`，其他参数会被忽略。
 
 ```js
 function canvas2DataUrl(canvas, quality){
-  return canvas.toDataURL('image/jpeg',quality);
-};
-```
-
-兼容低版本浏览器，可以先将 `canvas` 转化成 `base64`，再将 `base64` 解码出来，最后拼接生成 `Blob`
-
-```js
-if (!HTMLCanvasElement.prototype.toBlob) {
- Object.defineProperty(HTMLCanvasElement.prototype, 'toBlob', {
-  value: function (callback, type, quality) {
-
-    var binStr = atob( this.toDataURL(type, quality).split(',')[1] ),
-        len = binStr.length,
-        arr = new Uint8Array(len);
-
-    for (var i=0; i<len; i++ ) {
-     arr[i] = binStr.charCodeAt(i);
-    }
-
-    callback( new Blob( [arr], {type: type || 'image/png'} ) );
-  }
- });
+  return canvas.toDataURL('image/jpeg', quality);
 }
 ```
 
-### filetoDataURL(file,fn)
+### filetoDataURL(file, fn)
 
-`filetoDataURL(file,fn)` 会将 `File（Blob` 类型文件转变为 `dataURL` 字符串,其中 `file` 参数传入一个 `File（Blob）`类型文件; `fn` 为回调方法，包含一个 `dataURL` 字符串的参数;代码如下：
+
+
+`filetoDataURL(file, fn)` 会将 `File（Blob)` 类型文件转变为 `dataURL` 字符串,其中 `file` 参数传入一个 `File（Blob）`类型文件; `fn` 为回调方法，包含一个 `dataURL` 字符串的参数;代码如下：
 
 ```js
 function filetoDataURL(file,fn){
     var reader = new FileReader();
     reader.onloadend = function(e){
-        fn(e.target.result);
+      fn(e.target.result);
     };
     reader.readAsDataURL(file);
-};
+}
 ```
 
 ### dataURLtoImage(dataurl,fn)
@@ -167,6 +141,38 @@ function dataURLtoFile(dataurl) {
     }
     return new Blob([u8arr], {type:mime});
 };
+```
+
+### canvas2File(canvas, quality, fn)
+
+[`toBlob(callback, [type], [encoderOptions])`](https://developer.mozilla.org/zh-CN/docs/Web/API/HTMLCanvasElement/toBlob) 方法创造 `Blob` 对象，用以展示 `canvas` 上的图片；这个图片文件可以被缓存或保存到本地，由用户代理端自行决定。第二个参数指定图片格式，如不特别指明，图片的类型默认为 `image/png`，分辨率为 `96dpi`。第三个参数用于针对`image/jpeg` 格式的图片进行输出图片的质量设置。
+
+```js
+function canvas2File(canvas, quality, fn){
+  canvas.toBlob(function(blob) {
+    fn(blob);
+  }, 'image/jpeg', quality);
+}
+```
+
+为兼容低版本浏览器，作为 `toBlob` 的 `polyfill` 方案，可以先通过 [`toDataURL`](https://developer.mozilla.org/zh-CN/docs/Web/API/HTMLCanvasElement/toDataURL) 将 `canvas` 转化成 `base64` 字符串，再将 `base64` 字符串解码出来，最后拼接生成 [`Blob`](https://developer.mozilla.org/zh-CN/docs/Web/API/Blob) 对象。
+
+```js
+if (!HTMLCanvasElement.prototype.toBlob) {
+ Object.defineProperty(HTMLCanvasElement.prototype, 'toBlob', {
+  value: function (callback, type, quality) {
+    var binStr = atob( this.toDataURL(type, quality).split(',')[1] );
+    var len = binStr.length;
+    var arr = new Uint8Array(len);
+
+    for (var i=0; i<len; i++ ) {
+     arr[i] = binStr.charCodeAt(i);
+    }
+
+    callback( new Blob( [arr], {type: type || 'image/png'} ) );
+  }
+ });
+}
 ```
 
 ## 封装图片压缩
