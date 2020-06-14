@@ -1,5 +1,5 @@
 ---
-title: JS中图片压缩的一般方法
+title: JS中图片压缩，这一篇就够了
 date: 2020-06-07 23:24:10
 tags: [javacript]
 ---
@@ -22,9 +22,9 @@ HTMLCanvasElement.toDataURL() 方法返回一个包含图片展示的 data URI
 
 本文将试图解决如下问题：
 
-- 弄清 `Image` 对象、`base64`、`Canvas` 和 `File（Blob）`之间的转化关系；
-- 图片压缩关键技巧
-- 超大图片压缩黑屏问题
+- 弄清 `Image` 对象、`data URL`、`Canvas` 和 `File（Blob）`之间的转化关系；
+- 图片压缩关键技巧；
+- 超大图片压缩黑屏问题。
 
 ## 转化关系
 
@@ -34,15 +34,41 @@ HTMLCanvasElement.toDataURL() 方法返回一个包含图片展示的 data URI
 
 ## 具体实现
 
-### url2Image(url,fn)
+下面将按照转化关系图中的转化方法一一实现。
 
-通过图片链接（`url`）获取图片 `Image` 对象，由于图片加载是一异步的，因此放到回调函数 `fn` 回传获取到的 `Image` 对象。
+### inputFile2DataUrl(file, fn)
+
+将用户上传的本地图片直接转化 [`data URL`](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/data_URIs) 字符串形式。可以使用 `File` 系统中的 `FileReader` 构造函数实例化读取文件内容并转化成 `base64` 字符串。
 
 ```js
-function urltoImage(url,fn){
+function inputFile2DataUrl(file, fn) {
+  var reader = new FileReader();
+  reader.onload = function () {
+    fn(reader.result);
+  };
+  reader.eadAsDataURL(file);
+}
+```
+
+`Data URL` 由四个部分组成：前缀（`data:`）、指示数据类型的 `MIME` 类型、如果非文本则为可选的 `base64` 标记、数据本身：
+
+> data:[<mediatype>][;base64],<data>
+
+比如一张 `png` 格式图片，转化为 `base64` 字符串形式：`data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAYAAABccqhmAAAgAElEQVR4XuxdB5g`。
+
+### inputFile2Image(file, fn)
+
+若想将用户通过本地上传的图片放入缓存并 `img` 标签显示出来，除了可以利用上面转化成的
+
+### url2Image(url, fn)
+
+通过图片链接（`url`）获取图片 `Image` 对象，由于图片加载是异步的，因此放到回调函数 `fn` 回传获取到的 `Image` 对象。
+
+```js
+function urltoImage(url, fn) {
   var img = new Image();
   img.src = url;
-  img.onload = function(){
+  img.onload = function() {
     fn(img);
   }
 }
@@ -73,8 +99,8 @@ function urltoImage(url,fn){
 ![canvas-draw-image](/gb/js-image-compress/canvas-draw-image.jpg)
 
 ```js
-function imagetoCanvas(image){
-  var canvas = document.createElement("canvas");
+function imagetoCanvas(image) {
+  var canvas = document.createElement(‘canvas’);
   var ctx = canvas.getContext('2d');
   canvas.width = image.naturalWidth;
   canvas.height = image.naturalHeight;
@@ -85,7 +111,7 @@ function imagetoCanvas(image){
 
 ### canvas2DataUrl(canvas, quality)
 
-`toDataURL(type, encoderOptions)` 方法返回一个包含图片展示的 [`data URI`](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/data_URIs) 。
+`toDataURL(type, encoderOptions)` 方法返回一个包含图片展示的 [`data URL`](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/data_URIs) 。
 
 参数：
 
@@ -93,24 +119,23 @@ function imagetoCanvas(image){
 - `encoderOptions` **在指定图片格式为 `image/jpeg` 或 `image/webp` 的情况下**，可以从 `0` 到 `1` 的区间内选择图片的质量。如果超出取值范围，将会使用默认值 `0.92`，其他参数会被忽略。
 
 ```js
-function canvas2DataUrl(canvas, quality){
+function canvas2DataUrl(canvas, quality) {
   return canvas.toDataURL('image/jpeg', quality);
 }
 ```
 
+
 ### filetoDataURL(file, fn)
 
-
-
-`filetoDataURL(file, fn)` 会将 `File（Blob)` 类型文件转变为 `dataURL` 字符串,其中 `file` 参数传入一个 `File（Blob）`类型文件; `fn` 为回调方法，包含一个 `dataURL` 字符串的参数;代码如下：
+`FileReader` 对象允许 `Web` 应用程序异步读取存储在计算机上的文件（或原始数据缓冲区）的内容，使用 [`File`](https://developer.mozilla.org/zh-CN/docs/Web/API/File) 或 [`Blob`](https://developer.mozilla.org/zh-CN/docs/Web/API/Blob) 对象指定要读取的文件或数据。`FileReader` 有一个 `readAsText()` 方法读取文件内容，完成后，`result` 属性将包含一个 `data URL` 格式的 `base64` 字符串以表示读取文件内容。
 
 ```js
-function filetoDataURL(file,fn){
-    var reader = new FileReader();
-    reader.onloadend = function(e){
-      fn(e.target.result);
-    };
-    reader.readAsDataURL(file);
+function file2DataURL(file, fn){
+  var reader = new FileReader();
+  reader.onloadend = function(e){
+    fn(e.target.result);
+  };
+  reader.readAsDataURL(file);
 }
 ```
 
