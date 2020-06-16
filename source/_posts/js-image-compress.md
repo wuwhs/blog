@@ -36,17 +36,17 @@ HTMLCanvasElement.toDataURL() 方法返回一个包含图片展示的 data URI
 
 下面将按照转化关系图中的转化方法一一实现。
 
-### inputFile2DataUrl(file, fn)
+### file2DataUrl(file, callback)
 
-将用户上传的本地图片直接转化 [`data URL`](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/data_URIs) 字符串形式。可以使用 `File` 系统中的 `FileReader` 构造函数实例化读取文件内容并转化成 `base64` 字符串。
+用户通过页面标签 `<input type="file" />` 上传的本地图片直接转化 [`data URL`](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/data_URIs) 字符串形式。可以使用 [`FileReader`](https://developer.mozilla.org/zh-CN/docs/Web/API/FileReader) 文件读取构造函数。`FileReader` 对象允许 `Web` 应用程序异步读取存储在计算机上的文件（或原始数据缓冲区）的内容，使用 [`File`](https://developer.mozilla.org/zh-CN/docs/Web/API/File) 或 [`Blob`](https://developer.mozilla.org/zh-CN/docs/Web/API/Blob) 对象指定要读取的文件或数据。该实例方法 `readAsDataURL` 读取文件内容并转化成 `base64` 字符串。在读取完后，在实例属性 `result` 上可获取文件内容。
 
 ```js
-function inputFile2DataUrl(file, fn) {
+function file2DataUrl(file, callback) {
   var reader = new FileReader();
   reader.onload = function () {
-    fn(reader.result);
+    callback(reader.result);
   };
-  reader.eadAsDataURL(file);
+  reader.readAsDataURL(file);
 }
 ```
 
@@ -56,27 +56,51 @@ function inputFile2DataUrl(file, fn) {
 
 比如一张 `png` 格式图片，转化为 `base64` 字符串形式：`data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAYAAABccqhmAAAgAElEQVR4XuxdB5g`。
 
-### inputFile2Image(file, fn)
+### file2Image(file, callback)
 
-若想将用户通过本地上传的图片放入缓存并 `img` 标签显示出来，除了可以利用上面转化成的
-
-### url2Image(url, fn)
-
-通过图片链接（`url`）获取图片 `Image` 对象，由于图片加载是异步的，因此放到回调函数 `fn` 回传获取到的 `Image` 对象。
+若想将用户通过本地上传的图片放入缓存并 `img` 标签显示出来，除了可以利用以上方法转化成的 `base64` 字符串作为图片 `src`，还可以直接用 `URL` 对象，引用保存在 `File` 和 `Blob` 中数据的 `URL`。使用对象 `URL` 的好处是可以不必把文件内容读取到 `JavaScript` 中 而直接使用文件内容。为此，只要在需要文件内容的地方提供对象 `URL` 即可。
 
 ```js
-function urltoImage(url, fn) {
-  var img = new Image();
-  img.src = url;
-  img.onload = function() {
-    fn(img);
+function file2Image(file, callback) {
+  var image = new Image();
+  var URL = window.webkitURL || window.URL;
+  if (URL) {
+    var url = URL.createObjectURL(file);
+    image.onload = function() {
+      callback(image);
+      window.revokeObjectURL(url);
+    };
+    image.src = url;
+  } else {
+    inputFile2DataUrl(file, function(dataUrl) {
+      image.onload = function() {
+        callback(image);
+      }
+      image.src = dataUrl;
+    });
+  }
+}
+```
+
+注意：要创建对象 `URL`，可以使用 `window.URL.createObjectURL()` 方法，并传入 `File` 或 `Blob` 对象。如果不再需要相应数据，最好释放它占用的内容。但只要有代码在引用对象 `URL`，内存就不会释放。要手工释放内存，可以把对象 `URL` 传给 `window.revokeObjectURL()`。
+
+### url2Image(url, callback)
+
+通过图片链接（`url`）获取图片 `Image` 对象，由于图片加载是异步的，因此放到回调函数 `callback` 回传获取到的 `Image` 对象。
+
+```js
+function url2Image(url, callback) {
+  var image = new Image();
+  image.src = url;
+  image.onload = function() {
+    callback(image);
   }
 }
 ```
 
 ### image2Canvas(image)
 
-利用 [`drawImage()`](https://developer.mozilla.org/zh-CN/docs/Web/API/CanvasRenderingContext2D/drawImage) 方法将 `Image` 对象转化成 `Canvas` 对象。
+利用 [`drawImage()`](https://developer.mozilla.org/zh-CN/docs/Web/API/CanvasRenderingContext2D/drawImage) 方法将 `Image` 对象绘画在 `Canvas` 对象上。
 
 `drawImage` 有三种语法形式：
 
@@ -99,8 +123,8 @@ function urltoImage(url, fn) {
 ![canvas-draw-image](/gb/js-image-compress/canvas-draw-image.jpg)
 
 ```js
-function imagetoCanvas(image) {
-  var canvas = document.createElement(‘canvas’);
+function image2Canvas(image) {
+  var canvas = document.createElement('canvas');
   var ctx = canvas.getContext('2d');
   canvas.width = image.naturalWidth;
   canvas.height = image.naturalHeight;
@@ -109,150 +133,138 @@ function imagetoCanvas(image) {
 }
 ```
 
-### canvas2DataUrl(canvas, quality)
+### canvas2DataUrl(canvas, quality, type)
 
-`toDataURL(type, encoderOptions)` 方法返回一个包含图片展示的 [`data URL`](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/data_URIs) 。
+`HTMLCanvasElement` 对象有 `toDataURL(type, encoderOptions)` 方法，返回一个包含图片展示的 [`data URL`](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/data_URIs) 。同时可以指定输出格式和质量。
 
-参数：
+参数分别为：
 
 - `type` 图片格式，默认为 `image/png`。
 - `encoderOptions` **在指定图片格式为 `image/jpeg` 或 `image/webp` 的情况下**，可以从 `0` 到 `1` 的区间内选择图片的质量。如果超出取值范围，将会使用默认值 `0.92`，其他参数会被忽略。
 
 ```js
-function canvas2DataUrl(canvas, quality) {
-  return canvas.toDataURL('image/jpeg', quality);
+function canvas2DataUrl(canvas, quality, type) {
+  return canvas.toDataURL(type || 'image/jpeg', quality || 0.8);
 }
 ```
 
+### dataUrl2Image(dataUrl, callback)
 
-### filetoDataURL(file, fn)
-
-`FileReader` 对象允许 `Web` 应用程序异步读取存储在计算机上的文件（或原始数据缓冲区）的内容，使用 [`File`](https://developer.mozilla.org/zh-CN/docs/Web/API/File) 或 [`Blob`](https://developer.mozilla.org/zh-CN/docs/Web/API/Blob) 对象指定要读取的文件或数据。`FileReader` 有一个 `readAsText()` 方法读取文件内容，完成后，`result` 属性将包含一个 `data URL` 格式的 `base64` 字符串以表示读取文件内容。
+图片链接也可以是 `base64` 字符串，直接赋值给 `Image` 对象 `src` 即可。
 
 ```js
-function file2DataURL(file, fn){
-  var reader = new FileReader();
-  reader.onloadend = function(e){
-    fn(e.target.result);
+function dataUrl2Image(dataUrl, callback) {
+  var image = new Image();
+  image.onload = function() {
+    callback(image);
   };
-  reader.readAsDataURL(file);
+  image.src = dataUrl;
 }
 ```
 
-### dataURLtoImage(dataurl,fn)
+### dataUrl2Blob(dataUrl)
 
-`dataURLtoImage(dataurl,fn)` 会将一串 `dataURL` 字符串转变为 `Image` 类型文件,其中 dataurl 参数传入一个 dataURL 字符串, fn 为回调方法，包含一个 Image 类型文件的参数，代码如下：
+将 `data URL` 字符串转化为 [`Blob`](https://developer.mozilla.org/zh-CN/docs/Web/API/Blob) 对象。主要思路是：先将 `data URL` 数据（`data`） 部分提取出来，用 `atob` 对经过 `base64` 编码的字符串进行解码，再转化成 `Unicode` 编码，存储在`Uint8Array`（8位无符号整型数组，每个元素是一个字节） 类型数组，最终转化成 `Blob` 对象。
 
 ```js
-function dataURLtoImage(dataurl,fn){
-    var img = new Image();
-    img.onload = function() {
-        fn(img);
-    };
-    img.src = dataurl;
-};
+function dataUrl2Blob(dataUrl, type) {
+  var data = dataUrl.split(',')[1];
+  var mimePattern = /^data:(.*?)(;base64)?,/;
+  var mime = dataUrl.match(mimePattern)[1];
+  var binStr = atob(data);
+  var arr = new Uint8Array(len);
+
+  for (var i = 0; i < len; i++) {
+    arr[i] = binStr.charCodeAt(i);
+  }
+  return new Blob([arr], {type: type || mime});
+}
 ```
 
-### dataURLtoFile(dataurl)
+### canvas2Blob(canvas, callback, quality, type)
 
-dataURLtoFile(dataurl) 会将一串 dataURL 字符串转变为 Blob 类型对象，其中 dataurl 参数传入一个 dataURL 字符串,代码如下：
-
-```js
-function dataURLtoFile(dataurl) {
-    var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
-        bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
-    while(n--){
-        u8arr[n] = bstr.charCodeAt(n);
-    }
-    return new Blob([u8arr], {type:mime});
-};
-```
-
-### canvas2File(canvas, quality, fn)
-
-[`toBlob(callback, [type], [encoderOptions])`](https://developer.mozilla.org/zh-CN/docs/Web/API/HTMLCanvasElement/toBlob) 方法创造 `Blob` 对象，用以展示 `canvas` 上的图片；这个图片文件可以被缓存或保存到本地，由用户代理端自行决定。第二个参数指定图片格式，如不特别指明，图片的类型默认为 `image/png`，分辨率为 `96dpi`。第三个参数用于针对`image/jpeg` 格式的图片进行输出图片的质量设置。
+`HTMLCanvasElement` 有 [`toBlob(callback, [type], [encoderOptions])`](https://developer.mozilla.org/zh-CN/docs/Web/API/HTMLCanvasElement/toBlob) 方法创造 `Blob` 对象，用以展示 `canvas` 上的图片；这个图片文件可以被缓存或保存到本地，由用户代理端自行决定。第二个参数指定图片格式，如不特别指明，图片的类型默认为 `image/png`，分辨率为 `96dpi`。第三个参数用于针对`image/jpeg` 格式的图片进行输出图片的质量设置。
 
 ```js
-function canvas2File(canvas, quality, fn){
+function canvas2Blob(canvas, callback, quality, type){
   canvas.toBlob(function(blob) {
-    fn(blob);
-  }, 'image/jpeg', quality);
+    callback(blob);
+  }, type || 'image/jpeg', quality || 0.8);
 }
 ```
 
-为兼容低版本浏览器，作为 `toBlob` 的 `polyfill` 方案，可以先通过 [`toDataURL`](https://developer.mozilla.org/zh-CN/docs/Web/API/HTMLCanvasElement/toDataURL) 将 `canvas` 转化成 `base64` 字符串，再将 `base64` 字符串解码出来，最后拼接生成 [`Blob`](https://developer.mozilla.org/zh-CN/docs/Web/API/Blob) 对象。
+为兼容低版本浏览器，作为 `toBlob` 的 `polyfill` 方案，可以用上面 `data URL` 生成 `Blob` 方法 `dataUrl2Blob` 作为`HTMLCanvasElement` 原型方法。
 
 ```js
 if (!HTMLCanvasElement.prototype.toBlob) {
  Object.defineProperty(HTMLCanvasElement.prototype, 'toBlob', {
   value: function (callback, type, quality) {
-    var binStr = atob( this.toDataURL(type, quality).split(',')[1] );
-    var len = binStr.length;
-    var arr = new Uint8Array(len);
-
-    for (var i=0; i<len; i++ ) {
-     arr[i] = binStr.charCodeAt(i);
-    }
-
-    callback( new Blob( [arr], {type: type || 'image/png'} ) );
+    let dataUrl = this.toDataURL(type, quality);
+    callback(dataUrl2Blob(dataUrl));
   }
  });
 }
 ```
 
-## 封装图片压缩
+### blob2DataUrl(blob, callback)
 
-对于常用的将一个 File 对象压缩之后再变为 File 对象,我们可以将上面的方法再封装一下，参考如下代码：
+将 `Blob` 对象转化成 `data URL` 数据，由于 `FileReader` 的实例 `readAsDataURL` 方法不仅支持读取文件，还支持读取 `Blob` 对象数据，这里复用上面 `file2DataUrl` 方法即可：
 
 ```js
-function fileResizetoFile(file,quality,fn){
-    filetoDataURL (file,function(dataurl){
-        dataURLtoImage(dataurl,function(image){
-            canvasResizetoFile(imagetoCanvas(image),quality,fn);
-        })
-    })
+function blob2DataUrl(blob, callback) {
+  file2DataUrl(blob, callback);
 }
 ```
 
-其中， file 参数传入一个 File （Blob）类型文件； quality 参数传入一个 0-1 的 number 类型，表示图片压缩质量； fn 为回调方法，包含一个 Blob 类型文件的参数。
+### blob2Image(blob, callback)
 
-它使用起来就像下面这样：
+将 `Blob` 对象转化成 `Image` 对象，可通过 `URL` 对象引用文件，也支持引用 `Blob` 这样的类文件对象，同样，这里复用上面 `file2Image` 方法即可：
 
 ```js
-var file = document.getElementById('demo').files[0];
-fileResizetoFile(file,0.6,function(res){
-    console.log(res);
-    //拿到res，做出你要上传的操作；
-})
+function blob2Image(blob, callback) {
+  file2Image(blob, callback);
+}
 ```
 
-这样的话，图片压缩上传就能轻松地搞定了。
+### upload(file)
 
-## 对象 URL
-
-对象 URL 也被成为 blob URL，指的是引用保存在 File 和 Blob 中数据的 URL。使用对象 URL 的好处是可以不必把文件内容读取到 JavaScript 中 而直接使用文件内容。为此，只要在需要文件内容的地方提供对象 URL 即可。要创建对象 URL，可以使用 window.URL.createObjectURL() 方法，并传入 File 或 Blob 对象。
+上传图片（已压缩），可以使用 `FormData` 传入文件对象，通过 `XHR` 直接把文件上传到服务器。
 
 ```js
-function createObjectURL (blob) {
-  if (window.URL) {
-    return window.URL.createObjectURL(blob);
-  } else if (window.webkitURL) {
-    return window.webkitURL.createObjectURL(blob);
-  } else {
-    return null;
+function upload(url, file) {
+  var xhr = new XMLHttpRequest();
+  var fd = new FormData();
+  fd.append('file', file);
+  xhr.onreadystatechange = function () {
+    if (xhr.readyState === 4 && xhr.status === 200) {
+      // 上传成功
+    }
   }
+  xhr.open('POST', url, true);
+  xhr.send(fd);
 }
 ```
 
-这个函数的返回值是一个字符串，指向一块内存的地址。因为这个字符串是 URL，所以在 DOM 中也能使用。
+也可以使用 `FileReader` 读取文件内容，转化成二进制上传
 
 ```js
-function onChange (ev) {
-  const { target } = ev;
-  const file = target.files[0];
-  const url = createObjectURL(file);
-  document.body.innerHTML = `<img src="${url} />"`;
+function upload(url, file) {
+  var url = '/upload.php';
+  var reader = new FileReader();
+  var xhr = new XMLHttpRequest();
+
+  xhr.open('POST', url, true);
+  xhr.overrideMimeType('text/plain; charset=x-user-defined-binary');
+
+  reader.onload = function() {
+    xhr.send(reader.result);
+  };
+  reader.readAsBinaryString(file);
 }
 ```
 
-如果不再需要相应数据，最好释放它占用的内容。但只要有代码在引用对象 URL，内存就不会释放。要手工释放内存，可以把对象 URL 传给 window.revokeObjectURL()。
+## 简易图片压缩
+
+```js
+fun
+```
