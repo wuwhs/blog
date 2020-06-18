@@ -249,7 +249,6 @@ function upload(url, file) {
 
 ```js
 function upload(url, file) {
-  var url = '/upload.php';
   var reader = new FileReader();
   var xhr = new XMLHttpRequest();
 
@@ -263,8 +262,67 @@ function upload(url, file) {
 }
 ```
 
-## 简易图片压缩
+## 实现简易图片压缩
+
+在熟悉以上各种图片转化方法的具体实现，将它们封装在一个公用对象 `util` 里，再结合压缩转化流程图，这里我们可以简单实现图片压缩了：
+首先将上传图片转化成 `Image` 对象，再将写入到 `Canvas` 画布，最后由 `Canvas` 对象 `API` 对图片的大小和尺寸输出调整，实现压缩目的。
 
 ```js
-fun
+/**
+ * 简易图片压缩方法
+ * @param {Object} options 相关参数
+ */
+function simpleImageCompressor(options) {
+  var file = options.file;
+  var quality = options.quality || 0.8;
+  var imageType = /^image\//;
+
+  if (!file || !imageType.test(file.type)) {
+    console.error('请上传图片文件!');
+    return;
+  }
+
+  util.file2Image(file, function (img) {
+    var canvas = util.image2Canvas(img);
+    util.canvas2Blob(canvas, function (blob) {
+      options.success && options.success(blob);
+    }, options.quality, options.mimeType)
+  })
+}
+```
+
+这个简易图片压缩方法调用和入参：
+
+```js
+var fileEle = document.getElementById('file');
+
+fileEle.addEventListener('change', function () {
+  file = this.files[0];
+  console.log('压缩之前图片尺寸大小: ', file.size);
+  console.log('mime 类型: ', file.type);
+  // 将上传图片在页面预览
+  util.file2DataUrl(file, function (url) {
+    document.getElementById('origin').src = url;
+  })
+
+  var options = {
+    file: file,
+    quality: 0.6,
+    mimeType: 'image/png',
+    success: function (result) {
+      console.log('压缩之后图片尺寸大小: ', result.size);
+      console.log('mime 类型: ', result.type);
+      console.log('压缩率： ', (result.size / file.size).toFixed(4) * 100 + '%');
+
+      // 生成压缩后图片在页面展示
+      util.file2DataUrl(result, function (url) {
+        document.getElementById('output').src = url;
+      })
+      // 上传到远程服务器
+      // util.upload('/upload.png', result);
+    }
+  };
+
+  simpleImageCompressor(options);
+}, false);
 ```

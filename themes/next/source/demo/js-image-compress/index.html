@@ -5,70 +5,115 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>js-image-compress</title>
-  <script src="./util.js"></script>
+  <style>
+    .row {
+      display: flex;
+      margin-bottom: 20px;
+      border-bottom: 1px dashed #999;
+    }
+
+    .column {
+      padding: 20px;
+    }
+
+    .upload,
+    .origin,
+    .output {
+      width: 300px;
+    }
+
+    .origin img,
+    .output img {
+      width: 100%;
+      vertical-align: middle;
+    }
+
+    .drop-content {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 80px;
+      border: 1px dotted #999;
+      border-radius: 4px;
+    }
+
+    .drop-content label {
+      color: #3db8fd;
+    }
+
+    .drop-content label:hover {
+      cursor: pointer;
+    }
+
+    #file-elem {
+      position: absolute !important;
+      height: 1px;
+      width: 1px;
+      overflow: hidden;
+      clip: rect(1px, 1px, 1px, 1px);
+    }
+
+    #file-elem:focus+label {
+      outline: thin dotted;
+    }
+
+    #file-elem:focus-within+label {
+      outline: thin dotted;
+    }
+  </style>
 </head>
 
 <body>
-  <div>
-    <input type="file" id="file">
+  <div id="app">
+    <div class="row">
+      <div class="column upload">
+        <div class="drop-content" @drop="dropFile" @dragenter="dragFileEnter" @dragover="drageFileOver"
+          style="min-height: 200px;">
+          <input id="file-elem" type="file" accept="image/*" @change="inputChange">
+          <span>拖入文件或</span><label for="file-elem">点击选择文件</label>
+        </div>
+      </div>
+      <div class="column">
+        <div>
+          <h3>设置参数</h3>
+          <!-- <input type="number" v-model="width"> -->
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="column origin">
+        <img :src="originImgUrl" />
+      </div>
+      <div class="column">
+        <h3>源图片信息</h3>
+        <div>
+          <span>尺寸：{{originImgWidth}} x {{originImgHeight}}</span>
+        </div>
+        <div>
+          <span>大小：{{originSize}}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="column output">
+        <img :src="outputImgUrl" />
+      </div>
+      <div class="column">
+        <h3>压缩图片信息</h3>
+        <div>
+          <span>尺寸：{{outputImgWidth}} x {{outputImgHeight}}</span>
+        </div>
+        <div>
+          <span>大小：{{outputSize}}</span>
+        </div>
+      </div>
+    </div>
   </div>
-  <div>
-    <img src="" id="origin">
-  </div>
-
-  <div>
-    <img src="" id="output" />
-  </div>
-
-  <script>
-    var fileEle = document.getElementById('file');
-
-    fileEle.addEventListener('change', function () {
-      file = this.files[0];
-      console.log('压缩之前图片尺寸大小: ', file.size);
-      // 将上传图片在页面预览
-      util.file2DataUrl(file, function (url) {
-        document.getElementById('origin').src = url;
-      })
-
-      var options = {
-        file: file,
-        quality: 0.6,
-        mimeType: 'image/png',
-        success: function (result) {
-          console.log('压缩之后图片尺寸大小: ', result.size);
-          console.log('压缩率： ', (result.size / file.size).toFixed(4) * 100 + '%');
-
-          // 生成压缩后图片在页面展示
-          util.file2DataUrl(result, function (url) {
-            document.getElementById('output').src = url;
-          })
-          // 上传到远程服务器
-          // util.upload('/upload.png', result);
-        }
-      };
-
-      simpleImageCompressor(options);
-    }, false);
-
-    function simpleImageCompressor(options) {
-      var file = options.file;
-      var quality = options.quality || 0.8;
-      var imageType = /^image\//;
-
-      if (!file || !imageType.test(file.type)) {
-        console.error('请上传图片文件!');
-        return;
-      }
-
-      util.file2Image(file, function (img) {
-        var canvas = util.image2Canvas(img);
-        util.canvas2Blob(canvas, function (blob) {
-          options.success && options.success(blob);
-        }, options.quality, options.mimeType)
-      })
-    }
-  </script>
+  <script src="./vue.min.js"></script>
+  <script src="./simple-image-compressor.js"></script>
+  <script src="./main.js"></script>
 </body>
 
 </html>
