@@ -1,27 +1,26 @@
 (function (win) {
+  var REGEXP_IMAGE_TYPE = /^image\//;
+  var util = {};
   var defaultOptions = {
     file: null,
-    quality: 0.8,
-    mimeType: 'image/jpeg'
+    quality: 0.8
   };
+  var isFunc = function (fn) { return typeof fn === 'function'; };
+  var isImageType = function (value) { return REGEXP_IMAGE_TYPE.test(value); };
 
   /**
-   * 简易图片压缩方法
+   * 简易图片压缩构造函数
    * @param {Object} options 相关参数
    */
   function SimpleImageCompressor(options) {
-    options = Object.assign({}, defaultOptions, options );
+    options = Object.assign({}, defaultOptions, options);
     this.options = options;
     this.file = options.file;
-    this.mimeType = options.mimeType;
-    this.quality = options.quality;
     this.init();
   }
 
-  var util = {};
   var _proto = SimpleImageCompressor.prototype;
   win.SimpleImageCompressor = SimpleImageCompressor;
-  var isFunc = function (fn) { return typeof fn === 'function' };
 
   /**
    * 初始化
@@ -30,17 +29,25 @@
     var _this = this;
     var file = this.file;
     var options = this.options;
-    var imageType = /^image\//;
 
-    if (!file || !imageType.test(file.type)) {
+    if (!file || !isImageType(file.type)) {
       console.error('请上传图片文件!');
       return;
     }
 
+    if (isImageType(options.mimeType)) {
+      options.mimeType = file.type;
+    }
+
     util.file2Image(file, function (img) {
       var canvas = util.image2Canvas(img);
-      _this.beforeCompress();
+      file.width = img.naturalWidth;
+      file.height = img.naturalHeight;
+      _this.beforeCompress(file, canvas);
+
       util.canvas2Blob(canvas, function (blob) {
+        blob.width = canvas.width;
+        blob.height = canvas.height;
         options.success && options.success(blob);
       }, options.quality, options.mimeType)
     })
@@ -49,8 +56,8 @@
   /**
    * 压缩之前，读取图片之后钩子函数
    */
-  _proto.beforeCompress = function beforeCompress () {
-    if(isFunc(this.options.beforeCompress)) {
+  _proto.beforeCompress = function beforeCompress() {
+    if (isFunc(this.options.beforeCompress)) {
       this.options.beforeCompress(this.file);
     }
   }
@@ -76,6 +83,7 @@
   util.file2Image = function file2Image(file, callback) {
     var image = new Image();
     var URL = window.URL || window.webkitURL;
+    image.alt = file.name;
     if (URL) {
       var url = URL.createObjectURL(file);
       image.onload = function () {
@@ -196,10 +204,25 @@
         }
       });
     }
-
     canvas.toBlob(function (blob) {
       callback(blob);
     }, type || 'image/jpeg', quality || 0.8);
+  }
+
+  util.upload = function upload(url, file, callback) {
+    var xhr = new XMLHttpRequest();
+    var fd = new FormData();
+    fd.append('file', file);
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState === 4 && xhr.status === 200) {
+        // 上传成功
+        callback && callback(xhr.responseText);
+      } else {
+        throw new Error(xhr);
+      }
+    }
+    xhr.open('POST', url, true);
+    xhr.send(fd);
   }
 
   for (key in util) {

@@ -1,26 +1,18 @@
 ---
-title: JS中图片压缩，这一篇就够了
+title: 了解JS压缩图片，这一篇就够了
 date: 2020-06-07 23:24:10
 tags: [javacript]
 ---
-
-HTMLCanvasElement.toBlob() 方法创造Blob对象，用以展示canvas上的图片；这个图片文件可以被缓存或保存到本地，由用户代理端自行决定。如不特别指明，图片的类型默认为 image/png，分辨率为96dpi。第三个参数用于针对image/jpeg格式的图片进行输出图片的质量设置。
-[toBlob]([HTMLCanvasElement.toBlob()](https://developer.mozilla.org/zh-CN/docs/Web/API/HTMLCanvasElement/toBlob))
-
-Blob 对象表示一个不可变、原始数据的类文件对象。
-[blob](https://developer.mozilla.org/zh-CN/docs/Web/API/Blob)
-
-HTMLCanvasElement.toBlob() 方法创造Blob对象，用以展示canvas上的图片
-[toBlob](https://developer.mozilla.org/zh-CN/docs/Web/API/HTMLCanvasElement/toBlob)
-
-HTMLCanvasElement.toDataURL() 方法返回一个包含图片展示的 data URI
-[toDataURL](https://developer.mozilla.org/zh-CN/docs/Web/API/HTMLCanvasElement/toDataURL)
 
 ## 前言
 
 公司的移动端业务需要在用户上传图片是由前端压缩图片大小，再上传到服务器，这样可以减少移动端上行流量，减少用户上传等待时长，优化用户体验。
 
-本文将试图解决如下问题：
+`JavaScript` 操作压缩图片原理不难，已有成熟 `API`，然而在实际输出压缩后结果却总有意外，有些图片竟会越压缩越大，加之终端（手机）类型众多，有些手机压缩图片甚至变黑。
+
+![压缩小龙女，哈哈哈😂](/gb/js-image-compressor/compress-xiaolongnv.png)
+
+所以本文将试图解决如下问题：
 
 - 弄清 `Image` 对象、`data URL`、`Canvas` 和 `File（Blob）`之间的转化关系；
 - 图片压缩关键技巧；
@@ -30,7 +22,7 @@ HTMLCanvasElement.toDataURL() 方法返回一个包含图片展示的 data URI
 
 在实际应用中有可能使用的情境：大多时候我们直接读取用户上传的 `File` 对象，读写到画布（`canvas`）上，利用 `Canvas` 的 `API` 进行压缩，完成压缩之后再转成 `File（Blob）` 对象，上传到远程图片服务器；不妨有时候我们也需要将一个 `base64` 字符串压缩之后再变为 `base64` 字符串传入到远程数据库或者再转成  `File（Blob）` 对象。一般的，它们有如下转化关系：
 
-![js-image-compress-flow-chat](/gb/js-image-compress/js-image-compress.jpg)
+![js-image-compressor-flow-chat](/gb/js-image-compressor/js-image-compressor.jpg)
 
 ## 具体实现
 
@@ -120,7 +112,7 @@ function url2Image(url, callback) {
 - `dWidth` `Image` 在目标 `canvas` 上绘制的宽度；
 - `dHeight` `Image` 在目标 `canvas` 上绘制的高度；
 
-![canvas-draw-image](/gb/js-image-compress/canvas-draw-image.jpg)
+![canvas-draw-image](/gb/js-image-compressor/canvas-draw-image.jpg)
 
 ```js
 function image2Canvas(image) {
@@ -226,18 +218,21 @@ function blob2Image(blob, callback) {
 }
 ```
 
-### upload(file)
+### upload(url, file, callback)
 
 上传图片（已压缩），可以使用 `FormData` 传入文件对象，通过 `XHR` 直接把文件上传到服务器。
 
 ```js
-function upload(url, file) {
+function upload(url, file, callback) {
   var xhr = new XMLHttpRequest();
   var fd = new FormData();
   fd.append('file', file);
   xhr.onreadystatechange = function () {
     if (xhr.readyState === 4 && xhr.status === 200) {
       // 上传成功
+      callback && callback(xhr.responseText);
+    } else {
+      throw new Error(xhr);
     }
   }
   xhr.open('POST', url, true);
@@ -272,23 +267,80 @@ function upload(url, file) {
  * 简易图片压缩方法
  * @param {Object} options 相关参数
  */
-function simpleImageCompressor(options) {
-  var file = options.file;
-  var quality = options.quality || 0.8;
-  var imageType = /^image\//;
+(function (win) {
+  var REGEXP_IMAGE_TYPE = /^image\//;
+  var util = {};
+  var defaultOptions = {
+    file: null,
+    quality: 0.8
+  };
+  var isFunc = function (fn) { return typeof fn === 'function'; };
+  var isImageType = function (value) { return REGEXP_IMAGE_TYPE.test(value); };
 
-  if (!file || !imageType.test(file.type)) {
-    console.error('请上传图片文件!');
-    return;
+  /**
+   * 简易图片压缩构造函数
+   * @param {Object} options 相关参数
+   */
+  function SimpleImageCompressor(options) {
+    options = Object.assign({}, defaultOptions, options);
+    this.options = options;
+    this.file = options.file;
+    this.init();
   }
 
-  util.file2Image(file, function (img) {
-    var canvas = util.image2Canvas(img);
-    util.canvas2Blob(canvas, function (blob) {
-      options.success && options.success(blob);
-    }, options.quality, options.mimeType)
-  })
-}
+  var _proto = SimpleImageCompressor.prototype;
+  win.SimpleImageCompressor = SimpleImageCompressor;
+
+  /**
+   * 初始化
+   */
+  _proto.init = function init() {
+    var _this = this;
+    var file = this.file;
+    var options = this.options;
+
+    if (!file || !isImageType(file.type)) {
+      console.error('请上传图片文件!');
+      return;
+    }
+
+    if (!isImageType(options.mimeType)) {
+      options.mimeType = file.type;
+    }
+
+    util.file2Image(file, function (img) {
+      var canvas = util.image2Canvas(img);
+      file.width = img.naturalWidth;
+      file.height = img.naturalHeight;
+      _this.beforeCompress(file, canvas);
+
+      util.canvas2Blob(canvas, function (blob) {
+        blob.width = canvas.width;
+        blob.height = canvas.height;
+        options.success && options.success(blob);
+      }, options.quality, options.mimeType)
+    })
+  }
+
+  /**
+   * 压缩之前，读取图片之后钩子函数
+   */
+  _proto.beforeCompress = function beforeCompress() {
+    if (isFunc(this.options.beforeCompress)) {
+      this.options.beforeCompress(this.file);
+    }
+  }
+
+  // 省略 `util` 公用方法定义
+  // ...
+
+  // 将 `util` 公用方法添加到实例的静态属性上
+  for (key in util) {
+    if (util.hasOwnProperty(key)) {
+      SimpleImageCompressor[key] = util[key];
+    }
+  }
+})(window)
 ```
 
 这个简易图片压缩方法调用和入参：
@@ -298,31 +350,40 @@ var fileEle = document.getElementById('file');
 
 fileEle.addEventListener('change', function () {
   file = this.files[0];
-  console.log('压缩之前图片尺寸大小: ', file.size);
-  console.log('mime 类型: ', file.type);
-  // 将上传图片在页面预览
-  util.file2DataUrl(file, function (url) {
-    document.getElementById('origin').src = url;
-  })
 
   var options = {
     file: file,
     quality: 0.6,
-    mimeType: 'image/png',
+    mimeType: 'image/jpeg',
+    // 压缩前回调
+    beforeCompress: function (result) {
+      console.log('压缩之前图片尺寸大小: ', result.size);
+      console.log('mime 类型: ', result.type);
+      // 将上传图片在页面预览
+      // SimpleImageCompressor.file2DataUrl(result, function (url) {
+      //   document.getElementById('origin').src = url;
+      // })
+    },
+    // 压缩成功回调
     success: function (result) {
       console.log('压缩之后图片尺寸大小: ', result.size);
       console.log('mime 类型: ', result.type);
-      console.log('压缩率： ', (result.size / file.size).toFixed(4) * 100 + '%');
+      console.log('压缩率： ', (result.size / file.size * 100).toFixed(2) + '%');
 
       // 生成压缩后图片在页面展示
-      util.file2DataUrl(result, function (url) {
-        document.getElementById('output').src = url;
-      })
+      // SimpleImageCompressor.file2DataUrl(result, function (url) {
+      //   document.getElementById('output').src = url;
+      // })
+
       // 上传到远程服务器
-      // util.upload('/upload.png', result);
+      // SimpleImageCompressor.upload('/upload.png', result);
     }
   };
 
-  simpleImageCompressor(options);
+  new SimpleImageCompressor(options);
 }, false);
 ```
+
+如果看到这里的客官不嫌弃这个 `demo` 太简单可以戳[这里](/demo/js-image-compressor/simple)试试水，如果你有足够的耐心多传几张图片就会发现有时将 `png` 格式图片压缩成 `jpeg` 格式，图片大小不减反增。有时在手机上压缩 `png` 格式大尺寸图片还会出现黑屏情况。
+
+![越压缩越膨胀😂](/gb/js-image-compressor/compress-larger.png)
