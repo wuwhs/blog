@@ -154,7 +154,7 @@ function dataUrl2Image(dataUrl, callback) {
 }
 ```
 
-### dataUrl2Blob(dataUrl)
+### dataUrl2Blob(dataUrl, type)
 
 将 `data URL` 字符串转化为 [`Blob`](https://developer.mozilla.org/zh-CN/docs/Web/API/Blob) 对象。主要思路是：先将 `data URL` 数据（`data`） 部分提取出来，用 `atob` 对经过 `base64` 编码的字符串进行解码，再转化成 `Unicode` 编码，存储在`Uint8Array`（8位无符号整型数组，每个元素是一个字节） 类型数组，最终转化成 `Blob` 对象。
 
@@ -412,7 +412,7 @@ if (height * aspectRatio > width) {
 }
 ```
 
-输出图片的尺寸确定了，接下来就是按这个尺寸创建一个 `Canvas` 画布。这里可以将上面提到的 `image2Canvas` 方法稍微做一下改造：
+输出图片的尺寸确定了，接下来就是按这个尺寸创建一个 `Canvas` 画布，将图片画上去。这里可以将上面提到的 `image2Canvas` 方法稍微做一下改造：
 
 ```js
 function image2Canvas(image, destWidth, destHeight) {
@@ -427,7 +427,16 @@ function image2Canvas(image, destWidth, destHeight) {
 
 > `png` 格式图片同格式压缩，压缩率不高，还有可能出现“不减反增”现象
 
-一般的，不建议将 `png` 格式图片压缩成自身格式，这样压缩率不高，有时反而会造成自身质量变得更大。有个折中的方法，我们可以设置一个阈值，如果 `png` 图片的质量小于这个值，就还是压缩输出 `png` 格式，在此基础上，如果压缩后图片大小 “不减反增”，我们就兜底处理输出源图片给用户。当图片质量大于某个值时，我们压缩成 `jpeg` 格式。
+一般的，不建议将 `png` 格式图片压缩成自身格式，这样压缩率不理想，有时反而会造成自身质量变得更大。
+
+因为我们在“具体实现”中两个有关压缩关键 `API`：
+
+- `toBlob(callback, [type], [encoderOptions])` 参数 `encoderOptions` 用于针对`image/jpeg` 格式的图片进行输出图片的质量设置；
+- `toDataURL(type, encoderOptions` 参数`encoderOptions` 在指定图片格式为 `image/jpeg` 或 `image/webp` 的情况下，可以从 `0` 到 `1` 的区间内选择图片的质量。
+
+均未对 `png` 格式图片有压缩效果。
+
+有个折衷的方案，我们可以设置一个阈值，如果 `png` 图片的质量小于这个值，就还是压缩输出 `png` 格式，这样最差的输出结果不至于质量太大，在此基础上，如果压缩后图片大小 “不减反增”，我们就兜底处理输出源图片给用户。当图片质量大于某个值时，我们压缩成 `jpeg` 格式。
 
 ```js
 // `png`格式图片质量大于某个阈值 `convertSize`
@@ -436,11 +445,64 @@ if (file.size > options.convertSize && options.mimeType === 'image/png') {
 }
 // 省略一些代码
 // ...
-// 压缩质量、尺寸大于源图片，则回退输出源图片
-if (result.size > file.size && options.mimeType === file.type && !(
-        options.width > naturalWidth
-        || options.height > naturalHeight
-      )) {
-        result = file;
-      }
+// 输出尺寸小于源尺寸情况下，如果压缩质量大于源图片，则回退输出源图片
+if (result.size > file.size && options.mimeType === file.type && !(options.width > naturalWidth || options.height > naturalHeight)) {
+  result = file;
+}
+```
+
+> 大尺寸 `png` 格式图片在一些手机上，压缩后出现“黑屏”现象；
+
+由于各大浏览器对 [`Canvas` 最大尺寸支持](https://stackoverflow.com/questions/6081483/maximum-size-of-a-canvas-element)不同
+
+浏览器|最大宽高|最大面积
+--|:--:|:--:|--
+Chrome|32,767 pixels|268,435,456 pixels(e.g.16,384 x 16,384)
+Firefox|32,767 pixels|472,907,776 pixels(e.g.22,528 x 20,992)
+IE|8,192 pixels|N/A
+IE Mobile|4,096 pixels|N/A
+
+如果图片尺寸过大，在创建同尺寸画布，再画上图片，就会出现异常情况，即生成的画布没有图片像素，而画布本身默认给的背景色为黑色，这样就导致图片“黑屏”情况。
+
+这里可以通过控制输出图片最大宽高，并且用透明色覆盖默认黑色背景解决：
+
+```js
+// ...
+// 限制最小和最大宽高
+var maxWidth = Math.max(options.maxWidth, 0) || Infinity;
+var maxHeight = Math.max(options.maxHeight, 0) || Infinity;
+var minWidth = Math.max(options.minWidth, 0) || 0;
+var minHeight = Math.max(options.minHeight, 0) || 0;
+
+if (maxWidth < Infinity && maxHeight < Infinity) {
+  if (maxHeight * aspectRatio > maxWidth) {
+    maxHeight = maxWidth / aspectRatio;
+  } else {
+    maxWidth = maxHeight * aspectRatio;
+  }
+} else if (maxWidth < Infinity) {
+  maxHeight = maxWidth / aspectRatio;
+} else if (maxHeight < Infinity) {
+  maxWidth = maxHeight * aspectRatio;
+}
+
+if (minWidth > 0 && minHeight > 0) {
+  if (minHeight * aspectRatio > minWidth) {
+    minHeight = minWidth / aspectRatio;
+  } else {
+    minWidth = minHeight * aspectRatio;
+  }
+} else if (minWidth > 0) {
+  minHeight = minWidth / aspectRatio;
+} else if (minHeight > 0) {
+  minWidth = minHeight * aspectRatio;
+}
+
+width = Math.floor(Math.min(Math.max(width, minWidth), maxWidth));
+height = Math.floor(Math.min(Math.max(height, minHeight), maxHeight));
+
+// ...
+// 覆盖默认填充颜色 (#000)
+var fillStyle = 'transparent';
+context.fillStyle = fillStyle;
 ```

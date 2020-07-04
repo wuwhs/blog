@@ -1,11 +1,72 @@
-// 公用文件
-var util = {};
-(function () {
+(function (win) {
+  var REGEXP_IMAGE_TYPE = /^image\//;
+  var util = {};
+  var defaultOptions = {
+    file: null,
+    quality: 0.8
+  };
+  var isFunc = function (fn) { return typeof fn === 'function'; };
+  var isImageType = function (value) { return REGEXP_IMAGE_TYPE.test(value); };
+
   /**
-   * 文件转化成 `data URL` 字符串
-   * @param {File} file 文件对象
-   * @param {Function} callback 回调函数
+   * 图片压缩构造函数
+   * @param {Object} options 相关参数
    */
+  function ImageCompressor(options) {
+    options = Object.assign({}, defaultOptions, options);
+    this.options = options;
+    this.file = options.file;
+    this.init();
+  }
+
+  var _proto = ImageCompressor.prototype;
+  win.ImageCompressor = ImageCompressor;
+
+  /**
+   * 初始化
+   */
+  _proto.init = function init() {
+    var _this = this;
+    var file = this.file;
+    var options = this.options;
+
+    if (!file || !isImageType(file.type)) {
+      console.error('请上传图片文件!');
+      return;
+    }
+
+    if (!isImageType(options.mimeType)) {
+      options.mimeType = file.type;
+    }
+
+    util.file2Image(file, function (img) {
+      var canvas = util.image2Canvas(img);
+      file.width = img.naturalWidth;
+      file.height = img.naturalHeight;
+      _this.beforeCompress(file, canvas);
+
+      util.canvas2Blob(canvas, function (blob) {
+        blob.width = canvas.width;
+        blob.height = canvas.height;
+        options.success && options.success(blob);
+      }, options.quality, options.mimeType)
+    })
+  }
+
+  /**
+   * 压缩之前，读取图片之后钩子函数
+   */
+  _proto.beforeCompress = function beforeCompress() {
+    if (isFunc(this.options.beforeCompress)) {
+      this.options.beforeCompress(this.file);
+    }
+  }
+
+  /**
+  * 文件转化成 `data URL` 字符串
+  * @param {File} file 文件对象
+  * @param {Function} callback 回调函数
+  */
   util.file2DataUrl = function file2DataUrl(file, callback) {
     var reader = new FileReader();
     reader.onload = function () {
@@ -15,13 +76,14 @@ var util = {};
   }
 
   /**
-   * 文件转化成 `Image` 对象
-   * @param {File} file 文件对象
-   * @param {Function} callback 回调函数
-   */
+     * 文件转化成 `Image` 对象
+     * @param {File} file 文件对象
+     * @param {Function} callback 回调函数
+     */
   util.file2Image = function file2Image(file, callback) {
     var image = new Image();
-    var URL = window.webkitURL || window.URL;
+    var URL = window.URL || window.webkitURL;
+    image.alt = file.name;
     if (URL) {
       var url = URL.createObjectURL(file);
       image.onload = function () {
@@ -142,9 +204,30 @@ var util = {};
         }
       });
     }
-
     canvas.toBlob(function (blob) {
       callback(blob);
     }, type || 'image/jpeg', quality || 0.8);
   }
-})()
+
+  util.upload = function upload(url, file, callback) {
+    var xhr = new XMLHttpRequest();
+    var fd = new FormData();
+    fd.append('file', file);
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState === 4 && xhr.status === 200) {
+        // 上传成功
+        callback && callback(xhr.responseText);
+      } else {
+        throw new Error(xhr);
+      }
+    }
+    xhr.open('POST', url, true);
+    xhr.send(fd);
+  }
+
+  for (key in util) {
+    if (util.hasOwnProperty(key)) {
+      ImageCompressor[key] = util[key];
+    }
+  }
+})(window)
