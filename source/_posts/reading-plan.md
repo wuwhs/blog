@@ -88,3 +88,8 @@ base64 -> formData
 ### 2020-6-7
 
 [手写async await的最简实现（20行）](https://juejin.im/post/5e79e841f265da5726612b6e)
+
+### 2020-7-18
+
+[Chrome DevTools中的这些骚操作，你都知道吗？](https://mp.weixin.qq.com/s/CfzKwfiJ7AVnv6m7CEhAVg)
+介绍了一些在 Chrome DevTools 中的一些有用而少有人知的操作，Snippets最骚，`Sources -> Snippets` 即可在浏览器上生成js文件
