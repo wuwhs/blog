@@ -93,3 +93,7 @@ base64 -> formData
 
 [Chrome DevTools中的这些骚操作，你都知道吗？](https://mp.weixin.qq.com/s/CfzKwfiJ7AVnv6m7CEhAVg)
 介绍了一些在 Chrome DevTools 中的一些有用而少有人知的操作，Snippets最骚，`Sources -> Snippets` 即可在浏览器上生成js文件
+
+### 2020-7-21
+
+[10个Vue开发技巧助力成为更好的工程师](https://juejin.im/post/5e8a9b1ae51d45470720bdfa) 介绍了Vue的10个高阶用法，让人眼前一亮的用法是同时监听多个变量的用法：定义一个计算属性，它的值为多个变量组成的对象，多个变量其中有发生变化，则计算属性也会变化，监听这个计算属性就可以知道这些变量有变化了！再者，使用 `@hook` 即可监听组件生命周期，比如：`<List @hook:mounted="listenMounted"></List>`
