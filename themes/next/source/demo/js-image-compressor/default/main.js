@@ -1,9 +1,11 @@
+var BTN_OK = '确定';
+
 new Vue({
   el: '#app',
   data: function () {
     return {
       file: null,
-      btnText: '确定',
+      btnText: BTN_OK,
       imgName: '',
       mimeType: 'auto',
       originImgUrl: '',
@@ -17,7 +19,14 @@ new Vue({
       outputImgHeight: 'auto',
       outputSize: 0,
       compressRatio: 0,
-      quality: 0.6
+      quality: 0.6,
+      maxWidth: 0,
+      maxHeight: 0,
+      width: 0,
+      height: 0,
+      minWidth: 0,
+      minHeight: 0,
+      convertSize: 1000000
     }
   },
 
@@ -77,10 +86,18 @@ new Vue({
      */
     compressImage: function (file) {
       var vm = this;
+      vm.btnText = '读取中...';
       var options = {
         file: file,
         quality: this.quality,
         mimeType: this.mimeType,
+        maxWidth: this.maxWidth,
+        maxHeight: this.maxHeight,
+        width: this.width,
+        height: this.height,
+        minWidth: this.minWidth,
+        minHeight: this.minHeight,
+        convertSize: this.convertSize,
         // 压缩前回调
         beforeCompress: function (result) {
           vm.btnText = '处理中...';
@@ -92,33 +109,37 @@ new Vue({
           console.log('压缩之前图片尺寸大小: ', result.size);
           console.log('mime 类型: ', result.type);
           // 将上传图片在页面预览
-          SimpleImageCompressor.file2DataUrl(result, function (url) {
+          ImageCompressor.file2DataUrl(result, function (url) {
             vm.originImgUrl = url;
           })
         },
         // 压缩成功回调
         success: function (result) {
-          vm.btnText = '确定';
+          vm.btnText = BTN_OK;
           console.log('压缩之后图片尺寸大小: ', result.size);
           console.log('mime 类型: ', result.type);
-          console.log('实际压缩率： ', (result.size / file.size * 100).toFixed(2) + '%');
+          console.log('实际压缩率： ', ((file.size - result.size) / file.size * 100).toFixed(2) + '%');
 
           vm.outputImgWidth = result.width;
           vm.outputImgHeight = result.height;
           vm.outputSize = result.size;
           vm.outputMimeType = result.type;
-          vm.compressRatio = (result.size / file.size * 100).toFixed(2) + '%';
+          vm.compressRatio = ((file.size - result.size) / file.size * 100).toFixed(2) + '%';
 
           // 生成压缩后图片在页面展示
-          SimpleImageCompressor.file2DataUrl(result, function (url) {
+          ImageCompressor.file2DataUrl(result, function (url) {
             vm.outputImgUrl = url;
           })
           // 上传到远程服务器
           // util.upload('/upload.png', result);
+        },
+        // 发生错误
+        error: function () {
+          vm.btnText = BTN_OK;
         }
       };
 
-      new SimpleImageCompressor(options);
+      new ImageCompressor(options);
     }
   }
 })

@@ -3,7 +3,8 @@
   var util = {};
   var defaultOptions = {
     file: null,
-    quality: 0.8
+    quality: 0.8,
+    convertSize: Infinity
   };
   var isFunc = function (fn) { return typeof fn === 'function'; };
   var isImageType = function (value) { return REGEXP_IMAGE_TYPE.test(value); };
@@ -32,6 +33,9 @@
 
     if (!file || !isImageType(file.type)) {
       console.error('请上传图片文件!');
+      if (isFunc(options.error)) {
+        options.error();
+      }
       return;
     }
 
@@ -40,15 +44,24 @@
     }
 
     util.file2Image(file, function (img) {
-      var canvas = util.image2Canvas(img);
-      file.width = img.naturalWidth;
-      file.height = img.naturalHeight;
-      _this.beforeCompress(file, canvas);
+
+      if (isFunc(_this.beforeCompress)) {
+        file.width = img.naturalWidth;
+        file.height = img.naturalHeight;
+        _this.beforeCompress(file);
+      }
+
+      var edge = _this.getExpectedEdge(img);
+
+      var canvas = util.image2Canvas(img, edge.width, edge.height);
+      _this.setCanvasStyle(canvas);
 
       util.canvas2Blob(canvas, function (blob) {
         blob.width = canvas.width;
         blob.height = canvas.height;
-        options.success && options.success(blob);
+        if (isFunc(options.success)) {
+          options.success(blob);
+        }
       }, options.quality, options.mimeType)
     })
   }
@@ -60,6 +73,86 @@
     if (isFunc(this.options.beforeCompress)) {
       this.options.beforeCompress(this.file);
     }
+  }
+
+  /**
+   * 获取用户想要输出的边（宽高）
+   */
+  _proto.getExpectedEdge = function (image) {
+    console.log('options: ', this.options)
+    var options = this.options;
+    var naturalWidth = image.naturalWidth;
+    var naturalHeight = image.naturalHeight;
+    var aspectRatio = naturalWidth / naturalHeight;
+    var maxWidth = Math.max(options.maxWidth, 0) || Infinity;
+    var maxHeight = Math.max(options.maxHeight, 0) || Infinity;
+    var minWidth = Math.max(options.minWidth, 0) || 0;
+    var minHeight = Math.max(options.minHeight, 0) || 0;
+    var width = Math.max(options.width, 0) || naturalWidth;
+    var height = Math.max(options.height, 0) || naturalHeight;
+
+    if (maxWidth < Infinity && maxHeight < Infinity) {
+      if (maxHeight * aspectRatio > maxWidth) {
+        maxHeight = maxWidth / aspectRatio;
+      } else {
+        maxWidth = maxHeight * aspectRatio;
+      }
+    } else if (maxWidth < Infinity) {
+      maxHeight = maxWidth / aspectRatio;
+    } else if (maxHeight < Infinity) {
+      maxWidth = maxHeight * aspectRatio;
+    }
+
+    if (minWidth > 0 && minHeight > 0) {
+      if (minHeight * aspectRatio > minWidth) {
+        minHeight = minWidth / aspectRatio;
+      } else {
+        minWidth = minHeight * aspectRatio;
+      }
+    } else if (minWidth > 0) {
+      minHeight = minWidth / aspectRatio;
+    } else if (minHeight > 0) {
+      minWidth = minHeight * aspectRatio;
+    }
+
+    if (height * aspectRatio > width) {
+      height = width / aspectRatio;
+    } else {
+      width = height * aspectRatio;
+    }
+
+    width = Math.floor(Math.min(Math.max(width, minWidth), maxWidth));
+    height = Math.floor(Math.min(Math.max(height, minHeight), maxHeight));
+
+    return {
+      width: width,
+      height: height
+    }
+  }
+
+  /**
+   * 设置画布一些样式
+   * @param {HTMLCanvasElement} canvas Canvas 对象
+   */
+  _proto.setCanvasStyle = function (canvas) {
+    var file = this.file;
+    var options = this.options;
+    var ctx = canvas.ctx;
+    var fillStyle = 'transparent';
+    console.log('file.size: ', file.size)
+    console.log('options.convertSize: ', options.convertSize)
+    console.log('options.mimeType: ', options.mimeType)
+    // `png` 格式图片大小超过 `convertSize`, 转化成 `jpeg` 格式
+    if (file.size > options.convertSize && options.mimeType === 'image/png') {
+      fillStyle = '#fff';
+      console.log('fillstyle')
+      this.options.mimeType = 'image/jpeg';
+    }
+
+    // 覆盖默认的黑色填充色
+    ctx.fillStyle = fillStyle;
+    console.log('canvas.width: ', canvas.width)
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
   }
 
   /**
@@ -117,14 +210,17 @@
   /**
    * `Image` 转化成 `Canvas` 对象
    * @param {File} file `Image` 对象
+   * @param {Number} destWidth 目标宽度
+   * @param {Number} destHeight 目标高度
    * @return {HTMLCanvasElement} `canvas` 对象
    */
-  util.image2Canvas = function image2Canvas(image) {
+  util.image2Canvas = function image2Canvas(image, destWidth, destHeight) {
     var canvas = document.createElement('canvas');
     var ctx = canvas.getContext('2d');
-    canvas.width = image.naturalWidth;
-    canvas.height = image.naturalHeight;
+    canvas.width = destWidth || image.naturalWidth;
+    canvas.height = destHeight || image.naturalHeight;
     ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+    canvas.ctx = ctx;
     return canvas;
   }
 
@@ -162,6 +258,7 @@
     var mimePattern = /^data:(.*?)(;base64)?,/;
     var mime = dataUrl.match(mimePattern)[1];
     var binStr = atob(data);
+    var len = data.length;
     var arr = new Uint8Array(len);
 
     for (var i = 0; i < len; i++) {
@@ -200,7 +297,7 @@
       Object.defineProperty(HTMLCanvasElement.prototype, 'toBlob', {
         value: function (callback, type, quality) {
           let dataUrl = this.toDataURL(type, quality);
-          callback(dataUrl2Blob(dataUrl));
+          callback(util.dataUrl2Blob(dataUrl));
         }
       });
     }
