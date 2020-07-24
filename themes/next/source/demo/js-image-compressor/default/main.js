@@ -113,6 +113,17 @@ new Vue({
             vm.originImgUrl = url;
           })
         },
+        // 图片绘画前
+        beforeDraw: function (canvas, ctx) {
+          ctx.filter = 'grayscale(100%)';
+        },
+        // 图片绘画后
+        afterDraw: function (canvas, ctx) {
+          ctx.fillStyle = '#fff';
+          console.log('canvas.width * 0.01: ', canvas.width * 0.01)
+          ctx.font = (canvas.width * 0.1) + 'px microsoft yahei';
+          ctx.fillText('wuwhs', 20, canvas.height - 20);
+        },
         // 压缩成功回调
         success: function (result) {
           vm.btnText = BTN_OK;

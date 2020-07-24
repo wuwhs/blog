@@ -53,8 +53,7 @@
 
       var edge = _this.getExpectedEdge(img);
 
-      var canvas = util.image2Canvas(img, edge.width, edge.height);
-      _this.setCanvasStyle(canvas);
+      var canvas = util.image2Canvas(img, edge.width, edge.height, _this.beforeDraw.bind(_this), _this.afterDraw.bind(_this));
 
       util.canvas2Blob(canvas, function (blob) {
         blob.width = canvas.width;
@@ -131,28 +130,43 @@
   }
 
   /**
-   * 设置画布一些样式
+   * 画布上绘制图片前的一些操作：设置画布一些样式，支持用户自定义
    * @param {HTMLCanvasElement} canvas Canvas 对象
+   * @param {CanvasRenderingContext2D} ctx Canvas 对象的上下文
    */
-  _proto.setCanvasStyle = function (canvas) {
+  _proto.beforeDraw = function (canvas, ctx) {
     var file = this.file;
     var options = this.options;
-    var ctx = canvas.ctx;
     var fillStyle = 'transparent';
-    console.log('file.size: ', file.size)
-    console.log('options.convertSize: ', options.convertSize)
-    console.log('options.mimeType: ', options.mimeType)
+
     // `png` 格式图片大小超过 `convertSize`, 转化成 `jpeg` 格式
     if (file.size > options.convertSize && options.mimeType === 'image/png') {
       fillStyle = '#fff';
-      console.log('fillstyle')
-      this.options.mimeType = 'image/jpeg';
+      options.mimeType = 'image/jpeg';
     }
 
     // 覆盖默认的黑色填充色
     ctx.fillStyle = fillStyle;
-    console.log('canvas.width: ', canvas.width)
     ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // 用户自定义画布样式
+    if (isFunc(options.beforeDraw)) {
+      options.beforeDraw.call(this, canvas, ctx);
+    }
+  }
+
+  /**
+   * 画布上绘制图片后的一些操作：支持用户自定义
+   * @param {HTMLCanvasElement} canvas Canvas 对象
+   * @param {CanvasRenderingContext2D} ctx Canvas 对象的上下文
+   */
+  _proto.afterDraw = function (canvas, ctx) {
+    var options = this.options;
+    // 用户自定义画布样式
+    if (isFunc(options.afterDraw)) {
+      console.log('afterDraw')
+      options.afterDraw.call(this, canvas, ctx);
+    }
   }
 
   /**
@@ -169,13 +183,20 @@
   }
 
   /**
-     * 文件转化成 `Image` 对象
-     * @param {File} file 文件对象
-     * @param {Function} callback 回调函数
-     */
-  util.file2Image = function file2Image(file, callback) {
+   * 文件转化成 `Image` 对象
+   * @param {File} file 文件对象
+   * @param {Function} callback 成功回调函数
+   * @param {Function} error 错误回调函数
+   */
+  util.file2Image = function (file, callback, error) {
     var image = new Image();
     var URL = window.URL || window.webkitURL;
+
+    if (WINDOW.navigator && /(?:iPad|iPhone|iPod).*?AppleWebKit/i.test(WINDOW.navigator.userAgent)) {
+      // 修复IOS上webkit内核浏览器抛出错误 `The operation is insecure` 问题
+      image.crossOrigin = 'anonymous';
+    }
+
     image.alt = file.name;
     if (URL) {
       var url = URL.createObjectURL(file);
@@ -183,6 +204,9 @@
         callback(image);
         URL.revokeObjectURL(url);
       };
+      image.onerror = function () {
+        error('图片加载错误！');
+      }
       image.src = url;
     } else {
       this.file2DataUrl(file, function (dataUrl) {
@@ -212,15 +236,24 @@
    * @param {File} file `Image` 对象
    * @param {Number} destWidth 目标宽度
    * @param {Number} destHeight 目标高度
+   * @param {Function} beforeDraw 在图片绘画之前的回调函数
+   * @param {Function} beforeDraw 在图片绘画之后的回调函数
    * @return {HTMLCanvasElement} `canvas` 对象
    */
-  util.image2Canvas = function image2Canvas(image, destWidth, destHeight) {
+  util.image2Canvas = function (image, destWidth, destHeight, beforeDraw, afterDraw) {
     var canvas = document.createElement('canvas');
     var ctx = canvas.getContext('2d');
     canvas.width = destWidth || image.naturalWidth;
     canvas.height = destHeight || image.naturalHeight;
+    if (isFunc(beforeDraw)) {
+      beforeDraw(canvas, ctx);
+    }
+    ctx.save();
     ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
-    canvas.ctx = ctx;
+    ctx.restore();
+    if (isFunc(afterDraw)) {
+      afterDraw(canvas, ctx);
+    }
     return canvas;
   }
 
