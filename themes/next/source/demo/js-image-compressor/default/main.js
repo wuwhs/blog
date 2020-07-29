@@ -26,7 +26,8 @@ new Vue({
       height: 0,
       minWidth: 0,
       minHeight: 0,
-      convertSize: 1000000
+      convertSize: 1000000,
+      loose: true
     }
   },
 
@@ -98,6 +99,8 @@ new Vue({
         minWidth: this.minWidth,
         minHeight: this.minHeight,
         convertSize: this.convertSize,
+        loose: this.loose,
+
         // 压缩前回调
         beforeCompress: function (result) {
           vm.btnText = '处理中...';
@@ -113,20 +116,27 @@ new Vue({
             vm.originImgUrl = url;
           })
         },
+
         // 图片绘画前
-        beforeDraw: function (canvas, ctx) {
+        beforeDraw: function (ctx) {
+          vm.btnText = '准备绘图...';
+          console.log('准备绘图...');
           ctx.filter = 'grayscale(100%)';
         },
+
         // 图片绘画后
-        afterDraw: function (canvas, ctx) {
+        afterDraw: function (ctx, canvas) {
+          vm.btnText = '绘图完成...';
+          console.log('绘图完成...');
           ctx.fillStyle = '#fff';
-          console.log('canvas.width * 0.01: ', canvas.width * 0.01)
           ctx.font = (canvas.width * 0.1) + 'px microsoft yahei';
           ctx.fillText('wuwhs', 20, canvas.height - 20);
         },
+
         // 压缩成功回调
         success: function (result) {
           vm.btnText = BTN_OK;
+          console.log('result: ', result)
           console.log('压缩之后图片尺寸大小: ', result.size);
           console.log('mime 类型: ', result.type);
           console.log('实际压缩率： ', ((file.size - result.size) / file.size * 100).toFixed(2) + '%');
@@ -144,9 +154,11 @@ new Vue({
           // 上传到远程服务器
           // util.upload('/upload.png', result);
         },
+
         // 发生错误
-        error: function () {
+        error: function (msg) {
           vm.btnText = BTN_OK;
+          console.error(msg);
         }
       };
 

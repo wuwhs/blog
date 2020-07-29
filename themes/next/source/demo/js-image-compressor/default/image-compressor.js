@@ -1,13 +1,43 @@
-(function (win) {
+(function (WIN) {
   var REGEXP_IMAGE_TYPE = /^image\//;
+  var REGEXP_EXTENSION = /\.\w+$/;
   var util = {};
   var defaultOptions = {
     file: null,
     quality: 0.8,
-    convertSize: Infinity
+    convertSize: Infinity,
+    loose: true
   };
-  var isFunc = function (fn) { return typeof fn === 'function'; };
-  var isImageType = function (value) { return REGEXP_IMAGE_TYPE.test(value); };
+
+  /**
+   * 判断是否为函数
+   * @param {Any} value 任意值
+   * @returns {Boolean} 判断结果
+   */
+  var isFunc = function (value) {
+    return typeof value === 'function';
+  };
+
+  /**
+   * 判断是否为图片类型
+   * @param {String} value 类型字符串
+   * @returns {Boolean} 判断结果
+   */
+  var isImageType = function (value) {
+    return REGEXP_IMAGE_TYPE.test(value);
+  };
+
+  /**
+   * 图片类型转化为文件拓展名
+   * @param {String} value
+   */
+  var imageTypeToExtension = function (value) {
+    var extension = isImageType(value) ? value.substr(6) : '';
+    if (extension === 'jpeg') {
+      extension = 'jpg';
+    }
+    return '.' + extension;
+  }
 
   /**
    * 图片压缩构造函数
@@ -17,25 +47,23 @@
     options = Object.assign({}, defaultOptions, options);
     this.options = options;
     this.file = options.file;
+    this.image = null;
     this.init();
   }
 
   var _proto = ImageCompressor.prototype;
-  win.ImageCompressor = ImageCompressor;
+  WIN.ImageCompressor = ImageCompressor;
 
   /**
    * 初始化
    */
-  _proto.init = function init() {
+  _proto.init = function () {
     var _this = this;
     var file = this.file;
     var options = this.options;
 
     if (!file || !isImageType(file.type)) {
-      console.error('请上传图片文件!');
-      if (isFunc(options.error)) {
-        options.error();
-      }
+      _this.error('请上传图片文件!');
       return;
     }
 
@@ -46,29 +74,28 @@
     util.file2Image(file, function (img) {
 
       if (isFunc(_this.beforeCompress)) {
+        _this.image = img;
         file.width = img.naturalWidth;
         file.height = img.naturalHeight;
         _this.beforeCompress(file);
       }
 
-      var edge = _this.getExpectedEdge(img);
+      var edge = _this.getExpectedEdge();
 
       var canvas = util.image2Canvas(img, edge.width, edge.height, _this.beforeDraw.bind(_this), _this.afterDraw.bind(_this));
 
       util.canvas2Blob(canvas, function (blob) {
         blob.width = canvas.width;
         blob.height = canvas.height;
-        if (isFunc(options.success)) {
-          options.success(blob);
-        }
+        _this.success(blob);
       }, options.quality, options.mimeType)
-    })
+    }, _this.error)
   }
 
   /**
    * 压缩之前，读取图片之后钩子函数
    */
-  _proto.beforeCompress = function beforeCompress() {
+  _proto.beforeCompress = function () {
     if (isFunc(this.options.beforeCompress)) {
       this.options.beforeCompress(this.file);
     }
@@ -77,8 +104,9 @@
   /**
    * 获取用户想要输出的边（宽高）
    */
-  _proto.getExpectedEdge = function (image) {
+  _proto.getExpectedEdge = function () {
     console.log('options: ', this.options)
+    var image = this.image;
     var options = this.options;
     var naturalWidth = image.naturalWidth;
     var naturalHeight = image.naturalHeight;
@@ -131,10 +159,10 @@
 
   /**
    * 画布上绘制图片前的一些操作：设置画布一些样式，支持用户自定义
-   * @param {HTMLCanvasElement} canvas Canvas 对象
    * @param {CanvasRenderingContext2D} ctx Canvas 对象的上下文
+   * @param {HTMLCanvasElement} canvas Canvas 对象
    */
-  _proto.beforeDraw = function (canvas, ctx) {
+  _proto.beforeDraw = function (ctx, canvas) {
     var file = this.file;
     var options = this.options;
     var fillStyle = 'transparent';
@@ -157,27 +185,89 @@
 
   /**
    * 画布上绘制图片后的一些操作：支持用户自定义
-   * @param {HTMLCanvasElement} canvas Canvas 对象
    * @param {CanvasRenderingContext2D} ctx Canvas 对象的上下文
+   * @param {HTMLCanvasElement} canvas Canvas 对象
    */
-  _proto.afterDraw = function (canvas, ctx) {
+  _proto.afterDraw = function (ctx, canvas) {
     var options = this.options;
     // 用户自定义画布样式
     if (isFunc(options.afterDraw)) {
-      console.log('afterDraw')
-      options.afterDraw.call(this, canvas, ctx);
+      options.afterDraw.call(this, ctx, canvas);
+    }
+  }
+
+  /**
+   * 错误触发函数
+   * @param {String} msg 错误消息
+   */
+  _proto.error = function (msg) {
+    var options = this.options;
+    if (isFunc(options.error)) {
+      options.error.call(this, msg);
+    } else {
+      throw new Error(msg);
+    }
+  }
+
+  /**
+   * 成功触发函数
+   * @param {File|Blob} result `Blob` 对象
+   */
+  _proto.success = function (result) {
+    var options = this.options;
+    var file = this.file;
+    var image = this.image;
+    var edge = this.getExpectedEdge();
+    var naturalHeight = image.naturalHeight;
+    var naturalWidth = image.naturalWidth;
+
+    if (result) {
+      // 在非宽松模式下，用户期待的输出宽高没有大于源图片的宽高情况下，输出文件大小大于源文件，返回源文件
+      if (!options.loose && result.size > file.size && !(
+        edge.width > naturalWidth
+        || edge.height > naturalHeight
+      )) {
+        result = file;
+      } else {
+        const date = new Date();
+
+        result.lastModified = date.getTime();
+        result.lastModifiedDate = date;
+        result.name = file.name;
+
+        // 文件 `name` 属性中的后缀转化成实际后缀
+        if (result.name && result.type !== file.type) {
+          result.name = result.name.replace(
+            REGEXP_EXTENSION,
+            imageTypeToExtension(result.type)
+          );
+        }
+      }
+    } else {
+      // 在某些情况下压缩后文件为 `null`，返回源文件
+      result = file;
+    }
+
+    if (isFunc(options.success)) {
+      options.success.call(this, result);
     }
   }
 
   /**
   * 文件转化成 `data URL` 字符串
   * @param {File} file 文件对象
-  * @param {Function} callback 回调函数
+  * @param {Function} callback 成功回调函数
+  * @param {Function} error 取消回调函数
   */
-  util.file2DataUrl = function file2DataUrl(file, callback) {
+  util.file2DataUrl = function (file, callback, error) {
     var reader = new FileReader();
     reader.onload = function () {
       callback(reader.result);
+    };
+    reader.onerror = function () {
+      if (isFunc(error)) {
+        error('读取文件失败！');
+      }
     };
     reader.readAsDataURL(file);
   }
@@ -190,23 +280,26 @@
    */
   util.file2Image = function (file, callback, error) {
     var image = new Image();
-    var URL = window.URL || window.webkitURL;
+    var URL = WIN.URL || WIN.webkitURL;
 
-    if (WINDOW.navigator && /(?:iPad|iPhone|iPod).*?AppleWebKit/i.test(WINDOW.navigator.userAgent)) {
+    if (WIN.navigator && /(?:iPad|iPhone|iPod).*?AppleWebKit/i.test(WIN.navigator.userAgent)) {
       // 修复IOS上webkit内核浏览器抛出错误 `The operation is insecure` 问题
       image.crossOrigin = 'anonymous';
     }
 
     image.alt = file.name;
+    image.onerror = function () {
+      if (isFunc(error)) {
+        error('图片加载错误！');
+      }
+    }
+
     if (URL) {
       var url = URL.createObjectURL(file);
       image.onload = function () {
         callback(image);
         URL.revokeObjectURL(url);
       };
-      image.onerror = function () {
-        error('图片加载错误！');
-      }
       image.src = url;
     } else {
       this.file2DataUrl(file, function (dataUrl) {
@@ -214,20 +307,26 @@
           callback(image);
         }
         image.src = dataUrl;
-      });
+      }, error);
     }
   }
 
   /**
    * `url` 转化成 `Image` 对象
    * @param {File} url `url`
-   * @param {Function} callback 回调函数
+   * @param {Function} callback 成功回调函数
+   * @param {Function} error 失败回调函数
    */
-  util.url2Image = function url2Image(url, callback) {
+  util.url2Image = function (url, callback, error) {
     var image = new Image();
     image.src = url;
     image.onload = function () {
       callback(image);
+    };
+    image.onerror = function () {
+      if (isFunc(error)) {
+        error('图片加载错误！');
+      }
     }
   }
 
@@ -246,13 +345,13 @@
     canvas.width = destWidth || image.naturalWidth;
     canvas.height = destHeight || image.naturalHeight;
     if (isFunc(beforeDraw)) {
-      beforeDraw(canvas, ctx);
+      beforeDraw(ctx, canvas);
     }
     ctx.save();
     ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
     ctx.restore();
     if (isFunc(afterDraw)) {
-      afterDraw(canvas, ctx);
+      afterDraw(ctx, canvas);
     }
     return canvas;
   }
@@ -263,20 +362,26 @@
    * @param {Float} quality 输出质量比例
    * @return {String} `data URL` 字符串
    */
-  util.canvas2DataUrl = function canvas2DataUrl(canvas, quality, type) {
+  util.canvas2DataUrl = function (canvas, quality, type) {
     return canvas.toDataURL(type || 'image/jpeg', quality);
   }
 
   /**
    * `data URL` 转化成 `Image` 对象
    * @param {File} dataUrl `data URL` 字符串
-   * @param {Function} callback `canvas` 对象
+   * @param {Function} callback 成功回调函数
+   * @param {Function} error 失败回调函数
    */
-  util.dataUrl2Image = function dataUrl2Image(dataUrl, callback) {
+  util.dataUrl2Image = function (dataUrl, callback, error) {
     var image = new Image();
     image.onload = function () {
       callback(image);
     };
+    image.error = function () {
+      if (isFunc(error)) {
+        error('图片加载错误！');
+      }
+    }
     image.src = dataUrl;
   }
 
@@ -286,7 +391,7 @@
    * @param {String} type `mime`
    * @return {Blob} `Blob` 对象
    */
-  util.dataUrl2Blob = function dataUrl2Blob(dataUrl, type) {
+  util.dataUrl2Blob = function (dataUrl, type) {
     var data = dataUrl.split(',')[1];
     var mimePattern = /^data:(.*?)(;base64)?,/;
     var mime = dataUrl.match(mimePattern)[1];
@@ -303,19 +408,21 @@
   /**
    * `Blob` 对象转化成 `data URL`
    * @param {Blob} blob `Blob` 对象
-   * @param {Function} callback 回调函数
+   * @param {Function} callback 成功回调函数
+   * @param {Function} error 失败回调函数
    */
-  util.blob2DataUrl = function blob2DataUrl(blob, callback) {
-    this.file2DataUrl(blob, callback);
+  util.blob2DataUrl = function (blob, callback, error) {
+    this.file2DataUrl(blob, callback, error);
   }
 
   /**
    * `Blob`对象 转化成 `Image` 对象
    * @param {Blob} blob `Blob` 对象
-   * @param {Function} callback 回调函数
+   * @param {Function} callback 成功回调函数
+   * @param {Function} callback 失败回调函数
    */
-  util.blob2Image = function blob2Image(blob, callback) {
-    this.blob2Image(blob, callback);
+  util.blob2Image = function (blob, callback, error) {
+    this.file2Image(blob, callback, error);
   }
 
   /**
@@ -325,12 +432,13 @@
    * @param {Float} quality 输出质量比例
    * @param {String} type `mime`
    */
-  util.canvas2Blob = function canvas2Blob(canvas, callback, quality, type) {
+  util.canvas2Blob = function (canvas, callback, quality, type) {
+    var _this = this;
     if (!HTMLCanvasElement.prototype.toBlob) {
       Object.defineProperty(HTMLCanvasElement.prototype, 'toBlob', {
         value: function (callback, type, quality) {
           let dataUrl = this.toDataURL(type, quality);
-          callback(util.dataUrl2Blob(dataUrl));
+          callback(_this.dataUrl2Blob(dataUrl));
         }
       });
     }
@@ -339,7 +447,13 @@
     }, type || 'image/jpeg', quality || 0.8);
   }
 
-  util.upload = function upload(url, file, callback) {
+  /**
+   * 文件上传
+   * @param {String} url 上传路径
+   * @param {File} file 文件对象
+   * @param {Function} callback 回调函数
+   */
+  util.upload = function (url, file, callback) {
     var xhr = new XMLHttpRequest();
     var fd = new FormData();
     fd.append('file', file);
@@ -355,9 +469,9 @@
     xhr.send(fd);
   }
 
-  for (key in util) {
+  for (var key in util) {
     if (util.hasOwnProperty(key)) {
       ImageCompressor[key] = util[key];
     }
   }
-})(window)
+})(WINdow)
