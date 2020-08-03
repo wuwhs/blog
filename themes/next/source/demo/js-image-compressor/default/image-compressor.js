@@ -5,7 +5,7 @@
   var defaultOptions = {
     file: null,
     quality: 0.8,
-    convertSize: Infinity,
+    convertSize: 2048000,
     loose: true
   };
 
@@ -105,7 +105,6 @@
    * 获取用户想要输出的边（宽高）
    */
   _proto.getExpectedEdge = function () {
-    console.log('options: ', this.options)
     var image = this.image;
     var options = this.options;
     var naturalWidth = image.naturalWidth;
@@ -179,7 +178,7 @@
 
     // 用户自定义画布样式
     if (isFunc(options.beforeDraw)) {
-      options.beforeDraw.call(this, canvas, ctx);
+      options.beforeDraw.call(this, ctx, canvas);
     }
   }
 
@@ -474,4 +473,4 @@
       ImageCompressor[key] = util[key];
     }
   }
-})(WINdow)
+})(window)
