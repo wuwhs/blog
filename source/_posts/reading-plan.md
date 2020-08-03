@@ -97,3 +97,7 @@ base64 -> formData
 ### 2020-7-21
 
 [10个Vue开发技巧助力成为更好的工程师](https://juejin.im/post/5e8a9b1ae51d45470720bdfa) 介绍了Vue的10个高阶用法，让人眼前一亮的用法是同时监听多个变量的用法：定义一个计算属性，它的值为多个变量组成的对象，多个变量其中有发生变化，则计算属性也会变化，监听这个计算属性就可以知道这些变量有变化了！再者，使用 `@hook` 即可监听组件生命周期，比如：`<List @hook:mounted="listenMounted"></List>`
+
+### 2020-7-30
+
+[React 源码剖析系列 － 不可思议的 react diff](https://zhuanlan.zhihu.com/p/20346379)
