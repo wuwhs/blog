@@ -62,7 +62,7 @@ function file2Image(file, callback) {
     var url = URL.createObjectURL(file);
     image.onload = function() {
       callback(image);
-      window.revokeObjectURL(url);
+      URL.revokeObjectURL(url);
     };
     image.src = url;
   } else {
@@ -76,7 +76,7 @@ function file2Image(file, callback) {
 }
 ```
 
-注意：要创建对象 `URL`，可以使用 `window.URL.createObjectURL()` 方法，并传入 `File` 或 `Blob` 对象。如果不再需要相应数据，最好释放它占用的内容。但只要有代码在引用对象 `URL`，内存就不会释放。要手工释放内存，可以把对象 `URL` 传给 `window.revokeObjectURL()`。
+注意：要创建对象 `URL`，可以使用 `window.URL.createObjectURL()` 方法，并传入 `File` 或 `Blob` 对象。如果不再需要相应数据，最好释放它占用的内容。但只要有代码在引用对象 `URL`，内存就不会释放。要手工释放内存，可以把对象 `URL` 传给 `URL.revokeObjectURL()`。
 
 ### url2Image(url, callback)
 
@@ -386,7 +386,7 @@ fileEle.addEventListener('change', function () {
 }, false);
 ```
 
-如果看到这里的客官不嫌弃这个 `demo` 太简单可以戳[这里](/demo/js-image-compressor/simple)试试水。如果你有足够的耐心多传几种类型图片就会发现还存在如下问题：
+如果看到这里的客官不嫌弃这个 `demo` 太简单可以戳[这里](https://wuwhs.gitee.io/demo/js-image-compressor/simple)试试水。如果你有足够的耐心多传几种类型图片就会发现还存在如下问题：
 
 - 压缩输出图片寸尺固定为原始图片尺寸大小，而实际可能需要控制输出图片尺寸，同时达到尺寸也被压缩目的；
 - `png` 格式图片同格式压缩，压缩率不高，还有可能出现“不减反增”现象；
@@ -509,7 +509,7 @@ var fillStyle = 'transparent';
 context.fillStyle = fillStyle;
 ```
 
-到这里，上述的意外问题被我们一一解决了，如需体验改进版的图片压缩 `demo` 的小伙伴可以戳[这里](/demo/js-image-compressor/default)
+到这里，上述的意外问题被我们一一解决了，如需体验改进版的图片压缩 `demo` 的小伙伴可以戳[这里](https://wuwhs.gitee.io/demo/js-image-compressor/default)
 
 ## 总结
 
