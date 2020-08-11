@@ -41,7 +41,7 @@ import 'element-ui/lib/theme-chalk/index.css'
 </el-row>
 ```
 
-![](/gb/element-ui更换主题和按需引入组件/0.bmp)
+![](/gb/element-ui更换主题和按需引入组件/0.jpg)
 
 再看一下打包后的资源大小情况`npm run build --report`。
 
@@ -67,7 +67,7 @@ static/css/app.f24bb0ae3686720fe2e00c5a2024b8f1.css.map     267 kB          [emi
 
 再看一下各个模块占用情况：
 
-![](/gb/element-ui更换主题和按需引入组件/1.bmp)
+![](/gb/element-ui更换主题和按需引入组件/1.jpg)
 
 发现`elment-ui.common.js`占用最大。所有模块资源总共有708kb。怎么才能减小打包后的大小呢？很容易就会想到ui的引入和样式的引入中，实际我们只使用了三个组件，却整体都被打包了，在这里引入这三个组件即可。
 
@@ -140,7 +140,7 @@ static/css/app.bf52525d6279e7fb87b4db770d119a8d.css.map      63 kB          [emi
 
 再看各个模块占用情况：
 
-![](/gb/element-ui更换主题和按需引入组件/2.bmp)
+![](/gb/element-ui更换主题和按需引入组件/2.jpg)
 
 WHAT?竟然模块都没什么变化，岂不是竹篮打水，事与愿违。
 
@@ -190,7 +190,7 @@ static/css/app.b140020e5dbee406ae70780b43ba7ddc.css.map    91.4 kB          [emi
 
 `static/js/vendor.js`确实变小了，126kB。再来看各个模块分析图。
 
-![](/gb/element-ui更换主题和按需引入组件/3.bmp)
+![](/gb/element-ui更换主题和按需引入组件/3.jpg)
 
 模块总共135.03KB，少了5倍！
 
@@ -210,7 +210,7 @@ $--font-path: "~element-ui/lib/theme-chalk/fonts";
 
 现在我们的主题就变成了
 
-![](/gb/element-ui更换主题和按需引入组件/4.bmp)
+![](/gb/element-ui更换主题和按需引入组件/4.jpg)
 
 如果你没有用到`SCSS`，可以用`element-theme`主题编译插件，生成自定义主题文件引入。
 
