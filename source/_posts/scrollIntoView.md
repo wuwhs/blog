@@ -5,13 +5,13 @@ tags: javascript
 categories: javascript
 ---
 
-# 前言
+## 前言
 
 在实际应用中，经常用到滚动到页面顶部或某个位置，一般简单用锚点处理或用js将`document.body.scrollTop`设置为0，结果是页面一闪而过滚到指定位置，不是特别友好。我们想要的效果是要有点缓冲效果。
 
 现代浏览器陆续意识到了这种需求，`scrollIntoView`意思是滚动到可视，css中提供了`scroll-behavior`属性，js有`Element.scrollIntoView()`方法。
 
-# scroll-behavior
+## scroll-behavior
 
 `scroll-behavior`属性可取值`auto`|`smooth`|`inherit`|`unset`
 
@@ -104,7 +104,7 @@ html, body {
 
 呃~支持度不是很好，这样一行css代码能应用上当然是最好的，不行就退化成一闪而过的效果咯。下面再看下js提供的api。
 
-# Element.scrollIntoView()
+## Element.scrollIntoView()
 
 `Element.scrollIntoView()` 方法让当前的元素滚动到浏览器窗口的可视区域内。
 
@@ -112,14 +112,14 @@ html, body {
 element.scrollIntoView(alignToTop); // Boolean型参数
 element.scrollIntoView(scrollIntoViewOptions); // Object型参数
 
-## 参数alignToTop
+### 参数alignToTop
 
 一个`Boolean`值：
 
 - 如果为`true`，元素的顶端将和其所在滚动区的可视区域的顶端对齐。相应的`scrollIntoViewOptions: {block: "start", inline: "nearest"}`。这是这个参数的默认值。
 - 如果为`false`，元素的底端将和其所在滚动区的可视区域的底端对齐。相应的`scrollIntoViewOptions: {block: "end", inline: "nearest"}`。
 
-## 参数scrollIntoViewOptions
+### 参数scrollIntoViewOptions
 
 一个带有选项的 `object`：
 
@@ -145,11 +145,11 @@ element.scrollIntoView(scrollIntoViewOptions); // Object型参数
 
 可以看到对于无参数的情况支持还是很好的，有参数的该API在浏览器中支持不是很好，我们可以同时结合CSS设置`scroll-behavior: smooth;`滚动效果，在执行滚动使用`target.scrollIntoView()`，即可达到“完美滚动”（不太完美）效果。
 
-# 向下兼容
+## 向下兼容
 
 要达到所有浏览器都有相同（类似）效果，那就要把剩余不支持`scroll-behavior`属性的浏览器揪出来，用js去完成使命了。
 
-## 判断是否支持`scroll-behavior`属性
+### 判断是否支持`scroll-behavior`属性
 
 很简单，用以下这一行代码
 
@@ -164,7 +164,7 @@ if(typeof window.getComputedStyle(document.body).scrollBehavior === 'undefined')
 
 判断是否支持`scroll-behavior`属性，直接利用原生`Element.scrollIntoView()`滚动，否则向下兼容处理。
 
-## 缓冲算法
+### 缓冲算法
 
 缓冲的直观效果是越来越慢，直到停止，也就是在相同时间内运动的距离越来越短。这样可以设置一个定时器，移动到当前点到目标点距离的缓冲率（比如1/2，1/3，...）处，比如，缓冲率设为2，当前距离目标点64px，下一秒就是32px，然后16px，8px...，到达某个阈值结束，也就是：
 
@@ -243,7 +243,7 @@ $backToTop.addEventListener('click', function () {
 
 或者戳[这里](/demo/scrollIntoView/index.html)
 
-## 简单封装
+### 简单封装
 
 上面的小demo中，缓冲算法和当前滚动业务代码耦合在一起了，下面单独拆解出单独一个函数。
 
@@ -299,7 +299,7 @@ $backToTop.addEventListener('click', function () {
 }, false);
 ```
 
-# 总结
+## 总结
 
 综合来看，简单实现一个完美滚动注意以下即可
 
