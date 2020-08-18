@@ -7,7 +7,6 @@ new Vue({
       file: null,
       btnText: BTN_OK,
       imgName: '',
-      mimeType: 'auto',
       originImgUrl: '',
       originMimeType: 'auto',
       originSize: 0,
@@ -19,16 +18,7 @@ new Vue({
       outputImgHeight: 'auto',
       outputSize: 0,
       compressRatio: 0,
-      quality: 0.6,
-      maxWidth: 0,
-      maxHeight: 0,
-      width: 0,
-      height: 0,
-      minWidth: 0,
-      minHeight: 0,
-      convertSize: Infinity,
-      loose: true,
-      redressOrientation: true
+      quality: 0.6
     }
   },
 
@@ -92,20 +82,11 @@ new Vue({
       var options = {
         file: file,
         quality: this.quality,
-        mimeType: this.mimeType,
-        maxWidth: this.maxWidth,
-        maxHeight: this.maxHeight,
-        width: this.width,
-        height: this.height,
-        minWidth: this.minWidth,
-        minHeight: this.minHeight,
-        convertSize: this.convertSize,
-        loose: this.loose,
-        redressOrientation: this.redressOrientation,
 
         // 压缩前回调
         beforeCompress: function (result) {
           vm.btnText = '处理中...';
+          vm.imgName = result.name;
           vm.originImgWidth = result.width;
           vm.originImgHeight = result.height;
           vm.originSize = result.size;
@@ -118,10 +99,16 @@ new Vue({
           })
         },
 
+        // 图片绘画前
+        beforeDraw: function (ctx) {
+          vm.btnText = '准备绘图...';
+          console.log('准备绘图...');
+          ctx.filter = 'grayscale(100%)';
+        },
+
         // 压缩成功回调
         success: function (result) {
           vm.btnText = BTN_OK;
-          vm.imgName = result.name;
           console.log('result: ', result)
           console.log('压缩之后图片尺寸大小: ', result.size);
           console.log('mime 类型: ', result.type);
@@ -139,12 +126,6 @@ new Vue({
           })
           // 上传到远程服务器
           // util.upload('/upload.png', result);
-        },
-
-        // 发生错误
-        error: function (msg) {
-          vm.btnText = BTN_OK;
-          console.error(msg);
         }
       };
 
