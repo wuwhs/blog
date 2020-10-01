@@ -27,7 +27,7 @@ tags: [javascript, html]
 
 ![MutationObserver](/gb/mutation-observer/mutation-observer.png)
 
-PS `Mutation Observer API` 已经有很不多的浏览器兼容性，如果对IE10及以下没有要求的话。
+PS `Mutation Observer API` 已经有很不错的浏览器兼容性，如果对IE10及以下没有要求的话。
 
 ### MutationObserver 特点
 
@@ -39,7 +39,7 @@ PS `Mutation Observer API` 已经有很不多的浏览器兼容性，如果对IE
 
 ### MutationObserver 构造函数
 
-`MutationObserver` 构造函数的实例传的是一个回调函数，该函数接受两个参数，第一个是变动的数组，第二个是观察器是实例。
+`MutationObserver` 构造函数的实例传的是一个回调函数，该函数接受两个参数，第一个是变动的数组，第二个是观察器的实例。
 
 ```js
 var observer = new MutationObserver(function (mutations, observer){
@@ -138,7 +138,7 @@ $tar.className = 'tar'; // 能监听到
 $tar.dataset = 'abc'; // 监听不到
 ```
 
-#### characterData 和 `subtree` 属性
+#### characterData 和 subtree 属性
 
 `characterData` 属性表示是否应用到节点内容或节点文本的变动。`subtree` 是否将观察器应用于该节点的所有后代节点。为了更好观察节点文本变化，将两者结合应用到富文本监听上是不错的选择。
 
@@ -234,7 +234,7 @@ mutationObserver.observe($tar, {
 
 ## 漏网之鱼：动画（animation、transform）改变容器高（宽）
 
-除了容器内部元素节点、属性变化，还有 css3 动画会影响容器高宽，由于动画并不会造成元素属性的变化，所以 `MutationObserver` API 是监听不到的。
+除了容器内部元素节点、属性变化，还有 `css3` 动画会影响容器高宽，由于动画并不会造成元素属性的变化，所以 `MutationObserver` API 是监听不到的。
 
 将 `#tar` 容器加入以下 `css` 动画
 
@@ -315,8 +315,8 @@ Vue.directive('observe-element-height', {
 
 实验性的 `API` 不足，总有 `Polyfill` 来弥补。
 
-1. `ResizeObserver Polyfill` 利用事件冒泡，在顶层 `document` 上监听动画 `transitionend`；
-2. 简体 `window` 的 `resize` 事件；
+1. [`ResizeObserver Polyfill`](https://github.com/que-etc/resize-observer-polyfill) 利用事件冒泡，在顶层 `document` 上监听动画 `transitionend`；
+2. 监听 `window` 的 `resize` 事件；
 3. 其次用 `MutationObserver` 监听 `document` 元素；
 4. 兼容IE11以下 通过 `DOMSubtreeModified` 监听 `document` 元素。
 

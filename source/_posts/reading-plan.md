@@ -101,3 +101,7 @@ base64 -> formData
 ### 2020-7-30
 
 [React 源码剖析系列 － 不可思议的 react diff](https://zhuanlan.zhihu.com/p/20346379)
+
+### 2020-9-1
+
+[在淘宝优化了一个大型项目，分享一些干货（Webpack，SplitChunk代码实例，图文结合）](https://juejin.im/post/6844904183917871117)
