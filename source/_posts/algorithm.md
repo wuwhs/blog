@@ -288,4 +288,74 @@ console.log('arr: ', arr)
 
 对数组`[2,1,7,9,5,8]`进行排序。
 
-解题思路
+#### 解题思路
+
+![quick-sort](/gb/algorithm/quick-sort.gif)
+
+- 按照快速排序的思想，首先把数组筛选成较小和较大的两个子数组。
+- 随机从数组里选取一个数作为基准值，比如 7，于是原始的数组就被分成里两个子数组。注意：快速排序是直接在原始数组里进行各种交换操作，所以当子数组被分割出去的时候，原始数组里的排列也被改变了。
+- 接下来，在较小的子数组里选 2 作为基准值，在较大的子数组里选 8 作为基准值，继续分割子数组。
+- 继续将元素个数大于 1 的子数组进行划分，当所有子数组里的元素个数都为 1 的时候，原始数组也被排好序了。
+
+#### 快速排序代码示例
+
+```js
+// 快速排序
+const quickSort = function (arr, lo, hi) {
+  if (lo === undefined) {
+    lo = 0
+  }
+  if (hi === undefined) {
+    hi = arr.length - 1
+  }
+
+  // 判断是否只剩下一个元素，是，则直接返回
+  if (lo >= hi) return
+
+  // 利用 partition 函数找到一个随机的基准点
+  const p = partition(arr, lo, hi)
+
+  // 递归对基准点左半边和右半边的数进行排序
+  quickSort(arr, lo, p - 1)
+  quickSort(arr, p + 1, hi)
+}
+
+// 交换数组位置
+const swap = function (arr, i, j) {
+  let temp = arr[i]
+  arr[i] = arr[j]
+  arr[j] = temp
+}
+
+// 随机获取位置索引
+const randomPos = function (lo, hi) {
+  return lo + Math.floor(Math.random() * (hi - lo))
+}
+
+const partition = function (arr, lo, hi) {
+  const pos = randomPos(lo, hi)
+  console.log('pos: ', pos)
+  swap(arr, pos, hi)
+
+  let i = lo
+  let j = lo
+
+  // 从左到右用每个数和基准值比较，若比基准值小，则放在指针 i 指向的位置
+  // 循环完毕后，i 指针之前的数都比基准值小
+  while (j < hi) {
+    if (arr[j] <= arr[hi]) {
+      swap(arr, i++, j)
+    }
+    j++
+  }
+  // 末尾的基准值放置到指针 i 的位置， i 指针之后的数都比基准值大
+  swap(arr, i, j)
+
+  // 返回指针 i，作为基准点的位置
+  return i
+}
+
+const arr = [2, 1, 7, 9, 5, 8]
+quickSort(arr)
+console.log(arr)
+```

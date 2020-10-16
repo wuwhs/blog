@@ -109,7 +109,6 @@ const quickSort = function (arr, lo, hi) {
 
   // 利用 partition 函数找到一个随机的基准点
   const p = partition(arr, lo, hi)
-  console.log('p: ', p)
 
   // 递归对基准点左半边和右半边的数进行排序
   quickSort(arr, lo, p - 1)
@@ -125,8 +124,6 @@ const swap = function (arr, i, j) {
 
 // 随机获取位置索引
 const randomPos = function (lo, hi) {
-  console.log('lo', lo)
-  console.log('hi', hi)
   return lo + Math.floor(Math.random() * (hi - lo))
 }
 
