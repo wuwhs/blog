@@ -105,6 +105,11 @@ base64 -> formData
 
 [在淘宝优化了一个大型项目，分享一些干货（Webpack，SplitChunk 代码实例，图文结合）](https://juejin.im/post/6844904183917871117)
 
-### 2020-10-31
+### 2020-10-30
 
 [阔别两年，webpack5 正式发布](https://mp.weixin.qq.com/s/sh7rcv6hdhYfWr1bv_ssbg)
+
+### 2020-10-31
+
+[预测最近面试会考 Cookie 的 SameSite 属性](https://juejin.im/post/6844904095711494151)
+2020 年 2 月份 `Chrome 80` 版本中默认屏蔽了第三方的 `Cookie`，这样会造成一些跨站 `Cookie` 鉴权问题，解决方案是在响应头加上 `set-cookie: SomeSite: None;`
