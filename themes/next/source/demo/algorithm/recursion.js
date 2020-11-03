@@ -60,27 +60,28 @@
 // }
 // console.log(helper(2))
 
-const combinationSum = function (candidates, target) {
-  const results = []
-  backtracking(candidates, target, 0, [], results)
-  return results
-}
+// 数字组合
+// const combinationSum = function (candidates, target) {
+//   const results = []
+//   backtracking(candidates, target, 0, [], results)
+//   return results
+// }
 
-const backtracking = function (candidates, target, start, solution, results) {
-  if (target < 0) {
-    return false
-  }
+// const backtracking = function (candidates, target, start, solution, results) {
+//   if (target < 0) {
+//     return false
+//   }
 
-  if (target === 0) {
-    results.push(solution)
-    return true
-  }
+//   if (target === 0) {
+//     results.push([...solution])
+//     return true
+//   }
 
-  for (let i = start; i < candidates.length; i++) {
-    solution.push(candidates[i])
-    backtracking(candidates, target - candidates[i], i, solution, results)
-    solution.pop()
-  }
-}
+//   for (let i = start; i < candidates.length; i++) {
+//     solution.push(candidates[i])
+//     backtracking(candidates, target - candidates[i], i, solution, results)
+//     solution.pop()
+//   }
+// }
 
-console.log(combinationSum([1, 2, 3], 10))
+// console.log(combinationSum([1, 2, 3], 10))
