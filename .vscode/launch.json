@@ -10,7 +10,7 @@
       "type": "pwa-node",
       "name": "Run Current File",
       "request": "launch",
-      "program": "${workspaceFolder}/themes/next/source/demo/algorithm/recursion.js"
+      "program": "${workspaceFolder}/themes/next/source/demo/algorithm/dfs.js"
     }
   ]
 }
