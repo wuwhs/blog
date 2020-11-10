@@ -975,16 +975,26 @@ view 的变化会自动更新到 ViewModel，ViewModel 的变化也会自动同�
 
 提一下我熟悉的 MVVM 框架：vue.js，Vue.js 是一个构建数据驱动的 web 界面的渐进式框架。Vue.js 的目标是通过尽可能简单的 API 实现响应的数据绑定和组合的视图组件。核心是一个响应的数据绑定系统。
 
-Vue 中 MVVM 过程：
-深度遍历 `data` 对象，利用 `definedProperty` API 进行数据劫持（Observer）
-对于对象每个属性的 getter 绑定一个依赖队列（Dep），setter 触发（Nofity）这个依赖队列遍历执行每一项
-在模版编译构成中，编译到 `v-modal` 指令或者解析出具体的文本节点值时，生成一个观察者（Watcher），观察者生成后会调用 getter 方法，将观察对象插入依赖队列。
-下次数据变化后，观察者就会触发遍历执行依赖队列，这样就实现了从数据到视图的更新
-下次用户通过`input`修改数据时，同样会触发遍历执行依赖队列，这样就实现了从视图到数据的更新
-
 4. 一句话总结下不同之处
 
 MVC 中联系是单向的，MVP 中 P 和 V 通过接口交互，MVVM 的联系是双向的
+
+### Vue 中 MVVM 原理
+
+- 深度遍历 `data` 对象，利用 `defineProperty` API 对每个属性数据劫持（Observer）
+- 对于每个属性的 getter 绑定一个依赖队列（Dep），setter 触发（Nofity）这个依赖队列遍历执行每一项
+- 在模版编译构成中，编译到 `v-modal` 指令或者解析出具体的文本节点值时，创建一个观察者（Watcher），观察者创建后会调用 getter 方法，将观察对象插入依赖队列。
+- 通过监听元素的 `input` 事件，当用户输入即可修改数据，这样实现了从视图到数据的更新
+- 当数据变化，调用 setter，触发遍历执行依赖队列中的观察者，观察者回调更新（update）视图，这样就实现了从数据到视图的更新。
+
+### Vue 中 nextTick 原理
+
+- 在数据变化，触发观察者（`Watcher`）回调（`update`）时，会分为三种情况：赖处理（`lazy`）、同步（`sync`）和 观察者队列（`queueWatcher`）。
+- 观察者队列通过观察者 `id` 进行去重，再去通过 `nextTick` 遍历执行观察者的 `run` 函数视图更新
+- `nextTick` 执行的目的是在 `microtask` 或者 `task` 中推入一个 `function`，当前栈执行完毕以后执行 `nextTick` 传入的 `function`
+- 在 `Vue2.5` 之后的版本，nextTick 采取的策略默认走 `microTask`， 对于一些 `DOM` 交互，如 `v-on` 绑定事件回调函数的处理会强制走 `macroTask`。在 Vue2.4 前基于 microTask 实现，但是 microTask 的执行级别非常高，在某些场景之下甚至比事件冒泡还要快，会导致一些诡异的问题。但是全部改成 macroTask，对于一些有重绘和动画场景也会有性能影响。
+
+参考 [Vue 番外篇 -- vue.nextTick()浅析](https://juejin.im/post/6844903695935602696)
 
 ### DOM 元素 e 的 e.getAttribute(propName)和 e.propName 有什么区别和联系？
 
