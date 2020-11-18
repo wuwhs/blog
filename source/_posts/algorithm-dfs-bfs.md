@@ -12,7 +12,7 @@ DFS 解决的是连通性的问题，即，给定两个点，一个是起始点�
 
 ### DFS 遍历
 
-例题：假设我们有这么一个图，里面有 `A、B、C、D、E、F、G、H` 8 个顶点，点和点之间的联系如下图所示，对这个图进行深度优先的遍历。
+例题：假设我们有这么一个图，里面有 `A`、`B`、`C`、`D`、`E`、`F`、`G`、`H` `8` 个顶点，点和点之间的联系如下图所示，对这个图进行深度优先的遍历。
 
 ![dfs](/gb/algorithm-dfs-bfs/dfs.png)
 
@@ -270,7 +270,7 @@ console.log('dfs: ', dfs(maze, 0, 3))
 
   查找每个顶点的邻居需要 `O(V)` 的时间，所以查找整个矩阵的时候需要 `O(V2)` 的时间。
 
-举例：利用 DFS 在迷宫里找一条路径的复杂度。迷宫是用矩阵表示。
+举例：利用 `DFS` 在迷宫里找一条路径的复杂度。迷宫是用矩阵表示。
 
 解法：把迷宫看成是邻接矩阵。假设矩阵有 `M` 行 `N` 列，那么一共有 `M × N` 个顶点，因此时间复杂度就是 `O(M × N)`。
 
@@ -406,7 +406,7 @@ solve(maze)
 
 ### BFS 遍历
 
-例题：假设我们有这么一个图，里面有 `A、B、C、D、E、F、G、H` 8 个顶点，点和点之间的联系如下图所示，对这个图进行深度优先的遍历。
+例题：假设我们有这么一个图，里面有 `A`、`B`、`C`、`D`、`E`、`F`、`G`、`H` `8` 个顶点，点和点之间的联系如下图所示，对这个图进行深度优先的遍历。
 
 ![bfs](/gb/algorithm-dfs-bfs/bfs.png)
 
@@ -418,39 +418,39 @@ solve(maze)
 
 第一步，选择一个起始顶点，让我们从顶点 `A` 开始。把 `A` 压入队列，标记它为访问过（用红色标记）。
 
-![bfs-gif-1](/gb/algorithm-dfs-bfs/bfs-gif-1.png)
+![bfs-gif-1](/gb/algorithm-dfs-bfs/bfs-gif-1.gif)
 
 第二步，从队列的头取出顶点 `A`，打印输出到结果中，同时将与它相连的尚未被访问过的点按照字母大小顺序压入队列，同时把它们都标记为访问过，防止它们被重复地添加到队列中。
 
-![bfs-gif-2](/gb/algorithm-dfs-bfs/bfs-gif-2.png)
+![bfs-gif-2](/gb/algorithm-dfs-bfs/bfs-gif-2.gif)
 
 第三步，从队列的头取出顶点 `B`，打印输出它，同时将与它相连的尚未被访问过的点（也就是 `E` 和 `F`）压入队列，同时把它们都标记为访问过。
 
-![bfs-gif-3](/gb/algorithm-dfs-bfs/bfs-gif-3.png)
+![bfs-gif-3](/gb/algorithm-dfs-bfs/bfs-gif-3.gif)
 
 第四步，继续从队列的头取出顶点 `D`，打印输出它，此时我们发现，与 `D` 相连的顶点 `A` 和 `F` 都被标记访问过了，所以就不要把它们压入队列里。
 
-![bfs-gif-4](/gb/algorithm-dfs-bfs/bfs-gif-4.png)
+![bfs-gif-4](/gb/algorithm-dfs-bfs/bfs-gif-4.gif)
 
 第五步，接下来，队列的头是顶点 `G`，打印输出它，同样的，`G` 周围的点都被标记访问过了。我们不做任何处理。
 
-![bfs-gif-5](/gb/algorithm-dfs-bfs/bfs-gif-5.png)
+![bfs-gif-5](/gb/algorithm-dfs-bfs/bfs-gif-5.gif)
 
 第六步，队列的头是 `E`，打印输出它，它周围的点也都被标记为访问过了，我们不做任何处理。
 
-![bfs-gif-6](/gb/algorithm-dfs-bfs/bfs-gif-6.png)
+![bfs-gif-6](/gb/algorithm-dfs-bfs/bfs-gif-6.gif)
 
 第七步，接下来轮到顶点 `F`，打印输出它，将 `C` 压入队列，并标记 `C` 为访问过。
 
-![bfs-gif-7](/gb/algorithm-dfs-bfs/bfs-gif-7.png)
+![bfs-gif-7](/gb/algorithm-dfs-bfs/bfs-gif-7.gif)
 
 第八步，将 `C` 从队列中移出，打印输出它，与它相连的 `H` 还没被访问到，将 `H` 压入队列，将它标记为访问过。
 
-![bfs-gif-8](/gb/algorithm-dfs-bfs/bfs-gif-8.png)
+![bfs-gif-8](/gb/algorithm-dfs-bfs/bfs-gif-8.gif)
 
 第九步，队列里只剩下 `H` 了，将它移出，打印输出它，发现它的邻居都被访问过了，不做任何事情。
 
-![bfs-gif-9](/gb/algorithm-dfs-bfs/bfs-gif-9.png)
+![bfs-gif-9](/gb/algorithm-dfs-bfs/bfs-gif-9.gif)
 
 第十步，队列为空，表示所有的点都被处理完毕了，程序结束。
 
@@ -462,7 +462,7 @@ solve(maze)
 
 搜索的过程如下。
 
-![bfs-gif-10](/gb/algorithm-dfs-bfs/bfs-gif-10.png)
+![bfs-gif-10](/gb/algorithm-dfs-bfs/bfs-gif-10.gif)
 
 从起始点 `A` 出发，类似于涟漪，一层一层地扫描，避开墙壁，同时把每个点与 `A` 的距离或者步数标记上。当找到目的地的时候返回步数，这个步数保证是最短的。
 
