@@ -69,3 +69,29 @@
 // const arr = [10, 9, 2, 5, 3, 7, 101, 18]
 // const ls = new LongestSubsequence(arr)
 // console.log('ls: ', ls.max)
+
+// 求不相邻数最大和
+const rob = function (nums) {
+  let n = nums.length
+
+  // 处理当数组为空或者数组只有一个元素的情况
+  if (n === 0) return 0
+  if (n === 1) return nums[0]
+
+  // 定义一个 dp 数组，dp[i] 表示到第 i 个元素为止我们能收获到的最大总数
+  const dp = []
+
+  // 初始化 dp[0], dp[1]
+  dp[0] = nums[0]
+  dp[1] = Math.max(nums[0], nums[1])
+
+  // 对于每个 nums[i]，考虑两种情况，选还是不选，然后取最大值
+  for (let i = 2; i < n; i++) {
+    dp[i] = Math.max(nums[i] + dp[i - 2], dp[i - 1])
+  }
+
+  return dp[n - 1]
+}
+
+const arr = [10, 9, 2, 5, 3, 7, 101, 18]
+console.log('rb: ', rob(arr))
