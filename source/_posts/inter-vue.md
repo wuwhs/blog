@@ -31,3 +31,5 @@ tags: [vue, 面试]
 [JavaScript 运行机制详解：再谈 Event Loop](http://www.ruanyifeng.com/blog/2014/10/event-loop.html)
 [Vue.js 升级踩坑小记](https://github.com/DDFE/DDFE-blog/issues/24) 这里黄毅老师遇到的音乐播放跟我遇到的在线客服提示音乐一样的问题：`nextTick` 异步调用时使用 `messageChannel` API 被认定为不是用户行为，音乐播放器不会被调用。
 [Tasks, microtasks, queues and schedules](https://jakearchibald.com/2015/tasks-microtasks-queues-and-schedules/)
+
+### Vue3 中 Proxy 和 Vue2 中 Object.defineProperty 对比
