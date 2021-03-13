@@ -119,3 +119,7 @@ base64 -> formData
 ### 2021-3-7
 
 [ES2021 新特性提前知，附案例](https://juejin.cn/post/6914538946751889422) 1、String.prototype.replaceAll 替换字符串中所有指定字符； 2、Promise.any 其中一个成功则成功，全部失败则返回失败；3、WeakRef 创建一个弱引用；4、逻辑运算符：或等（||=）且等（&&=)数字分隔符。
+
+### 2021-3-13
+
+[跨域资源共享 CORS 详解](https://www.ruanyifeng.com/blog/2016/04/cors.html)
