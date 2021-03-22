@@ -8,7 +8,7 @@ tags: [javascript, webpack, npm, yarn]
 
 ## 前言
 
-看完本文，你将从整体了解依赖版本锁定，`package-lock.json` 或 `yarn.lock` 的重要性。首先要从最近接连出现两起有关 `npm` 安装 `package.json` 中依赖包，由于依赖包版本更新 `bug` 造成项目出错问题说起。
+看完本文，你将从整体了解依赖版本锁定原理，`package-lock.json` 或 `yarn.lock` 的重要性。首先要从最近接连出现两起有关 `npm` 安装 `package.json` 中依赖包，由于依赖包版本更新 `bug` 造成项目出错问题说起。
 
 ### 事件一：新版本依赖包本身 bug
 
@@ -30,11 +30,11 @@ tags: [javascript, webpack, npm, yarn]
 **打破沙锅问到底**
 既然“问题”已经定位到了 `2.0.7` 版本，进一步通过对比此次版本提交文件内容差异，发现 `.babelrc` 文件用到的 `preset` 是 `env`。
 
-![clipboard2.0.6](/gb/package-yarn-lock/clipboard2.0.6.png)
+![clipboard2.0.6](/gb/npm-yarn-lock/clipboard2.0.6.png)
 
 `2.0.7` 版本用的是 `@bable/env`，将 `babel` 更新到了 7！
 
-![clipboard2.0.7](/gb/package-yarn-lock/clipboard2.0.7.png)
+![clipboard2.0.7](/gb/npm-yarn-lock/clipboard2.0.7.png)
 
 问题基本定位到了，这里就顺便给作者提了一个 [`issues`](https://github.com/zenorocha/clipboard.js/issues/745)。
 
@@ -126,7 +126,7 @@ tags: [javascript, webpack, npm, yarn]
 
 当 `package.json` 中的依赖项有新版本时，`npm install` 会无视 `package-lock.json` 去下载新版本的依赖项并且更新 p`ackage-lock.json`。针对这种安装策略，又有人提出了一个 [issue](https://github.com/npm/npm/issues/17979) 参考 `npm` 贡献者 `iarna` 的评论，得出 `5.4.2` 版本后的规则。
 
-**5.4.2 版本后**：
+**`5.4.2` 版本后**：
 
 如果只有一个 `package.json` 文件，运行 `npm install` 会根据它生成一个 `package-lock.json` 文件，这个文件相当于本次 `install` 的一个快照，它不仅记录了 `package.json` 指明的直接依赖的版本，也记录了间接依赖的版本。
 
@@ -150,29 +150,27 @@ tags: [javascript, webpack, npm, yarn]
 
 ## 安装依赖树流程
 
-1. 执行工程自身 `preinstall`。当前 `npm` 工程如果定义了 `preinstall` 钩子此时会被执行。
+1. 执行工程自身 `preinstall`。
+   当前 `npm` 工程如果定义了 `preinstall` 钩子此时会被执行。
 
 2. 确定首层依赖。
    模块首先需要做的是确定工程中的首层依赖，也就是 `dependencies` 和 `devDependencies` 属性中直接指定的模块（假设此时没有添加 `npm install` 参数）。工程本身是整棵依赖树的根节点，每个首层依赖模块都是根节点下面的一棵子树，`npm` 会开启多进程从每个首层依赖模块开始逐步寻找更深层级的节点。
 
 3. 获取模块。
-
    获取模块是一个递归的过程，分为以下几步：
 
    - 获取模块信息。在下载一个模块之前，首先要确定其版本，这是因为 `package.json` 中往往是 `semantic version`（`semver`，语义化版本）。此时如果版本描述文件（`npm-shrinkwrap.json` 或 `package-lock.json`）中有该模块信息直接拿即可，如果没有则从仓库获取。如 `package.json` 中某个包的版本是 `^1.1.0`，`npm` 就会去仓库中获取符合 `1.x.x` 形式的最新版本。
    - 获取模块实体。上一步会获取到模块的压缩包地址（`resolved` 字段），`npm` 会用此地址检查本地缓存，缓存中有就直接拿，如果没有则从仓库下载。
    - 查找该模块依赖，如果有依赖则回到第 `1` 步，如果没有则停止。
 
-4. 模块扁平化（`dedupe`）
+4. 模块扁平化（`dedupe`）。
    上一步获取到的是一棵完整的依赖树，其中可能包含大量重复模块。比如 `A` 模块依赖于 `loadsh`，`B` 模块同样依赖于 `lodash`。在 `npm3` 以前会严格按照依赖树的结构进行安装，因此会造成模块冗余。`yarn` 和从 `npm5` 开始默认加入了一个 `dedupe` 的过程。它会遍历所有节点，逐个将模块放在根节点下面，也就是 `node-modules` 的第一层。当发现有重复模块时，则将其丢弃。这里需要对重复模块进行一个定义，它指的是模块名相同且 `semver` 兼容。每个 `semver` 都对应一段版本允许范围，如果两个模块的版本允许范围存在交集，那么就可以得到一个兼容版本，而不必版本号完全一致，这可以使更多冗余模块在 `dedupe` 过程中被去掉。
 
-- 安装模块
+5. 安装模块。
+   这一步将会更新工程中的 `node_modules`，并执行模块中的生命周期函数（按照 `preinstall`、`install`、`postinstall` 的顺序）。
 
-  这一步将会更新工程中的 `node_modules`，并执行模块中的生命周期函数（按照 `preinstall`、`install`、`postinstall` 的顺序）。
-
-- 执行工程自身生命周期
-
-  当前 `npm` 工程如果定义了钩子此时会被执行（按照 `install`、`postinstall`、`prepublish`、`prepare` 的顺序）。
+6. 执行工程自身生命周期。
+   当前 `npm` 工程如果定义了钩子此时会被执行（按照 `install`、`postinstall`、`prepublish`、`prepare` 的顺序）。
 
 ## 举例说明
 
@@ -190,7 +188,7 @@ tags: [javascript, webpack, npm, yarn]
 
 通过 `npm install` 安装后，生成的 `package-lock.json` 文件内容和它的 `node_modules` 目录结构：
 
-![npm-version](/gb/package-yarn-lock/npm-version.png)
+![npm-version](/gb/npm-yarn-lock/npm-version.png)
 
 可以发现：
 
@@ -199,7 +197,7 @@ tags: [javascript, webpack, npm, yarn]
 
 通过 `yarn` 安装后，生成的 `yarn.lock` 文件内容和它的 `node_modules` 目录结构：
 
-![npm-version](/gb/package-yarn-lock/yarn-version.png)
+![npm-version](/gb/npm-yarn-lock/yarn-version.png)
 
 可以发现与 `npm install` 不同的是：
 
@@ -252,7 +250,7 @@ $ nrm use cnpm  //switch registry to cnpm
 测速
 
 ```js
-nrm test cnpm
+$ nrm test cnpm
 
 * cnpm --- 618ms
 ```
@@ -267,4 +265,4 @@ nrm test cnpm
 - `yarn+yarn-lock.json`。
 
 根据自身情况选择。
-见识有限，欢迎指正，完～
+见识有限，欢迎指正，谢谢点赞，完～

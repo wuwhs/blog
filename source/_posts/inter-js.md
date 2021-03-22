@@ -47,6 +47,39 @@ Undefined、Null、Boolean、Number、String、ECMAScript 2015 新增 Symbol（�
 
 ![堆和栈](https://note.youdao.com/yws/public/resource/bb7792e904a30442f11cb6c88c33cce8/xmlnote/59441F709E514A1C900E0A930F8D8E89/13064)
 
+### typeof、instanceOf、constructor、Object.prototype.toString
+
+**typeof**：
+
+- 直接在计算机底层基于数据类型的值（二进制）检测。
+- `typeof null => Object` 对象存储在计算机中，都是以 `000` 二进制存储，`null` 也是，所以检测出来的结果是对象。
+- `typeof` 普通对象/数组对象/正则对象/日期对象 => Object
+
+**instanceof**：
+
+- 检测当前实例是否属于这个类。
+- 底层机制：只要当前类出现在实例的原型上，结果为 `true`。
+- 不能检测基础数据类型，`1 instanceof Number => false`。
+- 原型可以被修改，因此检测会不准确
+
+**constructor**：
+
+- constructor 可以被修改，因此检测不准确
+
+**Object.prototype.toString**：
+
+- 标准检测数据类型的办法，不是转化成字符串，而是返回当前实例所属类的信息
+
+### 三类循环和性能分析
+
+- `for` 循环及 `forEach` 底层：
+  `for` 是自己控制循环过程
+  基于 `var` 声明的时候，`for` 和 `while` 差不多。
+  基于 `let` 声明的时候，`for` 循环性能更好【原理：没有创造全局不释放的变量】。
+- `for of` 循环底层：
+  迭代器 iterator 规范，具备 `next` 方法，每次返回一个对象，具备 `value/done` 属性。
+  让对象具备可迭代性并且使用 `for of` 循环
+
 ### 请解释事件委托（event delegation）
 
 事件委托是将事件监听器添加到父元素，而不是每个子元素单独设置事件监听器。当触发子元素时，事件会冒泡到父元素，监听器就会触发，这种技术的好处是：
@@ -329,6 +362,34 @@ console.log(arr)
 - 如果函数调用不符合上述规则，那么 this 的值指向全局对象（global object）。浏览器环境下 this 的值指向 window 对象，在严格模式下（"user strict"），this 的值为 undefined；
 - 综上所述多个规则，较高（第一个最高，上一条最低）将决定 this 的值；
 - ES2015 中的箭头函数，将忽略上面的所有规则，this 被设置为它被创建时的上下文；
+
+### 实现 call()、apply、bind()
+
+```js
+// call
+Function.prototype.call = function call(context, ...args) {
+  const self = this
+  const key = Symbol('key')
+  // null undefined
+  context == null ? (context = window) : null
+  // string number
+  !/^(object|function)$/i.test(typeof context) ? (context = Object(context)) : null
+
+  // array function object
+  context[key] = self
+  const result = context[key](...args)
+  delete context[key]
+  return result
+}
+
+// bind
+Function.prototype.bind = function bind(context, ...args) {
+  const self = this
+  return function proxy() {
+    self.apply(context, args)
+  }
+}
+```
 
 ### eval 是做什么的？
 

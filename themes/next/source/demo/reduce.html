@@ -94,14 +94,41 @@
       // }, []);
       // console.log(letterArr); //  ["A", "B", "C"]
 
-      var a = 0
-      if (true) {
-        a = 1
-        function a() {}
-        a = 21
+      // var a = []
+      // if (true) {
+      //   a = 1
+      //   function a() {}
+      //   a = 21
+      // }
+      // console.log(a)
+
+      Function.prototype.call = function (context, ...args) {
+        const self = this
+        const key = Symbol('key')
+        // null undefined
+        context == null ? (context = window) : null
+        // string number
+        !/^(object|function)$/i.test(typeof context) ? (context = Object(context)) : null
+
+        // array function object
+        context[key] = self
+        const result = context[key](...args)
+        delete context[key]
+        return result
       }
-      debugger
-      console.log(a)
+
+      const obj = { name: 'w' }
+      const fn = function () {
+        console.log(this.name)
+      }
+      fn.call(obj)
+
+      Function.prototype.bind = function bind(context, ...args) {
+        const self = this
+        return function proxy(params) {
+          self.apply(context, args.concat(params))
+        }
+      }
     </script>
   </body>
 </html>
