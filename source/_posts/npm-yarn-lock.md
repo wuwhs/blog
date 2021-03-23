@@ -255,6 +255,16 @@ $ nrm test cnpm
 * cnpm --- 618ms
 ```
 
+然而，设置这些全局代理可能还是不能满足下载一些特定依赖包（在没有 `VPN` 情况下），比如：`node-sass`、`puppeteer`、`chromedriver`、`electron` 等。可以通过 `.npmrc` 文件设置具体依赖包的国内镜像。该文件在项目 `npm install` 时会被加载读取，优先级高于 `npm` 全局设置。
+
+```js
+registry=https://registry.npm.taobao.org/
+sass_binary_site=http://npm.taobao.org/mirrors/node-sass
+chromedriver_cdnurl=http://npm.taobao.org/mirrors/chromedriver
+electron_mirror=http://npm.taobao.org/mirrors/electron/ npm install -g electron
+puppeteer_download_host=http://npm.taobao.org/mirrors/chromium-browser-snapshots/
+```
+
 ## 总结
 
 项目在以后重新构建，由于依赖树中有版本更新，造成意外事故是不可避免的，究其原因是整个依赖树版本没有锁死。解决方案分为如下四种：
