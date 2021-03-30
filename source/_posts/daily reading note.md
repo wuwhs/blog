@@ -4,9 +4,10 @@ date: 2017-04-02 19:00:00
 tags: javascript
 categories: javascript
 ---
+
 ### 记录日常看书、看博客小记
 
-##### DOM2 DOM3有关属性
+##### DOM2 DOM3 有关属性
 
 **检测节点是否相等 isSomeNode isEqualNode**
 
@@ -26,20 +27,20 @@ var iframe = document.getElementById("myIframe");
 var iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
 ```
 
-**获取行间样式遇到float要用styleFloat**
+**获取行间样式遇到 float 要用 styleFloat**
 
 ```
 myDiv.styleFloat = "left";
 ```
+
 **几个重要样式属性和方法**
 
--  cssText
--  length
--  item(index)
--  getPropertyValue(propertyName)
+- cssText
+- length
+- item(index)
+- getPropertyValue(propertyName)
 - removeProperty(propertyName)
 - setProperty(propertyName, value, priority)
-
 
 ```
 var demo = document.getElementById("demo");
@@ -54,7 +55,8 @@ for(var i = 0, len = demo.style.length; i < len; i++) {
 ```
 
 **计算样式 computedStyle
-ie9-使用oDiv.currentStyle**
+ie9-使用 oDiv.currentStyle**
+
 ```
 var computedStyle = document.getComputedStyle(oDiv, null);
 
@@ -71,7 +73,6 @@ for(var i = 0, len = document.styleSheets.length; i++) {
 }
 ```
 
-
 ```
 var sheet = document.styleSheets[0];
 var rules = sheet.cssRules || sheet.rules;
@@ -80,6 +81,7 @@ rule.style.backgroundColor = "red";
 // 插入一条样式到样式表
 sheet.insertRule("body", "background-color:red;", 0);
 ```
+
 ——2017/11/24
 
 ---
@@ -95,7 +97,6 @@ sheet.insertRule("body", "background-color:red;", 0);
 > offsetLeft = 元素左边框至包含元素的左内边框之间的像素距离；
 
 > offsetTop = 元素上边框至包含元素的上内边框之间的像素距离；
-
 
 ```
 // 想知道某个元素再页面上的偏移量
@@ -113,10 +114,10 @@ function getElementLeft(ele) {
 ```
 
 **客户区大小**
+
 > clientWidth = 元素内容区宽度 + 左右内边距宽度；
 
 > clientHeight = 元素内容区高度 + 左右内边距高度；
-
 
 **滚动大小**
 
@@ -128,13 +129,13 @@ function getElementLeft(ele) {
 
 > scrollTop: 被隐藏在内容区域上方的像素数。通过设置这个属性可以改变元素的滚动位置。
 
-PS：在不包含滚动条的页面而言，scrollWidth与clientWidth，scrollHeight与clientHeight的关系并不是十分清晰。
+PS：在不包含滚动条的页面而言，scrollWidth 与 clientWidth，scrollHeight 与 clientHeight 的关系并不是十分清晰。
+
 1. Firefox，这两组属性始终相等，但大小代表的是文档内容区域的实际尺寸，而非视口尺寸；
-2. Oprea、safari、chrome中这两组属性有差别，其中scrollWidth和scrollHeight等于视口大小，而clientWidth和clientHeight等于文档区域大小；
-3. IE，这两组属性不相等，scrollHeight和scrollWidth等于文档内容区域大小，而clientHeight和clientWidth等于视口大小；
+2. Oprea、safari、chrome 中这两组属性有差别，其中 scrollWidth 和 scrollHeight 等于视口大小，而 clientWidth 和 clientHeight 等于文档区域大小；
+3. IE，这两组属性不相等，scrollHeight 和 scrollWidth 等于文档内容区域大小，而 clientHeight 和 clientWidth 等于视口大小；
 
 所以，我们一般采用获取最大值，保证跨浏览器准确：
-
 
 ```
 var docHeight = Math.max(document.documentElement.scrollHeight, doucument.documentElment.clientHeight);
@@ -152,11 +153,11 @@ html5 的 `DTD`
 <!DOCTYPE html>
 ```
 
-在文档使用了 `DTD` 时，`document.body.scrollHeight` 值为0，没有用 `DTD` 时不为0
+在文档使用了 `DTD` 时，`document.body.scrollHeight` 值为 0，没有用 `DTD` 时不为 0
 
 **确定元素大小**
 
-getBoundingClientRect()方法，返回一个对象，包括四个属性：left、top、right和bottom。这些属性给出了元素相对视口的位置。
+getBoundingClientRect()方法，返回一个对象，包括四个属性：left、top、right 和 bottom。这些属性给出了元素相对视口的位置。
 
 ——2017/11/26
 
@@ -169,9 +170,11 @@ getBoundingClientRect()方法，返回一个对象，包括四个属性：left�
 > selectNodeContents() 只选择节点的子节点
 
 html
+
 ```
 <p id="p1"><b>Hello</b>World!</p>
 ```
+
 js
 
 ```
@@ -200,8 +203,7 @@ range.insertNode(span); // 在选区前插入一个节点
 
 ##### 事件
 
-为了兼容所有浏览器，一般对元素添加、删除事件做如下处理（不过一般IE9+都没有必要这么做）
-
+为了兼容所有浏览器，一般对元素添加、删除事件做如下处理（不过一般 IE9+都没有必要这么做）
 
 ```
 var EventUtil = {
@@ -299,7 +301,7 @@ var EventUtil = {
 ```
 
 扫盲：
-以前认为在页面卸载的时候没有办法去控制，当初没有注意到window下的beforeunload事件
+以前认为在页面卸载的时候没有办法去控制，当初没有注意到 window 下的 beforeunload 事件
 
 ```
 EventUtil.addHandler(window, "beforeunload", function(ev) {
@@ -308,14 +310,14 @@ EventUtil.addHandler(window, "beforeunload", function(ev) {
     return "before unload ?";
 });
 ```
-新认识一个事件，**DOMContentLoaded**事件在形成完整的DOM数之后就触发，不会理会图片、JavaScript文件、css文件或其他资源是否已经下载完毕。
+
+新认识一个事件，**DOMContentLoaded**事件在形成完整的 DOM 数之后就触发，不会理会图片、JavaScript 文件、css 文件或其他资源是否已经下载完毕。
 
 —— 2017/11/27
 
 ---
 
 ##### 自定义事件
-
 
 ```
 EventUtil.addHandler(selfBtn, "myEvent", function(ev) {
@@ -342,7 +344,7 @@ selfBtn.dispatchEvent(event);
 
 ##### 表单
 
-form表单作为一种古老的数据提交方式，很多细节还真是头回见，下面小记下。
+form 表单作为一种古老的数据提交方式，很多细节还真是头回见，下面小记下。
 
 ```
 <form action="http://xxx.com" method="post" id="form1">
@@ -374,7 +376,8 @@ var form1 = document.forms["form1"]; // 根据名称获取表单
 <button type="submit" >Submit form</button>
 <input type="image" src="demo.png">
 ```
-这种方式提交表单，浏览器会将请求发送到服务器之前触发submit事件。
+
+这种方式提交表单，浏览器会将请求发送到服务器之前触发 submit 事件。
 
 ```
 var form = document.querySelector("form");
@@ -384,10 +387,9 @@ var field1 = form.elements["name"];
 
 除了<fieldset>元素外，所有表单字段拥有相同的一组属性：disabled、form、name、readonly、tabIndex、type、value。
 
-值得注意的是，对value属性所做的修改，不一定会反映在DOM中，因此，在处理文本框的值时，最好不要使用DOM方法。
+值得注意的是，对 value 属性所做的修改，不一定会反映在 DOM 中，因此，在处理文本框的值时，最好不要使用 DOM 方法。
 
 为解决不知道用户选择了什么文本的困扰，新认识了两个属性：**selectionStart**、**selectionEnd**。
-
 
 ```
 $name.addEventListener("select", function(ev) {
@@ -407,26 +409,26 @@ $name.value = "hello form";
 $name.setSelectionRange(0, 4); // hel
 $name.focus();
 ```
-复制&&粘贴问题解决方案：**event.clipboardData**/window.clipboardData获取到clipboardData对象，有setData和getData方法。只有opera不支持。Firefox、safari和chrome只允许在paste事件发生时读取剪贴板数据，而ie没有这个限制。
 
-以前对select的操作过于依赖jQuery或者DOM操作，其实本身有些很好的方法和属性。
-HTMLSelectElement提供的一些属性和方法：
+复制&&粘贴问题解决方案：**event.clipboardData**/window.clipboardData 获取到 clipboardData 对象，有 setData 和 getData 方法。只有 opera 不支持。Firefox、safari 和 chrome 只允许在 paste 事件发生时读取剪贴板数据，而 ie 没有这个限制。
 
-1. add(newOption, relOption)：向控件中插入新<option>元素，其位置在相关项relOption之前。
+以前对 select 的操作过于依赖 jQuery 或者 DOM 操作，其实本身有些很好的方法和属性。
+HTMLSelectElement 提供的一些属性和方法：
+
+1. add(newOption, relOption)：向控件中插入新<option>元素，其位置在相关项 relOption 之前。
 2. multiple：是否允许多项选择。
-3. options：控件中所有<option>元素的HTMLCollection。
+3. options：控件中所有<option>元素的 HTMLCollection。
 4. remove(index)：移除给定位置的选项。
-5. selectedIndex：基于0的选中项索引，没有选中项，返回-1.对于多选项，只返回选中项中的第一项索引。
+5. selectedIndex：基于 0 的选中项索引，没有选中项，返回-1.对于多选项，只返回选中项中的第一项索引。
 6. size：选择框中可见行数。
 
-HTMLOptionElement有一下属性：
+HTMLOptionElement 有一下属性：
 
-1. index：当前选项在options集合中的索引。
+1. index：当前选项在 options 集合中的索引。
 2. label：当前选项的标签。
-3. selected：当前选项是否被选中。将这个属性设置位true可以选中当前选项。
+3. selected：当前选项是否被选中。将这个属性设置位 true 可以选中当前选项。
 4. text：选项的文本。
 5. value：选项的值。
-
 
 ```
 <select name="is-student" id="is-student">
@@ -455,6 +457,7 @@ console.log("选中项的标签：", options[$isStudent.selectedIndex].label); /
 
 console.log("选中项的在options集合中的索引：", options[$isStudent.selectedIndex].index); // 2
 ```
+
 —— 2017/12/8
 
 ---
@@ -466,13 +469,14 @@ console.log("选中项的在options集合中的索引：", options[$isStudent.se
 ```
 if(aaa === undefined)
 ```
+
 看到别人偏偏
 
 ```
 if(typeof aaa == "undefined")
 ```
 
-今天才明白其中道理：因为在js中undefined可以被重写，这样防止页面中有undefined变量存在。下面来看看区别：
+今天才明白其中道理：因为在 js 中 undefined 可以被重写，这样防止页面中有 undefined 变量存在。下面来看看区别：
 
 ```
 (function(undefined) {
@@ -489,7 +493,7 @@ if(typeof aaa == "undefined")
 ```
 
 **作用于安全构造函数**
-构造函数其实是一个使用new操作符调用的函数。当使用new调用时，构造函数内用到的this对象会指向新创建的对象实例。
+构造函数其实是一个使用 new 操作符调用的函数。当使用 new 调用时，构造函数内用到的 this 对象会指向新创建的对象实例。
 
 ```
 function Person(name, age) {
@@ -501,7 +505,8 @@ var person = new Person("wuwh", "22");
 console.log( person.name );
 console.log( person.age );
 ```
-如果构造函数被当作普通函数调用，this就会指向window对象，添加成window下的属性。
+
+如果构造函数被当作普通函数调用，this 就会指向 window 对象，添加成 window 下的属性。
 
 ```
 var person = Person("wuwh", "22");
@@ -509,7 +514,7 @@ console.log(window.name);
 console.log(window.age);
 ```
 
-解决这个问题的方法时创建一个作用域安全的构造函数，原理是在进行任何更改前，确认this对象是指向正确的实例。
+解决这个问题的方法时创建一个作用域安全的构造函数，原理是在进行任何更改前，确认 this 对象是指向正确的实例。
 
 ```
 function Person(name, age) {
@@ -527,13 +532,14 @@ function Person(name, age) {
 
 ---
 
-#### HTML5原生API
+#### HTML5 原生 API
 
 **XDM**
 
-跨文档消息传送（XDM）,HTML5原生提供了postMessage方法。
+跨文档消息传送（XDM）,HTML5 原生提供了 postMessage 方法。
 
- postMessage()方法接收两个参数：
+postMessage()方法接收两个参数：
+
 1. 一条消息
 2. 一个表示消息接收方来自哪个域下的字符串
 
@@ -544,10 +550,11 @@ setTimeout(function() {
 }, 1000);
 ```
 
-接收到XDM消息时，会触发window对象的message事件，改事件会包含三个重要信息：
+接收到 XDM 消息时，会触发 window 对象的 message 事件，改事件会包含三个重要信息：
+
 1. data：postMessage()第一个参数；
 2. origin：发送消息的文档所在的域；
-3. source：发送消息的文档window对象的代理，用于发送上一条消息的窗口中调用postMessage()。
+3. source：发送消息的文档 window 对象的代理，用于发送上一条消息的窗口中调用 postMessage()。
 
 ```
 // 接收XDM消息
@@ -562,19 +569,20 @@ window.addEventListener("message", function(ev) {
 **拖放事件**
 
 在被拖动元素上依次触发事件：
+
 1. dragstart
 2. drag
 3. dragend
 
 在防止目标上依次触发事件：
+
 1. dragenter
 2. dragover
 3. dragleave
 4. drop
-为了阻止默认行为，一般都要对dragenter、dragover和drop绑定阻止默认事件。
+   为了阻止默认行为，一般都要对 dragenter、dragover 和 drop 绑定阻止默认事件。
 
-认识一个新的事件属性dataTransfer，用于从被拖放元素向放置目标传递字符串格式的数据。
-
+认识一个新的事件属性 dataTransfer，用于从被拖放元素向放置目标传递字符串格式的数据。
 
 ```
 // 设置文本和url数据
@@ -597,6 +605,7 @@ console.log("dataTransfer file:", dataTransfer.file);
 **惰性载入函数**
 
 有时候对浏览器的检测，我们执行一次就行，不必每次调用进行分支检测。解决方案就是惰性载入。
+
 1. 在第一次调用过程中，该函数被覆盖为另一个合适方式执行的函。
 
 ```
@@ -637,7 +646,7 @@ var createXHR = (function () {
 
 **函数绑定**
 
-指定一个函数内this环境，ES5原生可以用bind，bind实现原理时这样的：
+指定一个函数内 this 环境，ES5 原生可以用 bind，bind 实现原理时这样的：
 
 ```
 function bind(fn, context) {
@@ -647,13 +656,13 @@ function bind(fn, context) {
 }
 ```
 
-bind一般用于事件处理程序以及setTimeout()和setInterval()。因为这些直接用函数名，函数体内this时分别指向元素和window的。
+bind 一般用于事件处理程序以及 setTimeout()和 setInterval()。因为这些直接用函数名，函数体内 this 时分别指向元素和 window 的。
 
 **函数柯里化**
 
 上面模拟绑定函数的实现，发现不能传参。于是，对绑定函数进行传参处理叫做函数柯里化。
 
-实现可以传参的bind函数。
+实现可以传参的 bind 函数。
 
 ```
 function bind(fn, context) {
@@ -689,6 +698,7 @@ Object.seal(person);
 delete person.name;
 console.log(person.name); // wuwh
 ```
+
 Object.freeze() 冻结对象，既不可以拓展，也不可以密封，还不可以修改。
 
 ```
@@ -706,15 +716,15 @@ console.log(person.name); // wuwh
 
 **定时器**
 
-理解这段话就明白为什么setInterval要谨慎使用了。
-> 使用setInterval()创建的定时器确保了定时器代码规则地插入到队列中。问题在于，定时器代码可能在被添加到队列之前还没有完成执行，结果导致定时器代码运行好几次，而之间没有停顿。在这里js引擎避免了这个问题。当时用setInterval()时，仅当没有该定时器的任何其他代码实例时，才将定时器代码添加到队列中。确保了定时器代码加入到队列地最小时间间隔为指定间隔。
+理解这段话就明白为什么 setInterval 要谨慎使用了。
+
+> 使用 setInterval()创建的定时器确保了定时器代码规则地插入到队列中。问题在于，定时器代码可能在被添加到队列之前还没有完成执行，结果导致定时器代码运行好几次，而之间没有停顿。在这里 js 引擎避免了这个问题。当时用 setInterval()时，仅当没有该定时器的任何其他代码实例时，才将定时器代码添加到队列中。确保了定时器代码加入到队列地最小时间间隔为指定间隔。
 
 造成后果：(1)某些间隔被跳过；(2)多个定时器地代码执行之间地间隔可能会比预期地小。
 
 —— 2017/12/13
 
 ---
-
 
 ```
 /**自定义事件基于观察者设计模式
@@ -852,11 +862,11 @@ dg.enable();
 
 ---
 
-#### ES6之Symbol
+#### ES6 之 Symbol
 
-Symbol是ES6中引入的一个第七种数据类型（前六种分别是undefined、null、Boolean、String、Number、Object）。目的是使得属于Symbol类型的属性都是独一无二的，可以保证不与其他属性名产生冲突。
+Symbol 是 ES6 中引入的一个第七种数据类型（前六种分别是 undefined、null、Boolean、String、Number、Object）。目的是使得属于 Symbol 类型的属性都是独一无二的，可以保证不与其他属性名产生冲突。
 
-Symbol函数相同入参，返回值不相等
+Symbol 函数相同入参，返回值不相等
 
 ```
 let sym1 = Symbol("my symbol");
@@ -864,7 +874,7 @@ let sym2 = Symbol("my symbol");
 console.log(sym1 == sym2); // false
 ```
 
-Symbol值不能和其他类型的值进行运算，包括自身。但是可以显示转化成字符串，也可以转化成布尔值
+Symbol 值不能和其他类型的值进行运算，包括自身。但是可以显示转化成字符串，也可以转化成布尔值
 
 ```
 let sym = Symbol("my symbol");
@@ -873,7 +883,7 @@ console.log(sym.toString()); // Symbol(my symbol)
 console.log(sym + ".gif"); // Uncaught TypeError
 ```
 
-Symbol值作为对象属性
+Symbol 值作为对象属性
 
 ```
 let mySymbol = Symbol();
@@ -892,7 +902,7 @@ Object.defineProperty(c, mySymbol, {value: "Hello"});
 console.log("c:", c);
 ```
 
-获取对象所有Symbol属性名
+获取对象所有 Symbol 属性名
 
 ```
 const obj = {};
@@ -909,7 +919,8 @@ console.log("Object.getOwnPropertyNames(obj):", Object.getOwnPropertyNames(obj))
 
 console.log("Reflect.ownKeys(obj):", Reflect.ownKeys(obj)); // [Symbol(a), Symbol(b)]
 ```
-Symbol.for() 搜索返回已有参数名称的Symbol值，没有则会新建以改字符串为名称的Symbol值
+
+Symbol.for() 搜索返回已有参数名称的 Symbol 值，没有则会新建以改字符串为名称的 Symbol 值
 
 ```
 let s1 = Symbol.for("foo");
@@ -920,7 +931,7 @@ console.log(Symbol.keyFor(s1)); // foo
 console.log(Symbol.keyFor(Symbol("aaa"))); // undefined
 ```
 
-Symbol.for登记的名字是全局环境的
+Symbol.for 登记的名字是全局环境的
 
 ```
 let iframe = document.createElement("iframe");
@@ -931,9 +942,9 @@ document.body.appendChild(iframe);
 console.log(iframe.contentWindow.Symbol.for("foo") === window.Symbol.for("foo"));
 ```
 
-#### ES6之Proxy
+#### ES6 之 Proxy
 
-Proxy属于一种“元编程”，即对编程语言进行编程。可以理解成在木匾对象之前架设一层“拦截”
+Proxy 属于一种“元编程”，即对编程语言进行编程。可以理解成在木匾对象之前架设一层“拦截”
 
 ```
 let proxy = new Proxy({}, {
@@ -945,7 +956,8 @@ let proxy = new Proxy({}, {
 console.log(proxy.time); // wuwh
 console.log(proxy.name); // wuwh
 ```
-Proxy实例可以作为其他对象的原型对象
+
+Proxy 实例可以作为其他对象的原型对象
 
 ```
 let proxy = new Proxy({}, {
@@ -957,7 +969,8 @@ let proxy = new Proxy({}, {
 let obj = Object.create(proxy);
 console.log(proxy.time);
 ```
-Proxy的一些实例方法
+
+Proxy 的一些实例方法
 
 ```
 let handler = {
@@ -986,7 +999,7 @@ console.log(new fproxy(1, 2)); // {value: 2} 被construct拦截
 console.log(fproxy.time); // Hello, time 被get拦截
 ```
 
-writable和configurable属性都为false时，则该属性不能被代理，通过 Proxy 对象访问该属性会报错
+writable 和 configurable 属性都为 false 时，则该属性不能被代理，通过 Proxy 对象访问该属性会报错
 
 ```
 let obj = {};
@@ -1007,16 +1020,15 @@ let obj = {};
     console.log(proxy.foo);
 ```
 
-
-
 —— 2017/12/15
 
 ---
 
-#### ES6之Reflect
-Reflect对象与Proxy对象一样，也是ES6为了操作对象提供的新API。
+#### ES6 之 Reflect
 
-Reflect对象一共有 13 个静态方法。
+Reflect 对象与 Proxy 对象一样，也是 ES6 为了操作对象提供的新 API。
+
+Reflect 对象一共有 13 个静态方法。
 
 - Reflect.apply(target, thisArg, args)
 - Reflect.construct(target, args)
@@ -1032,10 +1044,10 @@ Reflect对象一共有 13 个静态方法。
 - Reflect.getPrototypeOf(target)
 - Reflect.setPrototypeOf(target, prototype)
 
-
 **Reflect.get && Reflect.set**
 
-在name属性部署了读取函数（getter）或者是设置函数（setter），this绑定receiver
+在 name 属性部署了读取函数（getter）或者是设置函数（setter），this 绑定 receiver
+
 ```
 var obj = {
     foo: 1,
@@ -1053,7 +1065,8 @@ console.log("obj.bar:", obj.foo);
 console.log("receiveObj.bar:", receiveObj.foo);
 ```
 
-如果Proxy对象和Reflect对象联合使用，前者拦截赋值操作，后者完成赋值的默认行为，而且传入receiver，那么Reflect.set会触发Proxy.defineProperty
+如果 Proxy 对象和 Reflect 对象联合使用，前者拦截赋值操作，后者完成赋值的默认行为，而且传入 receiver，那么 Reflect.set 会触发 Proxy.defineProperty
+
 ```
 var obj = {
     name: "wuwh"
@@ -1089,7 +1102,7 @@ const instance = Reflect.construct(Greeting, ["张三"]);
 
 **Reflect.getPrototypeOf(obj) && Reflect.setPrototypeOf(obj, newProto)**
 
-设置和读取对象的__proto__属性
+设置和读取对象的**proto**属性
 
 ```
 function FancyThing() {}
@@ -1105,6 +1118,7 @@ console.log(Reflect.getPrototypeOf(myObj)); // obj
 ```
 
 **Reflect.ownKeys**
+
 ```
 var obj = {
     foo: 1,
@@ -1121,11 +1135,11 @@ console.log(Reflect.ownKeys(obj)); // ["foo", "bar", Symbol(foo), Symbol(baz)]
 
 ```
 
-#### ES6之Set和Map
+#### ES6 之 Set 和 Map
 
 **set**
 
-Set是ES6新数据结构，类似于数组，但是成员都是唯一的，没有重复的值
+Set 是 ES6 新数据结构，类似于数组，但是成员都是唯一的，没有重复的值
 
 ```
 var s = new Set();
@@ -1137,6 +1151,7 @@ for(let i of s) {
     console.log("set i:", i);
 }
 ```
+
 可以看成是一种数组的去重方法 变量解构
 
 ```
@@ -1155,7 +1170,7 @@ let set1 = new Set([{}, {}]);
 console.log(set1); // Set {{}, {}}
 ```
 
-Set的方法 add、delete、clear和has
+Set 的方法 add、delete、clear 和 has
 
 ```
 let s = new Set([0, 1]);
@@ -1178,6 +1193,7 @@ console.log(s); // Set(0) {}
 const set = new Set([1, 2, 3, 4, 1, 2, 3]);
 console.log(Array.from(set));
 ```
+
 实现并集，交集和差集
 
 ```
@@ -1202,7 +1218,8 @@ console.log(difference); // Set(1) {1}
 let ws = new WeakSet([1, 2]); // Uncaught TypeError: Invalid value used in weak set
 console.log(ws);
 ```
-Map数据结构类似对象，也是键值对的集合，但是“键”的范围不限于字符串，各种类型的值都可以
+
+Map 数据结构类似对象，也是键值对的集合，但是“键”的范围不限于字符串，各种类型的值都可以
 
 ```
 let m = new Map();
@@ -1217,7 +1234,8 @@ console.log(m.has(o)); // true
 console.log(m.delete(o)); // true
 console.log(m.has(o)); // false
 ```
-Map可以接收一个数组作为参数，数组成员是一个个表示键值对的数组
+
+Map 可以接收一个数组作为参数，数组成员是一个个表示键值对的数组
 
 ```
 let m = new Map([
@@ -1229,7 +1247,8 @@ console.log(m); // Map(2) {"name" => "wuwh", "age" => 22}
 console.log(m.size); // 2
 console.log(m.get("name")); // wuwh
 ```
-事实上不仅仅是数组，任何具有Iterator接口、 每个成员都是一个双元素的数组，都可以当作Map构造函数的参数
+
+事实上不仅仅是数组，任何具有 Iterator 接口、 每个成员都是一个双元素的数组，都可以当作 Map 构造函数的参数
 
 ```
 let set = new Set([
@@ -1242,6 +1261,7 @@ console.log(set); // Set(2) {Array(2), Array(2)}
 let m = new Map(set);
 console.log(m); // Map(2) {"foo" => 1, "bar" => 2}
 ```
+
 一个键值多次赋值，后面的会覆盖前面的
 
 ```
@@ -1249,6 +1269,7 @@ let m = new Map();
 m.set(1, "aaa").set(1, "bbb");
 console.log(m); // Map(1) {1 => "bbb"}
 ```
+
 Map 的键实际上是跟内存地址绑定的，只要内存地址不一样，就视为两个键
 
 ```
@@ -1257,7 +1278,8 @@ let m = new Map();
 m.set(["a"], 1);
 console.log(m.get(["a"])); // undefined
 ```
-forEach方法接受第二个参数，用来绑定this
+
+forEach 方法接受第二个参数，用来绑定 this
 
 ```
 let reporter = {
@@ -1275,23 +1297,26 @@ m.forEach(function(value, key, map) {
 
 ---
 
-#### ES6之Promise
+#### ES6 之 Promise
 
-今天复习一下ES6中Promise的基础用法。ES6 规定，Promise对象是一个构造函数，用来生成Promise实例。Promise对象有两个特点：
+今天复习一下 ES6 中 Promise 的基础用法。ES6 规定，Promise 对象是一个构造函数，用来生成 Promise 实例。Promise 对象有两个特点：
+
 1. 对象的状态不受外界影响；
 2. 一旦状态改变，就不会再变，任何时候都可以得到这个结果；
 
 **优点**：
+
 1. 就可以将异步操作以同步操作的流程表达出来，避免了层层嵌套的回调函数。
-2. Promise对象提供统一的接口，使得控制异步操作更加容易。
+2. Promise 对象提供统一的接口，使得控制异步操作更加容易。
 
 **缺点**：
-1. 无法取消Promise，一旦新建它就会立即执行，无法中途取消。
-2. 如果不设置回调函数，Promise内部抛出的错误，不会反应到外部。
-3. 当处于pending状态时，无法得知目前进展到哪一个阶段（刚刚开始还是即将完成）。
 
+1. 无法取消 Promise，一旦新建它就会立即执行，无法中途取消。
+2. 如果不设置回调函数，Promise 内部抛出的错误，不会反应到外部。
+3. 当处于 pending 状态时，无法得知目前进展到哪一个阶段（刚刚开始还是即将完成）。
 
-Promise 新建后立即执行，所以首先输出的是Promise。然后，then方法指定的回调函数，将在当前脚本所有同步任务执行完才会执行，所以resolved最后输出。
+Promise 新建后立即执行，所以首先输出的是 Promise。然后，then 方法指定的回调函数，将在当前脚本所有同步任务执行完才会执行，所以 resolved 最后输出。
+
 ```
 let promise = new Promise(function(resolve, reject) {
   console.log('Promise');
@@ -1310,7 +1335,7 @@ console.log('Hi!');
 
 ```
 
-Promise实现ajax
+Promise 实现 ajax
 
 ```
 const getJSON = function(url) {
@@ -1348,8 +1373,8 @@ getJSON("js/data.json").then(function(res) {
 });
 ```
 
-前一个回调函数，有可能返回的还是一个Promise对象，这时后一个回调函数，
-就会等待该promise对象的状态发生变化，才会被调用，否则不会被调用。
+前一个回调函数，有可能返回的还是一个 Promise 对象，这时后一个回调函数，
+就会等待该 promise 对象的状态发生变化，才会被调用，否则不会被调用。
 
 ```
 getJSON("js/data.json").then(function(res) {
@@ -1363,7 +1388,8 @@ getJSON("js/data.json").then(function(res) {
     console.log("error:", error.message);
 });
 ```
-resolve语句后，抛出错误，不会被捕获，等于没有抛出，Promise状态一旦改变，不会再改变。
+
+resolve 语句后，抛出错误，不会被捕获，等于没有抛出，Promise 状态一旦改变，不会再改变。
 
 ```
 const promise = new Promise(function(resolve, reject) {
@@ -1378,7 +1404,7 @@ promise.then(function(value) {
 });
 ```
 
-catch、then中抛出的错误都会一级一级往后冒泡，直到被后面的catch捕获到。
+catch、then 中抛出的错误都会一级一级往后冒泡，直到被后面的 catch 捕获到。
 
 ```
 const promise = function() {
@@ -1401,7 +1427,8 @@ promise()
     });
 ```
 
-p1和p2都是 Promise 的实例，但是p2的resolve方法将p1作为参数，这时p1的状态就会传递给p2，也就是说，p1的状态决定了p2的状态
+p1 和 p2 都是 Promise 的实例，但是 p2 的 resolve 方法将 p1 作为参数，这时 p1 的状态就会传递给 p2，也就是说，p1 的状态决定了 p2 的状态
+
 ```
 const p1 = new Promise(function(resolve, reject) {
     setTimeout(function() {
@@ -1430,10 +1457,9 @@ p2.then(function(res) {
 
 ---
 
-#### ES6之Promise
+#### ES6 之 Promise
 
-立即resolved的Promise是在本轮事件循环的末尾执行，总是晚于本轮循环的同步任务
-
+立即 resolved 的 Promise 是在本轮事件循环的末尾执行，总是晚于本轮循环的同步任务
 
 ```
 new Promise((resolve, reject) => {
@@ -1446,9 +1472,8 @@ new Promise((resolve, reject) => {
 // 1
 ```
 
-所有Promise实例的状态都变成fulfilled，Promise.all状态才会变成fulfiled
-只要有一个别被rejected，Promise.all状态就变成rejected
-
+所有 Promise 实例的状态都变成 fulfilled，Promise.all 状态才会变成 fulfiled
+只要有一个别被 rejected，Promise.all 状态就变成 rejected
 
 ```
 let getJSON = function(url) {
@@ -1481,7 +1506,7 @@ Promise.all([getJSON("data/data1.json"), getJSON("data/data2.json")])
 });
 ```
 
-其中一个实例状态率先发生改变，Promise.race的状态就跟着改变，这个率先改变实例的返回值作为回调入参
+其中一个实例状态率先发生改变，Promise.race 的状态就跟着改变，这个率先改变实例的返回值作为回调入参
 
 ```
 Promise.race([fetch("data/data1.json"), fetch("data/data2.json")])
@@ -1493,7 +1518,7 @@ Promise.race([fetch("data/data1.json"), fetch("data/data2.json")])
 });
 ```
 
-立即resolve得Promise对象，是本轮“事件循环”得结束时，而不是下一轮“事件循环”的开始
+立即 resolve 得 Promise 对象，是本轮“事件循环”得结束时，而不是下一轮“事件循环”的开始
 
 ```
 setTimeout(() => {
@@ -1511,7 +1536,7 @@ console.log("one");
 // three
 ```
 
-Promise.reject()方法的参数，会原封不动地作为reject的理由，变成后续方法的参数
+Promise.reject()方法的参数，会原封不动地作为 reject 的理由，变成后续方法的参数
 
 ```
 const thenable = {
@@ -1538,14 +1563,16 @@ Promise.prototype.done = function(fulfiled, rejected) {
 
 Promise.reject().done();
 ```
+
 —— 2017/12/22
 
 ---
-#### ES6之Iterator和for...of循环
+
+#### ES6 之 Iterator 和 for...of 循环
 
 遍历器（Iterator）就是这样一种机制。它是一种接口，为各种不同的数据结构提供统一的访问机制。任何数据结构只要部署 Iterator 接口，就可以完成遍历操作（即依次处理该数据结构的所有成员）。
 
-模拟next方法
+模拟 next 方法
 
 ```
 var it = makeIterator(['a', 'b']);
@@ -1565,7 +1592,8 @@ function makeIterator(array) {
   };
 }
 ```
-解构、拓展运算符都会默认调用iterator接口
+
+解构、拓展运算符都会默认调用 iterator 接口
 覆盖原生遍历器
 
 ```
@@ -1591,7 +1619,7 @@ str[Symbol.iterator] = function() {
 console.log([...str]); // ["wuwh"]
 ```
 
-yield*后面跟的是一个可遍历的结构，它会调用该结构的遍历器接口。
+yield\*后面跟的是一个可遍历的结构，它会调用该结构的遍历器接口。
 
 ```
 let generator = function* () {
@@ -1609,12 +1637,12 @@ console.log(iterator.next());
 console.log(iterator.next());
 ```
 
-> 一个数据结构只要部署了Symbol.iterator属性，就被视为具有iterator接口，就可以用
-for...of循环遍历它的成员.也就是说,for...of循环内部调用的是数据结构的Symbol.iterator方法
-for...of循环可以使用的范围包括数组,Set和Map结构,某些类型的数组的对象(arguments对象,DOM NodeList对象)
-Generator对象以及字符串
+> 一个数据结构只要部署了 Symbol.iterator 属性，就被视为具有 iterator 接口，就可以用
+> for...of 循环遍历它的成员.也就是说,for...of 循环内部调用的是数据结构的 Symbol.iterator 方法
+> for...of 循环可以使用的范围包括数组,Set 和 Map 结构,某些类型的数组的对象(arguments 对象,DOM NodeList 对象)
+> Generator 对象以及字符串
 
-DOM NodeList对象部署了iterator接口
+DOM NodeList 对象部署了 iterator 接口
 
 ```
 let ps = document.querySelectorAll("p");
@@ -1623,14 +1651,16 @@ for(let p of ps) {
     console.log(p);
 }
 ```
-for...of能正确识别32位UTF-16字符
+
+for...of 能正确识别 32 位 UTF-16 字符
 
 ```
 for(let x of "\a\uD83D\uDC0A") {
     console.log(x);
 }
 ```
-并不是所有类似数组的对象都具有iterator接口
+
+并不是所有类似数组的对象都具有 iterator 接口
 
 ```
 let arrayLike = {
@@ -1646,7 +1676,7 @@ for(let x of arrayLike) {
 console.log(Array.from(arrayLike));
 ```
 
-forEach 缺点:break或return不奏效
+forEach 缺点:break 或 return 不奏效
 
 ```
 let arr = [1, 2, 3];
@@ -1660,9 +1690,9 @@ arr.forEach(function(item) {
 
 ---
 
-#### ES6之Generator
+#### ES6 之 Generator
 
-Generator函数调用并不执行,返回的也不是函数运行的结果,而是一个指向内部状态的指针对象,也就是遍历器对象。
+Generator 函数调用并不执行,返回的也不是函数运行的结果,而是一个指向内部状态的指针对象,也就是遍历器对象。
 
 ```
 function * helloWorldGenerator() {
@@ -1678,9 +1708,10 @@ console.log(hw.next()); // {value: "world", done: false}
 console.log(hw.next()); // {value: "ending", done: false}
 console.log(hw.next()); // {value: undefined, done: true}
 ```
-yield表达式只能用在 Generator 函数里面，用在其他地方都会报错
 
-yield表达式在另个一表达式中，必须放在圆括号里面。放在函数参数或放到赋值表达式的右边，可以不加括号。
+yield 表达式只能用在 Generator 函数里面，用在其他地方都会报错
+
+yield 表达式在另个一表达式中，必须放在圆括号里面。放在函数参数或放到赋值表达式的右边，可以不加括号。
 
 ```
 function foo() {}
@@ -1698,9 +1729,9 @@ console.log("f.next():", f.next());
 console.log("f.next():", f.next());
 ```
 
-任意一个对象的Symbol.iterator方法，等于该对象的遍历器生成函数，调用该函数会返回该对象的一个遍历器对象。
+任意一个对象的 Symbol.iterator 方法，等于该对象的遍历器生成函数，调用该函数会返回该对象的一个遍历器对象。
 
-由于Generator函数就是遍历器生成函数，依次可以把Generator赋值给对象的Symbol.iterator,从而使得该对象具有Interator接口。
+由于 Generator 函数就是遍历器生成函数，依次可以把 Generator 赋值给对象的 Symbol.iterator,从而使得该对象具有 Interator 接口。
 
 ```
 let myIterable = {};
@@ -1711,7 +1742,8 @@ myIterable[Symbol.iterator] = function* () {
 };
 console.log([...myIterable]); // [1, 2, 3]
 ```
-Generator函数执行后，返回一个遍历器对象。该对象本身也具有Symbol.iterator属性，执行后返回自身。
+
+Generator 函数执行后，返回一个遍历器对象。该对象本身也具有 Symbol.iterator 属性，执行后返回自身。
 
 ```
 function* gen() {}
@@ -1721,7 +1753,7 @@ let g = gen();
 console.log( g[Symbol.iterator]() === g ); // true
 ```
 
-yield表达式本身没有返回值，或者说总是返回undefined。next方法可以带一个参数，该参数就会被当作上一个yield表达式的返回值。
+yield 表达式本身没有返回值，或者说总是返回 undefined。next 方法可以带一个参数，该参数就会被当作上一个 yield 表达式的返回值。
 
 ```
 function* foo(x) {
@@ -1740,6 +1772,7 @@ console.log(b.next());  // {value: 6, done: false}
 console.log(b.next(3)); // {value: 2, done: false}
 console.log(b.next(6)); // {value: 17, done: true}
 ```
+
 遍历斐波拉契数列
 
 ```
@@ -1755,7 +1788,8 @@ for(let n of fibonacci(100)) {
     console.log(n);
 }
 ```
-原生对象没有iterator接口，无法用for...of遍历，可以通过Generator函数加上遍历接口。
+
+原生对象没有 iterator 接口，无法用 for...of 遍历，可以通过 Generator 函数加上遍历接口。
 
 ```
 function* objectEntries(obj) {
@@ -1771,7 +1805,8 @@ for(let [key, value] of objectEntries(o)) {
     console.log(`${key}: ${value}`);
 }
 ```
-扩展运算符、解构赋值和Array.from方法内部调用都是遍历器接口。
+
+扩展运算符、解构赋值和 Array.from 方法内部调用都是遍历器接口。
 
 ```
 function* numbers() {
@@ -1792,9 +1827,10 @@ console.log(Array.from(numbers()));
 let [x, y] = numbers();
 console.log(x, y);
 ```
-在Generator函数内部，调用另一个Generator函数，默认情况下是没有效果的。
 
-yield* 后面的Generator函数（没有return语句时），等同于在Generator内部部署了一个for...of函数。
+在 Generator 函数内部，调用另一个 Generator 函数，默认情况下是没有效果的。
+
+yield\* 后面的 Generator 函数（没有 return 语句时），等同于在 Generator 内部部署了一个 for...of 函数。
 
 ```
 function* foo() {
@@ -1813,7 +1849,7 @@ for(let v of bar()) {
 }
 ```
 
-被代理的Generator函数有return语句，那么就可以向代理它的Generator函数返回数据。
+被代理的 Generator 函数有 return 语句，那么就可以向代理它的 Generator 函数返回数据。
 
 ```
 function* foo() {
@@ -1838,7 +1874,8 @@ console.log(it.next()); // v:  foo
 console.log(it.next()); // {value: 4, done: false}
 console.log(it.next()); // { value: undefined, done: true }
 ```
-将Generator函数内部this指向它的原型上，可以new命令。
+
+将 Generator 函数内部 this 指向它的原型上，可以 new 命令。
 
 ```
 function* gen() {
@@ -1862,7 +1899,8 @@ console.log(f.a); // 1
 console.log(f.b); // 2
 console.log(f.c); // 3
 ```
-return 方法返回给定的值，并且终结遍历Generator函数。
+
+return 方法返回给定的值，并且终结遍历 Generator 函数。
 
 ```
 function* gen() {
@@ -1878,8 +1916,8 @@ g.return("foo");
 console.log(g.next());
 ```
 
-Generator函数内部没有部署try...catch，那么throw抛出的错误，被外部try...catch捕获。
-Generator函数内部和外部，都没有部署try...catch，程序将会报错，中断执行。
+Generator 函数内部没有部署 try...catch，那么 throw 抛出的错误，被外部 try...catch 捕获。
+Generator 函数内部和外部，都没有部署 try...catch，程序将会报错，中断执行。
 
 ```
 function* gen() {
@@ -1910,7 +1948,8 @@ catch (e) {
     console.log("外部捕获", e);
 }
 ```
-next()、throw()、return()这三个方法本质时同一件事，可以放在一起理解。它们的作用都是让Generator函数恢复执行，并且使用不同的语句替换yield表达式。
+
+next()、throw()、return()这三个方法本质时同一件事，可以放在一起理解。它们的作用都是让 Generator 函数恢复执行，并且使用不同的语句替换 yield 表达式。
 
 ```
 function* gen(x, y) {
@@ -1935,9 +1974,9 @@ console.log(g.return(2));
 
 ---
 
-#### ES6之Generator函数的异步应用
+#### ES6 之 Generator 函数的异步应用
 
-对于多个异步操作，要等到上一个操作完才执行下一个，这时候就需要封装一个，Generator函数自动执行器。
+对于多个异步操作，要等到上一个操作完才执行下一个，这时候就需要封装一个，Generator 函数自动执行器。
 
 ```
 function run(fn) {
@@ -1961,9 +2000,10 @@ function* gen() {
 
 run(gen);
 ```
+
 回调函数。将异步操作包装成 Thunk 函数，在回调函数里面交回执行权。
 
-Promise 对象。将异步操作包装成 Promise 对象，用then方法交回执行权。
+Promise 对象。将异步操作包装成 Promise 对象，用 then 方法交回执行权。
 
 ```
 // co函数源码
@@ -2020,6 +2060,7 @@ class Point {
 ```
 
 类的数据类型就是函数
+
 ```
 console.log(typeof Point); // function
 ```
@@ -2030,15 +2071,17 @@ console.log(typeof Point); // function
 console.log(Point === Point.prototype.constructor); // true
 ```
 
-直接对类使用new命令
+直接对类使用 new 命令
 
 ```
 let p = new Point(1, 2);
 console.log(p.toString()); // (1, 2)
 ```
-x和y都是对象point自身的属性（定义在this变量上），toString是原型对象的属性（定义在Point类上）
+
+x 和 y 都是对象 point 自身的属性（定义在 this 变量上），toString 是原型对象的属性（定义在 Point 类上）
 
 实例上调用的方法，就是调用原型上的方法
+
 ```
 console.log(p.toString === Point.prototype.toString); // true
 ```
@@ -2053,6 +2096,7 @@ Reflect.getPrototypeOf(p).getX = function() {
 let p1 = new Point(3, 4);
 p1.getX(); // 3 */
 ```
+
 类的属性名，可以采用表达式
 
 ```
@@ -2071,7 +2115,8 @@ class Square {
 let sq = new Square();
 sq.getArea(); // get area...
 ```
-类中没有定义constructor方法，js引擎会自动为它添加一个空的constructor方法，constructor方法默认返回实例对象，也可以指定返回另一个对象
+
+类中没有定义 constructor 方法，js 引擎会自动为它添加一个空的 constructor 方法，constructor 方法默认返回实例对象，也可以指定返回另一个对象
 
 ```
 class Foo {
@@ -2082,7 +2127,8 @@ class Foo {
 
 console.log(new Foo() instanceof Foo); // false
 ```
-用表达式表示一个类，类的名称是MyClass，Me只在Class内部代码可用，指代当前类，如果内部没有使用到的话，可以省略Me
+
+用表达式表示一个类，类的名称是 MyClass，Me 只在 Class 内部代码可用，指代当前类，如果内部没有使用到的话，可以省略 Me
 
 ```
 const MyClass = class Me {
@@ -2103,14 +2149,15 @@ console.log(inst.getClassName()); // Me
 let inst1 = new Me(); // Uncaught ReferenceError: Me is not defined
 console.log(inst1.getClassName());
 ```
-在类的内部使用get和set关键字，对某个属性设置存值函数和取值函数，拦截该属性的存取行为
+
+在类的内部使用 get 和 set 关键字，对某个属性设置存值函数和取值函数，拦截该属性的存取行为
 
 ```
 inst.prop = 123; // setter:123
 console.log(inst.prop); // getter
 ```
 
-for...of循环自动调用遍历器
+for...of 循环自动调用遍历器
 
 ```
 class Foo {
@@ -2149,33 +2196,36 @@ for(let x of new Foo("hello", "world")) {
 }
 ```
 
-所有类中定义的方法，都会被实例继承，如果在一个方法前，加上static关键字，就表示该方法不会被实例继承，而是直接通过类来调用，成为“静态方法”。
+所有类中定义的方法，都会被实例继承，如果在一个方法前，加上 static 关键字，就表示该方法不会被实例继承，而是直接通过类来调用，成为“静态方法”。
 
-静态方法中的this指向Foo类，而不是实例。静态方法可以与非静态方法重名
+静态方法中的 this 指向 Foo 类，而不是实例。静态方法可以与非静态方法重名
 
 ```
 console.log(Foo.sayHi()); // hi
 console.log(new Foo().sayHi()); //Uncaught TypeError: (intermediate value).sayHi is not a function
 ```
+
 父类的静态方法可以被子类继承
 
 ```
 console.log(Bar.sayHi()); // hi
 ```
-静态方法可以从super对象上调用
+
+静态方法可以从 super 对象上调用
 
 ```
 console.log(Bar.childSayHi()); // hi child
 ```
-子类继承父类时，new.target会返回子类
+
+子类继承父类时，new.target 会返回子类
 
 ```
 console.log(new Bar()); // false
 ```
 
-#### ES6之Class的继承
+#### ES6 之 Class 的继承
 
-子类必须在constructor方法中调用super方法，否则新建实例时会报错，如果子类没有定义constructor方法，这个方法会被默认添加。在子类构造函数中，只有调用super之后，才可以使用this关键字，否则报错。
+子类必须在 constructor 方法中调用 super 方法，否则新建实例时会报错，如果子类没有定义 constructor 方法，这个方法会被默认添加。在子类构造函数中，只有调用 super 之后，才可以使用 this 关键字，否则报错。
 
 ```
 class ColorPaint extends Point {
@@ -2192,7 +2242,7 @@ console.log(cp instanceof ColorPaint); // true
 console.log(Reflect.getPrototypeOf(ColorPaint) === Point); // true
 ```
 
-super虽然代表了父类A的构造函数，但是返回的是子类B的实例，即super内部this指的是B。
+super 虽然代表了父类 A 的构造函数，但是返回的是子类 B 的实例，即 super 内部 this 指的是 B。
 
 ```
 class A {
@@ -2211,7 +2261,7 @@ new A(); // A
 new B(); // B
 ```
 
-super作为对象时，在普通方法中，指向父类的原型对象；在静态方法中指向父类。
+super 作为对象时，在普通方法中，指向父类的原型对象；在静态方法中指向父类。
 
 ```
 class A {
@@ -2229,7 +2279,8 @@ class B extends A {
 
 let b = new B();
 ```
-ES6规定，通过调用父类方法时，方法内部的this指向子类。
+
+ES6 规定，通过调用父类方法时，方法内部的 this 指向子类。
 
 ```
 class A {
@@ -2255,7 +2306,8 @@ class B extends A {
 let b = new B();
 b.m(); // 2
 ```
-如果super作为对象，用在静态方法中，这时super将指向父类，而不是父类原型对象。
+
+如果 super 作为对象，用在静态方法中，这时 super 将指向父类，而不是父类原型对象。
 
 ```
 class Parent {
@@ -2294,7 +2346,8 @@ class B extends A { }
 console.log(B.__proto__ === A); // true
 console.log(B.prototype.__proto__ === A.prototype); // true
 ```
-A作为一个基类，就是一个普通函数，所以直接继承Funtion.prototype，A调用后返回一个空对象，所以，A.prototype.__proto__指向构造函数的prototype属性。
+
+A 作为一个基类，就是一个普通函数，所以直接继承 Funtion.prototype，A 调用后返回一个空对象，所以，A.prototype.**proto**指向构造函数的 prototype 属性。
 
 ```
 class A { }
@@ -2302,6 +2355,7 @@ class A { }
 console.log(A.__proto__ === Function.prototype); // true
 console.log(A.prototype.__proto__ === Object.prototype); // true
 ```
+
 原生构造函数可以被继承
 
 ```
@@ -2332,10 +2386,11 @@ x.push(3);
 console.log(x.history);
 ```
 
-#### ES6之Module
+#### ES6 之 Module
+
 **export**
 
-通常情况下，export输出的变量就是本来的名字，但是也可以使用as关键字重命名。
+通常情况下，export 输出的变量就是本来的名字，但是也可以使用 as 关键字重命名。
 
 ```
 function v1() {}
@@ -2347,7 +2402,7 @@ export {
 }
 ```
 
-export命令规定是对外接口，必须与模块内部变量建立一一对应关系。
+export 命令规定是对外接口，必须与模块内部变量建立一一对应关系。
 
 ```
 // 变量写法一
@@ -2369,23 +2424,26 @@ function f() {}
 export {f};
 
 ```
-export语句输出的接口，与其对应的值是动态绑定关系
+
+export 语句输出的接口，与其对应的值是动态绑定关系
 
 ```
 export var foo = 'bar';
 setTimeout(() => foo = 'baz', 500);
 ```
+
 **import**
-import命令具有提升效果，会提升到整个模块的头部，首先执行。
+import 命令具有提升效果，会提升到整个模块的头部，首先执行。
 
 ```
 foo();
 
 import { foo } from 'my_module';
 ```
-目前阶段，通过 Babel 转码，CommonJS 模块的require命令和 ES6 模块的import命令，可以写在同一个模块里面，但是最好不要这样做。因为import在静态解析阶段执行，所以它是一个模块之中最早执行的。
 
-注意，模块整体加载所在的那个对象（上例是circle），应该是可以静态分析的，所以不允许运行时改变。下面的写法都是不允许的。
+目前阶段，通过 Babel 转码，CommonJS 模块的 require 命令和 ES6 模块的 import 命令，可以写在同一个模块里面，但是最好不要这样做。因为 import 在静态解析阶段执行，所以它是一个模块之中最早执行的。
+
+注意，模块整体加载所在的那个对象（上例是 circle），应该是可以静态分析的，所以不允许运行时改变。下面的写法都是不允许的。
 
 ```
 import * as circle from './circle';
@@ -2395,9 +2453,9 @@ circle.foo = 'hello';
 circle.area = function () {};
 ```
 
-export default命令为模块指定默认输出。其他模块加载该模块时，import命令可以为该匿名函数指定任意名字。
+export default 命令为模块指定默认输出。其他模块加载该模块时，import 命令可以为该匿名函数指定任意名字。
 
-第一组是使用export default时，对应的import语句不需要使用大括号；第二组是不使用export default时，对应的import语句需要使用大括号。
+第一组是使用 export default 时，对应的 import 语句不需要使用大括号；第二组是不使用 export default 时，对应的 import 语句需要使用大括号。
 
 ```
 // 第一组
@@ -2418,25 +2476,28 @@ import {crc32} from 'crc32'; // 输入
 —— 2017/12/28
 
 ---
-#### ES6之Module加载
+
+#### ES6 之 Module 加载
+
 ES6 模块与 CommonJS 模块之间的差异：
+
 1. CommonJS 模块输出的是一个值的拷贝，ES6 模块输出的是值的引用。
 2. CommonJS 模块是运行时加载，ES6 模块是编译时输出接口。
 
-#### ES6之编程风格
-1. 在let和const之间，建议优先使用const，尤其是在全局环境，不应该设置变量，只应设置常量。
-2.  所有的函数都应该设置为常量。
-3.  静态字符串一律使用单引号或反引号，不使用双引号。动态字符串使用反引号。
-4.  箭头函数取代Function.prototype.bind，不应再用 self/_this/that 绑定 this。
-5.  注意区分 Object 和 Map，只有模拟现实世界的实体对象时，才使用 Object。如果只是需要key: value的数据结构，使用 Map 结构。因为 Map 有内建的遍历机制。
-6.  如果模块只有一个输出值，就使用export default，如果模块有多个输出值，就不使用export default，export default与普通的export不要同时使用。
+#### ES6 之编程风格
 
+1. 在 let 和 const 之间，建议优先使用 const，尤其是在全局环境，不应该设置变量，只应设置常量。
+2. 所有的函数都应该设置为常量。
+3. 静态字符串一律使用单引号或反引号，不使用双引号。动态字符串使用反引号。
+4. 箭头函数取代 Function.prototype.bind，不应再用 self/\_this/that 绑定 this。
+5. 注意区分 Object 和 Map，只有模拟现实世界的实体对象时，才使用 Object。如果只是需要 key: value 的数据结构，使用 Map 结构。因为 Map 有内建的遍历机制。
+6. 如果模块只有一个输出值，就使用 export default，如果模块有多个输出值，就不使用 export default，export default 与普通的 export 不要同时使用。
 
 —— 2017/12/28
 
 ---
 
-#### ES6之数组
+#### ES6 之数组
 
 复制数组
 
@@ -2447,9 +2508,11 @@ const [...a2] = a1;
 a2[0] = 2;
 console.log('a1:', a1); // [1, 2]
 ```
-拓展运算符值会部署了iterator接口的对象转化为数组，包括字符串、Set、Map、generator函数、数组、NodeList等
 
-类似数组的对象（array-like object）和可遍历（iterable）的对象可用Array.from方法转化
+拓展运算符值会部署了 iterator 接口的对象转化为数组，包括字符串、Set、Map、generator 函数、数组、NodeList 等
+
+类似数组的对象（array-like object）和可遍历（iterable）的对象可用 Array.from 方法转化
+
 ```
 let arrayLike = {
     '0': 'a',
@@ -2458,40 +2521,47 @@ let arrayLike = {
 };
 console.log(Array.from(arrayLike)); // ["a"]
 ```
-Array.from还可以接受第二个参数，作用类似于数组的map方法，用来对每个元素进行处理，将处理后的值放入返回的数组。
+
+Array.from 还可以接受第二个参数，作用类似于数组的 map 方法，用来对每个元素进行处理，将处理后的值放入返回的数组。
 
 ```
 console.log(Array.from(arrayLike, x => x.repeat(2)));
 ```
-Array.of方法用于将一组值，转化为数组
+
+Array.of 方法用于将一组值，转化为数组
 
 ```
 console.log(Array.of(3, 10, 9));
 console.log(Array.of());
 ```
+
 将指定位置的成员复制到其他位置
 
 ```
 console.log([1, 2, 3, 4, 5].copyWithin(0, 3, 4)); // [4, 2, 3, 4, 5]
 ```
-find找出第一个符合条件数组成员，
-findIndex找出第一个符合条件数组成员索引
+
+find 找出第一个符合条件数组成员，
+findIndex 找出第一个符合条件数组成员索引
 
 ```
 let f = [1, 3, 5, 7].find(n => n > 3);
 console.log(f);
 ```
-fill填充数组
+
+fill 填充数组
 
 ```
 console.log(new Array(3).fill(6));
 ```
-fill方法还可以接受第二个和第三个参数，用于指定填充的起始位置和结束位置。
+
+fill 方法还可以接受第二个和第三个参数，用于指定填充的起始位置和结束位置。
 
 ```
 console.log([1, 2, 3, 4].fill('a', 1, 4)); // [1, "a", "a", "a"]
 ```
-include表示某个数组是否包含给定的值第二个参数表示搜索的起始位置
+
+include 表示某个数组是否包含给定的值第二个参数表示搜索的起始位置
 
 ```
 console.log([1, 2, 3, NaN].includes(NaN)); //true
@@ -2531,8 +2601,10 @@ console.log(new Array(3).fill('a')); // ["a", "a", "a"]
 
 // entries() 、keys() 、values() 、find()和findIndex()会将空位处理成undefined。
 ```
-#### ES6之String
-codePointAt 方法在第一个字符上，正确地识别了“𠮷”，返回了它的十进制码点 134071（即十六进制的20BB7）。在第二个字符（即“𠮷”的后两个字节）和第三个字符“a”上，codePointAt方法的结果与charCodeAt方法相同。
+
+#### ES6 之 String
+
+codePointAt 方法在第一个字符上，正确地识别了“𠮷”，返回了它的十进制码点 134071（即十六进制的 20BB7）。在第二个字符（即“𠮷”的后两个字节）和第三个字符“a”上，codePointAt 方法的结果与 charCodeAt 方法相同。
 
 ```
 let s = '𠮷';
@@ -2552,7 +2624,8 @@ for(let t of text) {
     console.log(t);
 }
 ```
-endsWith的行为与其他两个方法有所不同，它针对前n个字符，而其他两个方法针对从第n个位置直到字符串结束。
+
+endsWith 的行为与其他两个方法有所不同，它针对前 n 个字符，而其他两个方法针对从第 n 个位置直到字符串结束。
 
 ```
 let str = 'Hello world';
@@ -2560,6 +2633,7 @@ console.log(str.startsWith('llo', 2)); // true
 console.log(str.endsWith('d', 11)); // true
 console.log(str.includes('wo', 1)); // true
 ```
+
 repeat()
 
 ```
@@ -2570,6 +2644,7 @@ console.log('y'.repeat(-0.1)); // ""
 // 非数字，转化成数字
 console.log('z'.repeat('z')); // ""
 ```
+
 padStart() padEnd()
 
 ```
@@ -2586,6 +2661,7 @@ console.log('xxx'.padStart(5)); // "  xxx"
 
 console.log('12'.padStart(10, 'YYYY-MM-DD')); // "YYYY-MM-12"
 ```
+
 模板字符串里可以嵌套
 
 ```
@@ -2613,6 +2689,7 @@ console.log(temp(data));
 
 $body.innerHTML= temp(data);
 ```
+
 执行一段字符串
 
 ```
@@ -2621,6 +2698,7 @@ let func = new Function('name', str);
 console.log(func);
 console.log(func('wuwh'));
 ```
+
 标签模板
 
 ```
@@ -2644,7 +2722,7 @@ let str = passthru`My name is ${name}, I am ${age} old`; // tag函数调用
 console.log(str);
 ```
 
-tag函数的第一个参数strings，有一个raw属性，也指向一个数组
+tag 函数的第一个参数 strings，有一个 raw 属性，也指向一个数组
 
 ```
 tag`abc\nefg`;
@@ -2657,12 +2735,12 @@ function tag(str) {
 console.log(String.raw`abc\nefg`);
 ```
 
-
 —— 2018/1/3
 
 ---
 
-#### ES6之Object
+#### ES6 之 Object
+
 把表达式放到方括号里，作为对象的属性名
 
 ```
@@ -2673,6 +2751,7 @@ let obj = {
 };
 console.log(obj.ab); // "ab"
 ```
+
 把表达式放到方括号里，作为对象下的方法名
 
 ```
@@ -2683,6 +2762,7 @@ let obj = {
 };
 console.log(obj.hello()); // "hi"
 ```
+
 属性名表达式如果是一个对象，默认情况下会自动转化为字符串[object Object]
 
 ```
@@ -2692,7 +2772,8 @@ const obj = {
 };
 console.log(obj);
 ```
-getter和setter函数name属性在该方法的属性描述对象的get和set属性上面
+
+getter 和 setter 函数 name 属性在该方法的属性描述对象的 get 和 set 属性上面
 
 ```
 const obj = {
@@ -2704,23 +2785,27 @@ const descriptor = Object.getOwnPropertyDescriptor(obj, 'foo');
 console.log(descriptor.get.name); // "foo"
 console.log(descriptor.set.name); // "foo"
 ```
-Function构造函数创造的函数，name属性返回anonymous
+
+Function 构造函数创造的函数，name 属性返回 anonymous
 
 ```
 console.log((new Function()).name); // anonymous
 ```
-bind方法创造的函数，name属性返回bound加上原函数的名字
+
+bind 方法创造的函数，name 属性返回 bound 加上原函数的名字
 
 ```
 let doSomething = function() {};
 console.log(doSomething.bind().name); // bound doSomething
 ```
-Object.is() 同值相等 不同于运算符（===），一是+0不等于-0，二是NaN等于自身
+
+Object.is() 同值相等 不同于运算符（===），一是+0 不等于-0，二是 NaN 等于自身
 
 ```
 console.log(Object.is(+0, -0)); // false
 console.log(Object.is(NaN, NaN)); // true
 ```
+
 assign
 
 ```
@@ -2752,18 +2837,20 @@ const target = {};
 console.log( Object.assign(target, source) ); // {foo: 1}
 ```
 
-ES6规定，所有class的原型方法都是不可枚举的
+ES6 规定，所有 class 的原型方法都是不可枚举的
 
 ```
 let cd = Object.getOwnPropertyDescriptor(class { foo() { } }.prototype, 'foo').enumerable;
 console.log(cd); // false
 ```
-Reflect.ownKeys遍历对象属性类型顺序 数字 -> 字符串 -> Symbol
+
+Reflect.ownKeys 遍历对象属性类型顺序 数字 -> 字符串 -> Symbol
 
 ```
 console.log(Reflect.ownKeys({ [Symbol()]: 0, a: 1, 0: 2 })); // ["0", "a", Symbol()]
 ```
-ES2017 引入了Object.getOwnPropertyDescriptors方法，返回指定对象所有自身属性（非继承属性）的描述对象
+
+ES2017 引入了 Object.getOwnPropertyDescriptors 方法，返回指定对象所有自身属性（非继承属性）的描述对象
 
 ```
 const obj = {
@@ -2774,7 +2861,8 @@ const obj = {
 
 console.log(Object.getOwnPropertyDescriptors(obj));
 ```
-getOwnPropertyDescriptors可应用于将两个对象合并，包括set和get
+
+getOwnPropertyDescriptors 可应用于将两个对象合并，包括 set 和 get
 
 ```
 const shallowMerge = (target, source) => Object.defineProperties(
@@ -2784,7 +2872,8 @@ const shallowMerge = (target, source) => Object.defineProperties(
 
 console.log(shallowMerge({}, { set foo(val) { console.log(val) } }));
 ```
-对象上部署__proto__属性，一下三种方法都能达到效果
+
+对象上部署**proto**属性，一下三种方法都能达到效果
 
 ```
 let prot = {};
@@ -2811,7 +2900,8 @@ console.log('obj1:', obj1);
 console.log('obj2:', obj2);
 console.log('obj3:', obj3);
 ```
-super关键字表示原型对象时，只能用在对象的方法之中，用在其他地方都会报错，super等价于Object.getPrototypeOf(this)
+
+super 关键字表示原型对象时，只能用在对象的方法之中，用在其他地方都会报错，super 等价于 Object.getPrototypeOf(this)
 
 ```
 const obj = {
@@ -2855,11 +2945,9 @@ console.log(y); // undefined
 console.log(z); // 3
 ```
 
-
 —— 2018/1/4
 
 ---
-
 
 ```
 {
@@ -2874,7 +2962,6 @@ console.log(z); // 3
 }
 ```
 
-
 ```
 // 指定默认值后，函数的length属性将失真
 console.log((function (a, b, c = 5) { }).length); // 2
@@ -2883,12 +2970,14 @@ console.log((function (...rest) { }).length); // 0
 // 设置了默认值的参数不是尾参数，那么length属性也不再计入后面的参数了
 console.log((function (a = 5, b, c) { }).length); // 0
 ```
+
 —— 2018/1/5
 
 ---
 
-#### ES6之function
-箭头函数不能当作构造函数，原因在于箭头函数内部没有this，而是引用外层的this
+#### ES6 之 function
+
+箭头函数不能当作构造函数，原因在于箭头函数内部没有 this，而是引用外层的 this
 
 ```
 let Fn = () => {
@@ -2897,6 +2986,7 @@ let Fn = () => {
 
 let fn = new Fn(); // Uncaught TypeError: Fn is not a constructor
 ```
+
 箭头函数不能用作 Generator 函数
 
 ```
@@ -2906,7 +2996,8 @@ let g = function* () => {
 
 console.log( g().next() ); // Uncaught SyntaxError: Unexpected token =>
 ```
-箭头函数没有自己的this，所以bind方法无效，内部的this指向外部的this
+
+箭头函数没有自己的 this，所以 bind 方法无效，内部的 this 指向外部的 this
 
 ```
 let res = (function() {
@@ -2917,6 +3008,7 @@ let res = (function() {
 
 console.log('res:', res); // ["outer"]
 ```
+
 "尾调用优化"意义：函数执行到最后一步，不保留外层函数的调用帧，只会保存内部函数调用帧，这样节省了内存。注意，只有不再用到外层函数内部变量，内层函数的调用帧才会取代外层函数的调用帧，否则无法进行“尾调用优化”。
 
 ```
@@ -2928,6 +3020,7 @@ function addOne(a) {
     return inner(a);
 }
 ```
+
 尾递归的实现，往往需要改写递归函数，确保最后一步只调用自身，做到这一点的方法，就是把所有用到的内部变量改写成函数的参数。
 
 ```
@@ -2956,8 +3049,8 @@ console.log('tailFibonacci 10:', tailFibonacci(10)); // 89
 console.log('tailFibonacci 100:', tailFibonacci(100)); // 573147844013817200000
 ```
 
-ES6之class继承（续）
-继承Object子类，有一个行为差异，ES6改变了Object构造函数的行为，发现不是通过new Object()形式调用，Object构造函数忽略参数
+ES6 之 class 继承（续）
+继承 Object 子类，有一个行为差异，ES6 改变了 Object 构造函数的行为，发现不是通过 new Object()形式调用，Object 构造函数忽略参数
 
 ```
 class NewObj extends Object {
@@ -2969,6 +3062,7 @@ class NewObj extends Object {
 let o = new NewObj({attr: true});
 console.log(o.attr === true); //false
 ```
+
 将多个类的接口“混入”另一个类
 
 ```
@@ -3026,55 +3120,55 @@ console.log(ins.getAddress());
 
 ---
 
-**关于从页面外部加载js文件**
+**关于从页面外部加载 js 文件**
 
-1. 带有src属性```<script>``` 标签之间还包含JavaScript代码，则只会下载并执行外部脚本文件，嵌入的代码会被忽略；
-2. 不存在defer和async属性，浏览器就会按照```<script>```在页面中出现的先后顺序对它们依次进行解析；
-3. ```<script>```有defer属性，浏览器会立刻下载，但延时执行（延时到```</html>```后执行），HTML5规定按照文件出现的先后顺序执行，先于DOMContentLoaded事件执行；
-4. ```<script>```有async属性，浏览器立刻下载，不保证按照先后顺序执行，一定在load事件前执行，但不一定在DOMContentLoaded之前执行；
+1. 带有 src 属性`<script>` 标签之间还包含 JavaScript 代码，则只会下载并执行外部脚本文件，嵌入的代码会被忽略；
+2. 不存在 defer 和 async 属性，浏览器就会按照`<script>`在页面中出现的先后顺序对它们依次进行解析；
+3. `<script>`有 defer 属性，浏览器会立刻下载，但延时执行（延时到`</html>`后执行），HTML5 规定按照文件出现的先后顺序执行，先于 DOMContentLoaded 事件执行；
+4. `<script>`有 async 属性，浏览器立刻下载，不保证按照先后顺序执行，一定在 load 事件前执行，但不一定在 DOMContentLoaded 之前执行；
 
-**重绘repaint与重排reflow**
-重绘：当改变那些不会影响元素在网页中的位置样式时，如background-color，border，visibility，浏览器只会用新的样式将元素重绘一次。
+**重绘 repaint 与重排 reflow**
+重绘：当改变那些不会影响元素在网页中的位置样式时，如 background-color，border，visibility，浏览器只会用新的样式将元素重绘一次。
 重排：当改变影响到文本内容或结构，或者元素位置时，重排就会发生。
 
 —— 2018/1/19
 
 ---
+
 **输入框弹起数字键盘**
 
 ```html
-<input type="tel" novalidate="novalidate" pattern="[0-9]*" id="q2" value="" name="q2" verify="学号">
+<input type="tel" novalidate="novalidate" pattern="[0-9]*" id="q2" value="" name="q2" verify="学号" />
 ```
 
 `type="tel"`
 
-- 优点是iOS和Android的键盘表现都差不多
+- 优点是 iOS 和 Android 的键盘表现都差不多
 - 缺点是那些字母好多余，虽然我没有强迫症但还是感觉怪怪的啊。
 
 `type="number"`
 
-- 优点是Android下实现的一个真正的数字键盘
-- 缺点一：iOS下不是九宫格键盘，输入不方便
-- 缺点二：旧版Android（包括微信所用的X5内核）在输入框后面会有超级鸡肋的小尾巴，好在Android 4.4.4以后给去掉了。
+- 优点是 Android 下实现的一个真正的数字键盘
+- 缺点一：iOS 下不是九宫格键盘，输入不方便
+- 缺点二：旧版 Android（包括微信所用的 X5 内核）在输入框后面会有超级鸡肋的小尾巴，好在 Android 4.4.4 以后给去掉了。
 
-不过对于缺点二，我们可以用webkit私有的伪元素给fix掉：
+不过对于缺点二，我们可以用 webkit 私有的伪元素给 fix 掉：
 
 ```css
-input[type=number]::-webkit-inner-spin-button,
-input[type=number]::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    appearance: none;
-    margin: 0;
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  appearance: none;
+  margin: 0;
 }
 ```
 
 `pattern`
 
-pattern用于验证表单输入的内容，通常HTML5的type属性，比如email、tel、number、data类、url等，已经自带了简单的数据格式验证功能了，加上pattern后，前端部分的验证更加简单高效了。
+pattern 用于验证表单输入的内容，通常 HTML5 的 type 属性，比如 email、tel、number、data 类、url 等，已经自带了简单的数据格式验证功能了，加上 pattern 后，前端部分的验证更加简单高效了。
 
 ``
 
 `novalidate`
 
-novalidate 属性规定当提交表单时不对其进行验证。
----
+## novalidate 属性规定当提交表单时不对其进行验证。

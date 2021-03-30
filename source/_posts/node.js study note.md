@@ -5,9 +5,9 @@ tags: nodejs
 categories: nodejs
 ---
 
-**node内部对模块输出module.exports的实现**
+**node 内部对模块输出 module.exports 的实现**
 
-变量module是Node在加载js文件前准备的一个变量，并将其传入加载函数
+变量 module 是 Node 在加载 js 文件前准备的一个变量，并将其传入加载函数
 
 ```
 // 准备module对象
@@ -34,7 +34,7 @@ var exported = load(module);
 save(module, exported);
 ```
 
-默认情况下，Node准备的exports变量和module.exports变量实际上是同一个变量，所以一下两种写法都支持
+默认情况下，Node 准备的 exports 变量和 module.exports 变量实际上是同一个变量，所以一下两种写法都支持
 
 ```
 // method 1
@@ -55,6 +55,7 @@ exports.bar = bar;
 **process**
 
 下一轮事件循环 回调
+
 ```
 process.nextTick(function() {
     console.log('nextTick callback');
@@ -70,6 +71,7 @@ process.on('exit', function(code) {
 
 console.log('nextTick set');
 ```
+
 **readFile/readFileSync writeFile/writeFileSync stat**
 
 异步读取一个文本文件
@@ -85,6 +87,7 @@ fs.readFile('./hello.js', 'utf-8', function(err, data) {
     }
 });
 ```
+
 异步读取一个二进制文件
 
 ```
@@ -102,7 +105,8 @@ fs.readFile('1.jpg', function(err, data) {
     }
 });
 ```
-同步读取一个文件直接返回，读取错误用try...catch捕获
+
+同步读取一个文件直接返回，读取错误用 try...catch 捕获
 
 ```
 try {
@@ -115,7 +119,8 @@ catch(err) {
 
 console.log('readFileSync ended');
 ```
-异步写入一个文件，默认是以UTF-8编码写入文本文件
+
+异步写入一个文件，默认是以 UTF-8 编码写入文本文件
 
 ```
 var data = 'Hello,Node.js';
@@ -129,6 +134,7 @@ fs.writeFile('output.txt', data, function(err) {
     }
 });
 ```
+
 同步写入文本到一个文件
 
 ```
@@ -136,6 +142,7 @@ var data = 'Hello,Node.js,I am sync data';
 fs.writeFileSync('output.txt', data);
 console.log('writeFileSync ended');
 ```
+
 获取文件信息
 
 ```
@@ -160,12 +167,13 @@ fs.stat('./1.jpg', function(err, stat) {
     }
 });
 ```
+
 PS:绝大部分需要在服务器运行期反复执行业务逻辑，必须使用异步代码服务器启动时如果需要读取配置文件，或者结束时需要写入到状态文件时，可以使用同步代码
 
 **createReadStream createWriteStream pipe**
 
-在node.js中，流也是一个对象，我们只需要响应流的事件就可以了。
-data事件表示流的数据已经可以读取了，end事件表示这个流已经到末尾了，没有数据可以读取了，error事件表示出错。
+在 node.js 中，流也是一个对象，我们只需要响应流的事件就可以了。
+data 事件表示流的数据已经可以读取了，end 事件表示这个流已经到末尾了，没有数据可以读取了，error 事件表示出错。
 
 ```
 var rs = fs.createReadStream('./data.txt', 'utf-8');
@@ -183,7 +191,8 @@ rs.on('error', function (chunk) {
     console.log('error event:');
 });
 ```
-以流的形式写入文件，只需要不断调用write()方法，最后以end()结束
+
+以流的形式写入文件，只需要不断调用 write()方法，最后以 end()结束
 
 ```
 var ws = fs.createWriteStream('./data.txt');
@@ -192,6 +201,7 @@ ws.write('loading...\n');
 ws.write('END');
 ws.end();
 ```
+
 pipe()把一个文件流和另一个文件流串起来，这样源文件的所有数据就自动写入到目标文件里
 
 ```
@@ -221,7 +231,7 @@ server.listen(8080);
 console.log('Server is running at http://localhost:8080');
 ```
 
-实现一个文件服务器，拼接访问路径读取本地文件，从命令参数获取root目录，默认是当前目录
+实现一个文件服务器，拼接访问路径读取本地文件，从命令参数获取 root 目录，默认是当前目录
 
 ```
 var root = path.resolve('.');
@@ -272,9 +282,9 @@ server.listen(8080);
 console.info('Server is runing at http://localhost:8080/');
 ```
 
-express是第一代流行的web框架，它对Node.js的HTTP进行封装，语法基于ES5，要实现异步代码，只有一个方法：回调。
+express 是第一代流行的 web 框架，它对 Node.js 的 HTTP 进行封装，语法基于 ES5，要实现异步代码，只有一个方法：回调。
 
-koa2完全基于ES7开发，使用Promise配合async实现异步
+koa2 完全基于 ES7 开发，使用 Promise 配合 async 实现异步
 
 ```
 // 创建一个Koa对象
