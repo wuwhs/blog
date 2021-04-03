@@ -627,7 +627,116 @@ var module1 = function () {
 
 ### 如何解决跨域问题?
 
-jsonp、 iframe、window.name、window.postMessage、服务器上设置代理页面
+jsonp、 iframe、window.name、window.postMessage、服务器上设置代理页面、CORS、Proxy、Nginx
+
+#### JSONP
+
+客户端
+
+```js
+window.func = (data) => {
+  console.log('data: ', data)
+}
+const script = document.createElement('script')
+script.src = 'http://domain.com/list?callback=func'
+script.onload = () => {
+  console.log('script loaded')
+}
+const body = document.body
+body.append(script)
+body.removeChild(script)
+```
+
+服务器端
+
+```js
+const express = require('express')
+const app = express()
+app.listen(8080, () => {
+  console.log('ok')
+})
+app.get('/list', (req, res) => {
+  const { callback = Function.prototype } = req.query
+  const data = { name: 'winfar', age: 18 }
+  res.send(`${callback}(${JSON.stringify(data)})`)
+})
+```
+
+#### CORS
+
+客户端
+
+```js
+fetch('http://otherdomain.com/list', { method: 'get' }).then((response) => {
+  console.log('response: ', response)
+})
+```
+
+服务端
+
+```js
+const express = require('express')
+const app = express()
+
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', 'http://domain.com')
+  res.header('Access-Control-Allow-Credentials', true)
+  res.header('Access-Control-Allow-Headers', 'Content-Type,Content-Length,Authorization,Accept,X-Requested-with')
+  res.header('Access-Control-Allow-Methods', 'PUT,POST,GET,DELETE,OPTIONS,HEAD')
+  req.method === 'OPTIONS' ? res.send('CURRENT SERVICES SUPPORT CROSS DOMAIN REQUESTS') : next()
+})
+app.listen(80)
+app.get('/list', (req, res) => {
+  const data = { name: 'winfar', age: 18 }
+  res.send(JSON.stringify(data))
+})
+```
+
+#### Proxy
+
+webpack && dev-server
+
+```js
+const path = require('path')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+module.exports = {
+  mode: 'development',
+  entry: './src/main.js',
+  output: {
+    filename: 'main.[hash].min.js',
+    path: path.resolve(__dirname, 'build')
+  },
+  devServer: {
+    port: '8080',
+    proxy: {
+      '/': {
+        target: 'http://otherdomain.com',
+        changeOrigin: true
+      }
+    }
+  },
+  plugins: [
+    new HtmlWebpackPlugin({
+      template: './public/index.html',
+      filename: 'index.html'
+    })
+  ]
+}
+```
+
+#### nginx
+
+```js
+server {
+  listen 80;
+  server_name http://domain.com;
+  location / {
+    proxy_pass http://otherdomain.com;
+    root html;
+    index index.html index.htm;
+  }
+}
+```
 
 ### 页面编码和被请求的资源编码如果不一致如何处理？
 

@@ -117,7 +117,7 @@ console.log(flattedArr)
 const bubbleSort = function (arr) {
   const len = arr.length
   for (let i = 0; i < len - 1; i++) {
-    for (let j = 0; j < len - 1; j++) {
+    for (let j = 0; j < len - 1 - i; j++) {
       let curr = arr[j]
       let next = arr[j + 1]
       if (curr > next) {
@@ -156,6 +156,7 @@ const arr = [1, 2, 5, 6, 0, 2, 4]
 console.log(insertSort(arr))
 */
 
+/*
 // 快速排序
 // 思想：取中间数，逐个与剩余数比较，比该数大的放在右边数组，否则放在左边数组
 // 左右数组同理再分成左右数组，直到不能再分了，然后依次拼接起来得到最终排好顺序
@@ -179,3 +180,48 @@ const quickSort = function (arr) {
 }
 const arr = [1, 2, 5, 6, 0, 2, 4]
 console.log(quickSort(arr))
+*/
+
+// 归并排序
+// 思想：将数组按中间位置拆分成两个数组，数组继续从中间位置拆分，直到不能拆分为止，
+// 然后回溯拼接两个数组并进行排序，形成一个有序数组，再与之前拆分的已形成有序数组拼接排序
+// 最终形成一个完整的有序数组
+const mergeSort = function (arr) {
+  const len = arr.length
+  if (len <= 1) return arr
+  const middle = Math.floor(len / 2)
+  const leftArr = arr.slice(0, middle)
+  const rightArr = arr.slice(middle)
+  const lf = mergeSort(leftArr)
+  const rt = mergeSort(rightArr)
+  return merge(lf, rt)
+}
+
+const merge = function (lf, rt) {
+  const result = []
+  let i = 0
+  let j = 0
+  const lfLen = lf.length
+  const rtLen = rt.length
+
+  while (i < lfLen || j < rtLen) {
+    if (i >= lfLen) {
+      // 左边数组遍历完了，直接将右边剩下的放进合成队列
+      result.push(...rt.slice(j))
+      break
+    } else if (j >= rtLen) {
+      // 右边边数组遍历完了，直接将左边剩下的放进合成队列
+      result.push(...lf.slice(i))
+      break
+    } else if (lf[i] > rt[j]) {
+      // 左边大于右边，选取右边较小者，左边索引后移一位
+      result.push(rt[j++])
+    } else {
+      // 右边大于左边，选取左边较小者
+      result.push(lf[i++])
+    }
+  }
+  return result
+}
+const arr = [1, 2, 5, 6, 0, 2, 4]
+console.log(mergeSort(arr))
