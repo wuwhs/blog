@@ -16,3 +16,30 @@ tags: [interview]
 
 [2020 三元同学春招阿里淘系、阿里云、字节跳动面经 & 个人成长经验分享 | 掘金技术征文
 ](https://juejin.im/post/6844904106537009159)
+
+## 浏览器原理
+
+[一文搞懂 V8 引擎的垃圾回收](https://juejin.cn/post/6844904016325902344)
+
+[](https://zhuanlan.zhihu.com/p/47407398)
+
+## 计算机网络
+
+[查缺补漏」巩固你的 HTTP 知识体系](https://juejin.cn/post/6857287743966281736)
+
+[跨域资源共享 CORS 详解](https://www.ruanyifeng.com/blog/2016/04/cors.html)
+
+[【原】老生常谈-从输入 url 到页面展示到底发生了什么](https://www.cnblogs.com/xianyulaodi/p/6547807.html)
+
+[从 URL 输入到页面展现到底发生什么？](https://juejin.cn/post/6844903717259444232)
+
+[预测最近面试会考 Cookie 的 SameSite 属性](https://juejin.cn/post/6844904095711494151)
+
+## 缓存
+
+[浅解强缓存和协商缓存](https://juejin.cn/post/6844903736196726798)
+
+## 性能优化
+
+[前端性能优化 24 条建议（2020）
+](https://juejin.cn/post/6892994632968306702)

@@ -182,6 +182,7 @@ const arr = [1, 2, 5, 6, 0, 2, 4]
 console.log(quickSort(arr))
 */
 
+/*
 // 归并排序
 // 思想：将数组按中间位置拆分成两个数组，数组继续从中间位置拆分，直到不能拆分为止，
 // 然后回溯拼接两个数组并进行排序，形成一个有序数组，再与之前拆分的已形成有序数组拼接排序
@@ -225,3 +226,57 @@ const merge = function (lf, rt) {
 }
 const arr = [1, 2, 5, 6, 0, 2, 4]
 console.log(mergeSort(arr))
+*/
+
+/*
+// 寻找中心对称数
+// n = 0 中心对称数是：''
+// n = 1 中心对称数是：'0', '1, '8'
+// n = 2 中心对称数是： '11', '69', '88', '96'
+// n >= 3 中心对称数是：n - 2中心对称数两边加 '1-1', '6-9', '8-8', '9-6', '0-0'
+// 如果是最外层不能加 `0-0`
+const findNum = function (n, m) {
+  m = m || n
+  if (n <= 0) return ['']
+  if (n === 1) return ['0', '1', '8']
+  const prev = findNum(n - 2, m)
+  const result = []
+  for (let i = 0; i < prev.length; i++) {
+    const item = prev[i]
+    if (n !== m) {
+      result.push('0' + item + '0')
+    }
+    result.push('1' + item + '1')
+    result.push('6' + item + '9')
+    result.push('8' + item + '8')
+    result.push('9' + item + '6')
+  }
+  return result
+}
+
+console.log(findNum(2))
+*/
+
+// 给定一个无重复元素的数组 candidates 和一个目标数 target ，
+// 找出 candidates 中所有可以使数字和为 target 的组合。
+const combinationSum = function (candidates, target) {
+  const result = []
+  backtracking(candidates, target, result, [], 0)
+  return result
+}
+
+const backtracking = function (candidates, target, result, solution, start) {
+  if (target < 0) return
+  if (target === 0) {
+    return result.push([...solution])
+  }
+  for (let i = start; i < candidates.length; i++) {
+    const value = candidates[i]
+    solution.push(value)
+    backtracking(candidates, target - value, result, solution, i)
+    solution.pop()
+  }
+}
+
+const arr = [2, 3, 6, 7]
+console.log(combinationSum(arr, 9))

@@ -34,56 +34,101 @@
 
 // test()
 
-const tree = {
-  a: {
-    value: 'aaa',
-    children: {
-      b: {
-        value: 'bbb',
-        children: {}
-      },
-      d: {
-        value: 'ddd',
-        children: {
-          g: {
-            value: 'ggg',
-            children: {
-              f: {
-                value: 'fff',
-                children: {}
-              }
-            }
-          }
-        }
-      }
-    }
-  }
+// const tree = {
+//   a: {
+//     value: 'aaa',
+//     children: {
+//       b: {
+//         value: 'bbb',
+//         children: {}
+//       },
+//       d: {
+//         value: 'ddd',
+//         children: {
+//           g: {
+//             value: 'ggg',
+//             children: {
+//               f: {
+//                 value: 'fff',
+//                 children: {}
+//               }
+//             }
+//           }
+//         }
+//       }
+//     }
+//   }
+// }
+
+// const data = [
+//   {
+//     parent_id: null,
+//     id: 'a',
+//     value: 'xxx'
+//   },
+//   {
+//     parent_id: 'a',
+//     id: 'b',
+//     value: 'xxx'
+//   },
+//   {
+//     parent_id: 'a',
+//     id: 'd',
+//     value: 'xxx'
+//   },
+//   {
+//     parent_id: 'd',
+//     id: 'g',
+//     value: 'xxx'
+//   },
+//   {
+//     parent_id: 'g',
+//     id: 'f',
+//     value: 'xxx'
+//   }
+// ]
+
+function ListNode(val = 0, next = null) {
+  this.val = val
+  this.next = next
 }
 
-const data = [
-  {
-    parent_id: null,
-    id: 'a',
-    value: 'xxx'
-  },
-  {
-    parent_id: 'a',
-    id: 'b',
-    value: 'xxx'
-  },
-  {
-    parent_id: 'a',
-    id: 'd',
-    value: 'xxx'
-  },
-  {
-    parent_id: 'd',
-    id: 'g',
-    value: 'xxx'
-  },
-  {
-    parent_id: 'g',
-    id: 'f',
-    value: 'xxx'
+// array -> ListNode
+/*
+// 递归方式创建单向链表
+function createListNode(arr) {
+  const n = arr.length
+  function fn(i) {
+    if (i >= n - 1) return new ListNode(arr[i])
+    return new ListNode(arr[i], fn(i + 1))
   }
-]
+  return fn(0)
+}
+*/
+
+// 移动指针的方式创建单向链表
+function createListNode(arr) {
+  let result = new ListNode()
+  let head = result
+  arr.forEach((value) => {
+    result.val = value
+    result.next = new ListNode()
+    result = result.next
+  })
+  return head
+}
+
+const arr = [2, 3, 4, 5, 8, 2]
+console.log(createListNode(arr))
+
+// ListNode -> array
+function spreadListNodeValue(list) {
+  const result = []
+  let l = list
+  while (l.next) {
+    result.push(l.val)
+    l = l.next
+  }
+  result.push(l.val)
+  return result
+}
