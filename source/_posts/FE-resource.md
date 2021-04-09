@@ -22,9 +22,11 @@ tags: [interview]
 [一文搞懂 V8 引擎的垃圾回收](https://juejin.cn/post/6844904016325902344)
 
 [图解浏览器基本工作原理](https://zhuanlan.zhihu.com/p/47407398)
+
 从整体到细节概括了浏览器的工作原理：
-大的方面：浏览器的工作由由进程（Process）和线程（Thread）协作完成。一个进程可能有多个线程，进程与进程之间可通过 IPC 进行通信，浏览器是通过 browser process 对其他进程（比如 network process、plugin process、render process、GPU process）进行调度、分工。
-小的方面：浏览器具体渲染某个页面，这部分是由 render process 完成，加载解析 html，构建 DOM 树。加载解析 css，确定 DOM 节点样式和位置信息，构建成布局（layout）树。主线程会遍历布局树创建层（layer）树。合成器（compositor）栅格化每一层
+**大的方面**：浏览器的工作由由进程（Process）和线程（Thread）协作完成。一个进程可能有多个线程，进程与进程之间可通过 IPC 进行通信，浏览器是通过 browser process 对其他进程（比如 network process、plugin process、render process、GPU process）进行调度、分工。
+**小的方面**：浏览器具体渲染某个页面，这部分是由 render process 完成，加载解析 html，构建 DOM 树。加载解析 css，遍历 DOM 节点计算样式和位置信息，构建成布局（layout）树。主线程会遍历布局树，生成绘制记录，然后创建层（layer）树。合成器（compositor）将每层分成多个磁贴，栅格线程栅格每一个磁贴，栅格完成后创建合成帧，然后发送给 GPU 显示。
+**passive 应用原理**：页面滚动，render process 通知合成器生成新的帧，如果合成器发现有绑定事件，会通知并等待主线程的响应，才合成下一帧，这样就造成了页面卡顿。passive 参数就是为了告诉合成器不用等待，直接去生成新帧。
 
 ## 计算机网络
 
