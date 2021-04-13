@@ -32,13 +32,25 @@ tags: [interview]
 
 [查缺补漏」巩固你的 HTTP 知识体系](https://juejin.cn/post/6857287743966281736)
 
-[跨域资源共享 CORS 详解](https://www.ruanyifeng.com/blog/2016/04/cors.html)
-
 [【原】老生常谈-从输入 url 到页面展示到底发生了什么](https://www.cnblogs.com/xianyulaodi/p/6547807.html)
 
 [从 URL 输入到页面展现到底发生什么？](https://juejin.cn/post/6844903717259444232)
 
 [预测最近面试会考 Cookie 的 SameSite 属性](https://juejin.cn/post/6844904095711494151)
+
+[跨域资源共享 CORS 详解](https://www.ruanyifeng.com/blog/2016/04/cors.html)
+
+阮一峰老师对 CORS 的定义理解
+
+[CORS 完全手冊](https://blog.huli.tw/2021/02/19/cors-guide-3/)
+讲述小明提交表单的故事，一层层讲解 `CORS` 在现实应用出错的一些情景：
+
+- 首先用 `fetch` 跨域请求会报错 `mode to 'no-cors'` ，需要后端加上 `Access-Contron-Allow-Origin: origin` 响应头制定某个或者所有域名，告诉浏览器允许的 `origin`。
+- 如果设置 `cookie`，需要后端响应头加上 `set-cookie` 和 `Access-Control-Allow-credential: origin`，如果前端的请求需要携带 `cookie`，前端也许加上这个请求头 `Access-Control-Allow-credential: true`。
+- 如果 `Access-Contron-Allow-Origin: *` 则不能携带 cookie，`Access-Control-Allow-credential: true` 不起作用。
+- 跨域请求分为简单请求和非简单请求。判断是简单请求：1. `method` 是 `GET`、`HEAD` 或 `POST`，2. 没有自订 `header`，3. `Content-Type`是这三种：`application/x-www-form-urlencoded`、`multipart/form-data` 和 `text-plain`。其他都是非简单请求。非简单请求在正是请求前都会发送一个预检请求（`preflight request`），也就是 `method` 为 `OPTIONS` 请求，浏览器会加上两个 `header`：`Access-Control-Request-Headers` 和 `Access-Control-Request-Method`，告诉服务器正式请求的请求头和请求方法，后端需要返回响应头 `Access-Control-Allow-Headers` 让浏览器通过预检，浏览器才会发送正式请求。
+- `Access-Control-max-age: second` 可以在 second 秒内不针对每个请求进行预检，减少资源浪费。
+- 若想渠道自订 header ，需要后端的响应头设置 `Access-Control-Expose-Headers: self-header,other-header` 指定。
 
 ## 缓存
 
@@ -48,3 +60,7 @@ tags: [interview]
 
 [前端性能优化 24 条建议（2020）
 ](https://juejin.cn/post/6892994632968306702)
+
+## react 原理
+
+[从零开始实现一个 React](https://github.com/hujiulong/blog/issues/4)
