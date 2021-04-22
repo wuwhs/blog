@@ -257,6 +257,7 @@ const findNum = function (n, m) {
 console.log(findNum(2))
 */
 
+/*
 // 给定一个无重复元素的数组 candidates 和一个目标数 target ，
 // 找出 candidates 中所有可以使数字和为 target 的组合。
 const combinationSum = function (candidates, target) {
@@ -280,3 +281,26 @@ const backtracking = function (candidates, target, result, solution, start) {
 
 const arr = [2, 3, 6, 7]
 console.log(combinationSum(arr, 9))
+*/
+
+// 寻找最长上升子序列长度
+// f(n) = max(f(i)) 0<=i<=n-1
+const getSeriseLen = function (arr) {
+  const len = arr.length
+  let max = 1
+  if (arr.length === 1) return 1
+  const dp = new Array(len).fill(1)
+  for (let i = 1; i < len; i++) {
+    for (let j = 0; j < i; j++) {
+      if (arr[j] < arr[i] && dp[j] + 1 > dp[i]) {
+        dp[i] = dp[j] + 1
+        max = Math.max(dp[i], max)
+      }
+    }
+  }
+  console.log('dp: ', dp)
+  return max
+}
+
+const arr = [2, 8, 6, 7, 1, 2, 3]
+console.log(getSeriseLen(arr))

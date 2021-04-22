@@ -61,6 +61,34 @@ tags: [interview]
 [前端性能优化 24 条建议（2020）
 ](https://juejin.cn/post/6892994632968306702)
 
+[前端虚拟列表实现原理](https://mp.weixin.qq.com/s/VTH10pCV_AOOyYcsNQtnRQ)
+
+实现前提，列表容器定高，容器内有一个影子容器，高度为算出的实际内容高度，这样就有真实的滚动条及滚动效果。而真实展示给用户视窗中的是绝对定位的元素构成的真实容器，影子容器滚动，真实容器也跟着滚动，监听影子容器的 onscroll 事件，获取影子容器的 scrollTop，算出视窗中第一项渲染的数据索引 startIndex 有没有更新，有，则重新截取列表数据渲染可视区。虽然说是重新渲染，但是下一帧和当前滚动位置元素一样，所以用户无感知。
+
+确定影子容器的高度：
+
+1. 列表内容每一项定高，影子容器的高度=每一项定高 x total
+2. 列表内容每一项不定高，可以初始假设每一项定高，算出影子容器高度，这样容器可滚动，待真实容器渲染后，算出每一项元素的高度、位置信息，再去更新影子容器高度。算出了影子容器的高度及其每一项的位置信息，又已知 scrollTop，可以通过二分法找到当前的 startIndex。
+
 ## react 原理
 
 [从零开始实现一个 React](https://github.com/hujiulong/blog/issues/4)
+
+## HTML5
+
+[种文件上传攻略](https://juejin.cn/post/6844903968338870285)
+[实现一个大文件上传和断点续传](https://juejin.cn/post/6844904046436843527)
+
+- **文件分片** 利用 Blob 原生方法 Blob.prototype.slice 切割文件，每个切片并行上传，服务端创建临时目录存储上传分片，前端上传完毕，服务端利用 createWriteStream 创建可写流，将切片整合成一个文件，然后删除临时分片的临时文件。
+- **断点续传** 前端记录当前上传的分片信息到 localStorage，下次续传重新读取，不过这种方式的前提是不换浏览器和更改文件名。严格的解决方案是按照文件内容生成 hash 值标志作为文件名：用 spark-md5 可以实现，不过当读取的文件内容特别大时，会出现“假死“，解决方案可以在 webWorker 线程中计算。
+- **文件秒传** 服务端已经存在了上传的资源，当再次上传时直接提示上传成功
+
+## 工程化
+
+[@babel/plugin-transform-runtime 到底是什么？](https://zhuanlan.zhihu.com/p/147083132)
+[](https://mp.weixin.qq.com/s/3lNlJKcgrdNzWEqaEx-7jQ)
+
+- Babel 只负责编译新标准引入的新语法，比如 Arrow function、Class、ES Modul 等，它不会编译原生对象新引入的方法和 API，比如 Array.includes，Map，Set 等，这些需要通过 Polyfill 来解决。
+- preset 预设是插件 plugins 的集合，预设数组加载的顺序是从从右到左，为了向后兼容，一般用户会把 `prest-es2015` 写在 `stage-0` 的前面。
+- @babel/preset-env 可以按需引入预设插件，设置参数 useBuiltIns: "usage" 可以按照用户使用 ES6 API 相应引入 Polyfill。
+- @babel/plugin-transform-runtime 可以让 Babel 在编译中复用辅助函数，从而减小打包文件体积 。
