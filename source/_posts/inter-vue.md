@@ -4,13 +4,30 @@ date: 2020-11-16 17:39:47
 tags: [vue, 面试]
 ---
 
+### Vue 响应式原理怎么实现
+
+- 响应式核型是通过 Object.defineProperty 拦截对数据的访问和设置。
+- 响应式数据分为两类：
+  - 对象。循环遍历对象的所有属性，为每个属性设置 getter、setter，以达到拦截访问和设置的目的的，如果属性值依旧为对象，则递归属性值上的每个 key 设置 getter、setter。
+  - 数组。增强数组的那 7 个可以改变自身的原型方法，然后拦截对这些方法的操作。
+  - 访问数据时（obj.key）进行依赖收集，在 dep 中存储相关的 watcher。
+  - 设置数据时有 dep 通知相关的 watcher 去更新。
+
 ### Vue 中 MVVM 原理
 
 - 深度遍历 `data` 对象，利用 `defineProperty` API 对每个属性数据劫持（Observer）
 - 对于每个属性的 getter 绑定一个依赖队列（Dep），setter 触发（Nofity）这个依赖队列遍历执行每一项
-- 在模版编译构成中，编译到 `v-modal` 指令或者解析出具体的文本节点值时，创建一个观察者（Watcher），观察者创建后会调用 getter 方法，将观察对象插入依赖队列。
+- 在模版编译构成中，编译到 `v-modal` 指令、解析出具体的文本节点值或者用户手动 watcher 时，创建一个观察者（Watcher），观察者创建后会调用 getter 方法，将其所有的依赖的观察对象插入当前依赖队列（subs）。
 - 通过监听元素的 `input` 事件，当用户输入即可修改数据，这样实现了从视图到数据的更新
 - 当数据变化，调用 setter，触发遍历执行依赖队列中的观察者，观察者回调更新（update）视图，这样就实现了从数据到视图的更新。
+
+### Vue 中 Dep && Watcher
+
+一个 obj.key 对应一个 Dep，它是用来收集当前 value 所有依赖，依赖列表（dep.subs） 存放所有依赖的 watcher 实例。
+
+一个组件对应一个 watcher（渲染 watcher）或者一个表达式 watcher（用户 watcher）。Watcher 对依赖（newDeps）去重，设置依赖收集的开关（Dep.target），返回执行获取的值。
+
+当前值发生改变时，就会执行 setter，通知依赖实例（dep）进行更新（notify），遍历依赖列表（subs）中的 watcher 执行 update。
 
 ### Vue 中 nextTick 原理
 
@@ -49,3 +66,34 @@ tags: [vue, 面试]
 - 调用 created 钩子函数。
 - 如果发现配置项上有 el 选项，则自动调用$mount  方法，否则手动调用$mount。
 - 接下来进入挂载阶段。
+
+### methods、computed 和 watch 区别
+
+#### 使用场景
+
+- methods 一般用于封装一些较为复杂的处理逻辑（同步、异步）。
+- computed 一般用于封装简单的同步逻辑，将记过处理的数据返回，然后显示，减轻模版重量。
+- watch 一般用于当需要数据变化时执行异步或开销较大的操作。
+
+#### 区别
+
+- methods 每次执行都调用。
+- computed 第一次执行数据被缓存，实现原理它本事是一个 watcher，缓存是因为 watcher.dirty 属性控制。
+- watch Watcher 对象的实例。
+
+### Vue 的异步更新机制是如何实现的？
+
+Vue 的异步更新机制的核心是利用浏览器的异步任务队列来实现的，首选微任务队列，宏任务队列次之。
+
+当响应式数据更新后，会调用 dep.notify 方法，通知 dep 中收集的 watcher 去执行 update 方法，watcher.update 将 watcher 自己放入一个 watcher 队列（全局 queue 数组）。
+
+然后通过 nextTick 方法将一个刷新 watcher 队列的方法（flushSchedulerQueue）放入全局的 callbacks 数组中。
+
+如果此时浏览器的异步任务队列中没有一个叫 flushCallbacks 的函数，则执行 timeFunc 函数，将 flushCallbacks 函数放入异步任务队列。如果异步任务队列中已经存在 flushCallbacks 函数，等待其执行完成以后再放入下一个 flushCallbacks 函数。
+
+flushSchedulerQueue 函数负责刷新 watcher 队列，即执行 queue 数组中每一个 watcher 的 run 方法，从而进入更新阶段，比如执行组件更新函数或者执行用户 watch 的回调函数。
+
+### Vue 的 nexttick API 的实现
+
+- 将传递的回调函数用 try catch 包裹，然后放入 callbacks 数组。
+- 执行 timerFunc 函数，在浏览器的异步任务队列放入一个刷新 callbacks 数组的函数。

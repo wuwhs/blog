@@ -86,7 +86,7 @@ tags: [interview]
 ## 工程化
 
 [@babel/plugin-transform-runtime 到底是什么？](https://zhuanlan.zhihu.com/p/147083132)
-[](https://mp.weixin.qq.com/s/3lNlJKcgrdNzWEqaEx-7jQ)
+[关于 Babel 那些事儿](https://mp.weixin.qq.com/s/3lNlJKcgrdNzWEqaEx-7jQ)
 
 - Babel 只负责编译新标准引入的新语法，比如 Arrow function、Class、ES Modul 等，它不会编译原生对象新引入的方法和 API，比如 Array.includes，Map，Set 等，这些需要通过 Polyfill 来解决。
 - preset 预设是插件 plugins 的集合，预设数组加载的顺序是从从右到左，为了向后兼容，一般用户会把 `prest-es2015` 写在 `stage-0` 的前面。
