@@ -17,6 +17,23 @@ tags: [interview]
 [2020 三元同学春招阿里淘系、阿里云、字节跳动面经 & 个人成长经验分享 | 掘金技术征文
 ](https://juejin.im/post/6844904106537009159)
 
+[面试被问项目经验不用慌，按这个步骤回答绝对惊艳](https://juejin.cn/post/6844904102795706375)
+面试 STAR 法则：
+
+- **Situation** 事情是在什么情况下发生，基于一个怎样的背景；
+- **TASK** 你是如何明确你的任务的；
+- **Action** 针对这样的情况分析，你采用了什么行动方式，具体做了哪些工作内容；
+- **Result** 结果怎样，带来什么价值，在整个过程中你学到了什么，有什么新的体会。
+
+Babel parse AST 的过程
+
+在解析 AST 过程中有连个阶段：词法分析和语法分析。
+
+- 词法分析阶段：字符串形式的代码转换为令牌（tokens）流，令牌类似于 AST 中的节点；
+- 语法分析阶段：把一个令牌流转化为 AST 形式，同时把令牌中的信息转化为 AST 表述结构。
+
+[阿里前端攻城狮们写了一份前端面试题答案，请查收](https://juejin.cn/post/6844904097556987917)
+
 ## 浏览器原理
 
 [一文搞懂 V8 引擎的垃圾回收](https://juejin.cn/post/6844904016325902344)
@@ -92,3 +109,23 @@ tags: [interview]
 - preset 预设是插件 plugins 的集合，预设数组加载的顺序是从从右到左，为了向后兼容，一般用户会把 `prest-es2015` 写在 `stage-0` 的前面。
 - @babel/preset-env 可以按需引入预设插件，设置参数 useBuiltIns: "usage" 可以按照用户使用 ES6 API 相应引入 Polyfill。
 - @babel/plugin-transform-runtime 可以让 Babel 在编译中复用辅助函数，从而减小打包文件体积 。
+
+[嘿，不要给 async 函数写那么多 try/catch 了](https://juejin.cn/post/6844903886898069511)
+
+[Webpack 插件开发如此简单！](https://mp.weixin.qq.com/s/adu7ZL0BA1X4672VqIkCtA)
+
+一个 Webpack 插件的构成：
+
+- 一个具名 JavaScript 函数；
+- 在它的原型上定义 apply 方法；
+- 指定一个触及到 webpack 本身的事件钩子；
+- 操作 webpack 内部的实例特定数据；
+- 在实现功能后调用 webpack 提供的 callback。
+
+[【编译篇】AST 实现函数错误的自动上报
+](https://segmentfault.com/a/1190000037630766)
+实现全局数据上报中 try catch 在 babel 编译层面上的拦截
+
+## js 原理实现
+
+[JavaScript 专题之跟着 underscore 学防抖](https://juejin.cn/post/6844903480239325191)

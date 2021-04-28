@@ -24,10 +24,10 @@ Function.prototype.call = function call(context, ...args) {
 }
 
 // bind
-Function.prototype.bind = function bind(context, ...args) {
-  const self = this
-  return function proxy() {
-    self.apply(context, args)
+Function.prototype.bind = function (context, ...args) {
+  const _this = this
+  return function proxy(...params) {
+    return _this.apply(context, args.concat(params))
   }
 }
 ```
