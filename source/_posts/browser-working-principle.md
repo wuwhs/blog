@@ -28,3 +28,7 @@ tags: [浏览器]
 - IP 负责把数据包送达目的主机。
 - UDP 负责把数据包送达具体应用。
 - 而 TCP 保证来数据完整地传输，它的连接可分为三个阶段：建立连接、传输数据和断开连接。
+
+### [](https://blog.poetries.top/browser-working-principle/guide/part1/lesson03.html)
+
+- 浏览器中的 HTTP 请求从发起到结束一共经历如下八个阶段：构建请求、查找缓存、准备 IP 和端口、等待 TCP 队列、建立 TCP 连接、发起 HTTP 请求、服务器处理请求、服务器返回请求和断开连接。
