@@ -97,3 +97,20 @@ flushSchedulerQueue 函数负责刷新 watcher 队列，即执行 queue 数组�
 
 - 将传递的回调函数用 try catch 包裹，然后放入 callbacks 数组。
 - 执行 timerFunc 函数，在浏览器的异步任务队列放入一个刷新 callbacks 数组的函数。
+
+### vite 的认识
+
+优点：
+
+- 采用 ESBuild 使用 go 编写，预构建依赖，比 Javascript 编写的打包器预构建依赖快 10-100 倍；
+- 预编译：npm 依赖基本不会变化的模块，在预构建阶段整理，减少 http 请求数；
+- 按需编译：用户源码需频繁变动的模块，根据路由使用实时编译；
+- 客户端强缓存：请求过的模块响应头 max-age=31536000，immutable 强缓存，如果版本模块发生变化则用附加版本 query 使其失效；
+- 产物优化：没有 runtime 和模版代码；
+- 分包处理：不需要用户干预，默认启动一系列只能分包规则，尽量减少模块的重复打包，tree-shaking，按需打包，公共依赖当作独立 chunk；
+- 静态资源处理：提供了 URL，字符串，module，assembly，worker 等处理方式；
+
+缺点：
+
+- ES module 只兼容现代浏览器；
+- Rollup 打包，而不是 ESBuild，原因在于构建应用重要功能还在持续开发中，特别是代码分割和 CSS 处理方面。

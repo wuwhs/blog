@@ -55,9 +55,50 @@ tags: [浏览器]
   - 渲染进程接收完数据后，向浏览器发送“确认提交”
   - 浏览器进程接收到确认消息后 engine 浏览器界面状态：安全、地址 URL、前进后退的历史状态、更新 web 页面
 
-[调用栈：为什么JavaScript代码会出现栈溢出](https://blog.poetries.top/browser-working-principle/guide/part2/lesson08.html)
+### [变量提升：javascript 代码是按顺序执行的吗](https://blog.poetries.top/browser-working-principle/guide/part2/lesson07.html)
 
-- 每调用一个函数，JavaScript引擎会为其创建执行上下文压入调用栈，然后，JavaScript引擎开始执行函数代码。
-- 如果一个函数A调用另外一个函数B，那么JavaScript引擎会为B函数创建执行上下文，并将B函数的执行上下文压入栈顶。
-- 当前函数执行完毕后，JavaScript引擎会将该函数的执行上下文弹出栈。
+- javascript 代码执行过程中，需要先做变量提升，而之所以需要实现变量提升，是因为 javascript 代码在执行之前需要先编译。在编译阶段，变量和函数会被存放到变量环境中，变量的默认值会被设置为 undefined；在代码执行阶段，javascript 引擎会从变量环境中去查找自定义的变量和函数。
+- javascript 代码经过编译后，会生成两部分内容：执行上下文和可执行代码。
+- 如果在编译阶段，存在两个相同的函数，那么最终存放在变量环境中的是最后定义的那个，这是因为后定义的会覆盖掉之前定义的。
+
+[调用栈：为什么 JavaScript 代码会出现栈溢出](https://blog.poetries.top/browser-working-principle/guide/part2/lesson08.html)
+
+- 每调用一个函数，JavaScript 引擎会为其创建执行上下文压入调用栈，然后，JavaScript 引擎开始执行函数代码。
+- 如果一个函数 A 调用另外一个函数 B，那么 JavaScript 引擎会为 B 函数创建执行上下文，并将 B 函数的执行上下文压入栈顶。
+- 当前函数执行完毕后，JavaScript 引擎会将该函数的执行上下文弹出栈。
 - 当分配的调用栈空间被占满时，会引发“堆栈溢出”问题。
+
+### [块级作用域：var 缺陷以及为什么要引入 let 和 const](https://blog.poetries.top/browser-working-principle/guide/part2/lesson09.html)
+
+- let、const 申明的变量不会被提升。在 javascript 引擎编译后，会保存在词法环境中。
+- 块级作用域在代码执行时，将 let、const 变量存放在词法环境的一个单独的区域。词法环境内部维护一个小型的栈结构，作用域内部变量压入栈顶。作用域执行完，从栈顶弹出。
+
+### [作用域链和闭包：代码中出现相同的变量，JavaScript 引擎如何选择](https://blog.poetries.top/browser-working-principle/guide/part2/lesson10.html)
+
+-
+
+### [this：从 JavaScript 执行上下文视角讲 this](https://blog.poetries.top/browser-working-principle/guide/part2/lesson11.html)
+
+当执行 new CreateObj 的时候，JavaScript 引擎做了四件事：
+
+- 首先创建一个控对象 tempObj；
+- 接着调用 CreateObj.call 方法，并将 tempObj 作为 call 方法的参数，这样当 createObj 的执行上下文创建时，它的 this 就指向 tempObj 对象；
+- 然后执行 CreateObj 函数，此时的 CreateObj 函数执行上下文中的 this 指向 tempObj 对象；
+- 最后返回 tempObj 对象。
+
+this 的使用分为：
+
+- 当函数最为对象的方法调用时，函数中的 this 就是该对象；
+- 当函数被正常调用时，在严格模式下，this 值是 undefined，非严格模式下 this 指向的是全局对象 window；
+- 嵌套函数中的 this 不会继承外层函数的 this 值；
+- 箭头函数没有自己的执行上下文，this 是外层函数的 this。
+
+### [https://blog.poetries.top/browser-working-principle/guide/part3/lesson12.html](栈空间和堆空间：数据是如何存储的)
+
+动态语言：在使用时需要检查数据类型的语言。
+弱类型语言：支持隐式转换的语言。
+
+JavaScript 中的 8 种数据类型，它们可以分为两大类——原始类型和引用类型。
+原始类型数据存放在栈中，引用类型数据存放在堆中。堆中的数据是通过引用与变量关系联系起来的。
+
+从内存视角了解闭包：词法扫描内部函数，引用了外部函数变量，堆空间创建一个“closure”对象，保存变量。
