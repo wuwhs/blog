@@ -114,3 +114,63 @@ JavaScript 中的 8 种数据类型，它们可以分为两大类——原始类
 - 主垃圾回收器负责老生区垃圾回收，大对象，存活时间长；
 - 新生代区域采用标记-清除算法回收垃圾：从根元素开始，递归，可到达的元素活动元素，否则是垃圾数据；
 - 为了不造成卡顿，标记过程被切分为一个个子标记，交替进行。
+
+### [编译器和解析器：V8 如何执行一段 JavaScript 代码的](https://blog.poetries.top/browser-working-principle/guide/part3/lesson14.html)
+
+- 计算机语言可以分为两种：编译型和解释型语言。编译型语言经过编译器编译后保留机器能读懂的二进制文件，比如 C/C++，go 语言。解释型语言是在程序运行时通过解释器对程序进行动态解释和执行，比如 Python，JavaScript 语言。
+- 编译型语言的编译过程：编译器首先将代码进行词法分析、语法分析，生成抽象语法树（AST），然后优化代码，最后生成处理器能够理解的机器码；
+- 解释型语言解释过程：解释器会对代码进行词法分析、语法分析，并生产抽象语法树（AST），不过它会再基于抽象语法树生成字节码，最后根据字节码执行程序；
+- AST 的生成：第一阶段是分词（词法分析），将一行行源码拆解成一个个 token（语法上不可再分、最小单个字符）。第二阶段是解析（语法分析），将上一步生成的 token 数据，根据语法规则转为 AST，这一阶段会检查语法错误；
+- 字节码存在的意义：直接将 AST 转化为机器码，执行效率是非常高，但是消耗大量内存，从而先转化为字节码解决内存问题；
+- 解释器 ignition 在解释执行字节码，同时会手机代码信息，发现某一部分代码是热点代码（HotSpot），编译器把热点的字节码转化为机器码，并保存起来，下次使用；
+- 字节码配合解释器和编译器的计数实现称为即时编译（JIT）。
+
+### [消息队列和事件循环：页面是怎么活起来的](https://blog.poetries.top/browser-working-principle/guide/part4/lesson15.html)
+
+- 每个渲染进程都有一个主线程，主线程会处理 DOM，计算样式，处理布局，JavaScript 任务以及各种输入事件；
+- 维护一个消息队列，新任务（比如 IO 线程）添加到消息队列尾部，主线程循环地从消息队列头部读取任务，执行任务；
+- 解决处理优先级高的任务：消息队列的中的任务称为宏任务，每个宏任务中都会包含一个微任务队列，在执行宏任务的过程中，如果 DOM 有变化，将该变化添加到微任务队列中；
+- 解决单个任务执行时长过久：JavaScript 通过回调功能来规避。
+
+### [webapi：setTimeout 是怎么实现的](https://blog.poetries.top/browser-working-principle/guide/part4/lesson16.html)
+
+- JavaScript 调用 setTimeout 设置回调函数的时候，渲染进程会创建一个回调任务，延时执行队列存放定时器任务；
+- 当定时器任务到期，就会从延时队列中取出并执行；
+- 如果当前任务执行时间过久，会影响延时到期定时器任务的执行；
+- 如果 setTimeout 存在嵌套调用（5 次以上），判断该函数方法被阻塞，那么系统会设置最短时间间隔为 4 秒；
+- 未激活的页面，setTimeout 执行最小间隔是 1000 毫秒，目的是为了降低加载损耗；
+- 延时执行时间最大值是 24.8 天，因为延时值是以 32 个 bit 存储的；
+- setTimeout 设置的回调函数中的 this 指向全局 window。
+
+#### [webpai：XMLHttpRequest 是怎么实现的](https://blog.poetries.top/browser-working-principle/guide/part4/lesson17.html)
+
+- XMLHttpRequest onreadystatechange 处理流程：未初始化 -> OPENED -> HEADERS_RECEIVED -> LOADING -> DONE；
+- 渲染进程会将请求发送给网络进程，然后网络进程负责资源下载，等网络进程接收到数据后，利用 IPC 通知渲染进程；
+- 渲染进程接收到消息之后，会将 xhr 回调函数封装成任务并添加到消息队列中，等主线程循环系统执行到该任务的时候，会根据相关状态来调用回调函数。
+
+#### [宏任务和微任务：不是所有的任务都是一个待遇](https://blog.poetries.top/browser-working-principle/guide/part4/lesson18.html)
+
+- 消息队列中的任务为宏任务。渲染进程内部会维护多个消息队列，比如延时执行队列和普通消息队列，主线程采用 for 循环，不断地从这些任务队列中取出任务并执行；
+- 微任务是一个需要异步执行的函数，执行时机是在主函数执行结束之后、当前宏任务结束之前；
+- V8 在执行 javascript 脚本时，会为其创建一个全局执行上下文，同事会创建一个微任务队列；
+- 执行微任务过程中产生的微任务不会推迟到下个宏任务中执行，而是在当前宏任务中继续执行；
+
+#### [使用 Promise 告别回调函数](https://blog.poetries.top/browser-working-principle/guide/part4/lesson19.html)
+
+- 使用 Promise 解决了回调地狱问题，消灭嵌套和多次处理；
+- 模拟实现 Promise
+
+```js
+function Bromise(executor) {
+  var _onResolve = null
+  this.then = function (onResolve) {
+    _onResolve = onResolve
+  }
+  function resolve(value) {
+    setTimeout(() => {
+      _onResolve(value)
+    }, 0)
+  }
+  executor(resolve, null)
+}
+```
