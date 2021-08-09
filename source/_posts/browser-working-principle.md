@@ -174,3 +174,12 @@ function Bromise(executor) {
   executor(resolve, null)
 }
 ```
+
+#### [DOM 树：JavaScript 是如何影响 DOM 树构建的](https://blog.poetries.top/browser-working-principle/guide/part5/lesson22.html)
+
+- HTML 解析器（HTMLParse）负责将 HTML 字节流转换为 DOM 结构；
+- HTML 解析器并不是等整个文档加载完成之后再解析，而是网络进程加载流多少数据，便解析多少数据；
+- 字节流转换成 DOM 三个阶段：1、字节流转换为 Token；2、维护一个 Token 栈，遇到 StartTag Token 入栈，遇到 EndTag Token 出栈；3、为每个 Token 创建一个 DOM 节点；
+- JavaScript 文件和 CSS 样式表文件都会阻塞 DOM 解析；
+
+#### [渲染流水线：CSS 如何影响首次加载时的白屏时间](https://blog.poetries.top/browser-working-principle/guide/part5/lesson22.html)
