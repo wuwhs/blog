@@ -4,9 +4,9 @@ date: 2021-05-31 22:33:26
 tags: [浏览器]
 ---
 
-## [浏览器工作原理与实践](https://blog.poetries.top/browser-working-principle/)
+### [浏览器工作原理与实践](https://blog.poetries.top/browser-working-principle/)
 
-### [Chrome 架构：仅仅打开了 1 个页面，为什么有 4 个进程](https://blog.poetries.top/browser-working-principle/guide/part1/lesson01.html)
+#### [Chrome 架构：仅仅打开了 1 个页面，为什么有 4 个进程](https://blog.poetries.top/browser-working-principle/guide/part1/lesson01.html)
 
 **线程和进程区别**：多线程可以并行处理任务，线程不能单独存在，它是由进程来启动和管理的。一个进程是一个程序的运行实例。
 
@@ -22,18 +22,18 @@ tags: [浏览器]
 
 **面向服务架构**：把原来的各种模块重构成独立的服务，每个服务都可以在独立的进程中运行，访问服务必须使用定义好的接口，通过 IPC 通讯，使得系统更内聚、松耦合、易维护和拓展。
 
-### [TCP 协议：如何保证页面文件能被完整送达浏览器](https://blog.poetries.top/browser-working-principle/guide/part1/lesson02.html)
+#### [TCP 协议：如何保证页面文件能被完整送达浏览器](https://blog.poetries.top/browser-working-principle/guide/part1/lesson02.html)
 
 - 互联网中的数据是通过数据包来传输的，数据包在传输过程中容易丢失或出错。
 - IP 负责把数据包送达目的主机。
 - UDP 负责把数据包送达具体应用。
 - 而 TCP 保证来数据完整地传输，它的连接可分为三个阶段：建立连接、传输数据和断开连接。
 
-### [HTTP 请求流程：为什么很多站点第二次打开速度会很快](https://blog.poetries.top/browser-working-principle/guide/part1/lesson03.html)
+#### [HTTP 请求流程：为什么很多站点第二次打开速度会很快](https://blog.poetries.top/browser-working-principle/guide/part1/lesson03.html)
 
 - 浏览器中的 HTTP 请求从发起到结束一共经历如下八个阶段：构建请求、查找缓存、准备 IP 和端口、等待 TCP 队列、建立 TCP 连接、发起 HTTP 请求、服务器处理请求、服务器返回请求和断开连接。
 
-### [导航流程：从输入 URL 到页面展示这中间发生了什么](https://blog.poetries.top/browser-working-principle/guide/part1/lesson04.html)
+#### [导航流程：从输入 URL 到页面展示这中间发生了什么](https://blog.poetries.top/browser-working-principle/guide/part1/lesson04.html)
 
 - 用户输入 URL 并回车
 - 浏览器进程检查 URL，组装协议，构成完整 URL
@@ -55,29 +55,44 @@ tags: [浏览器]
   - 渲染进程接收完数据后，向浏览器发送“确认提交”
   - 浏览器进程接收到确认消息后 engine 浏览器界面状态：安全、地址 URL、前进后退的历史状态、更新 web 页面
 
-### [变量提升：javascript 代码是按顺序执行的吗](https://blog.poetries.top/browser-working-principle/guide/part2/lesson07.html)
+#### [渲染流程（上）：HTML、CSS 和 JavaScript 是如何变成页面的](https://blog.poetries.top/browser-working-principle/guide/part1/lesson05.html)
 
-- javascript 代码执行过程中，需要先做变量提升，而之所以需要实现变量提升，是因为 javascript 代码在执行之前需要先编译。在编译阶段，变量和函数会被存放到变量环境中，变量的默认值会被设置为 undefined；在代码执行阶段，javascript 引擎会从变量环境中去查找自定义的变量和函数。
-- javascript 代码经过编译后，会生成两部分内容：执行上下文和可执行代码。
-- 如果在编译阶段，存在两个相同的函数，那么最终存放在变量环境中的是最后定义的那个，这是因为后定义的会覆盖掉之前定义的。
+- 浏览器不能直接理解 HTML 数据，需要将其转化为 DOM 树结构；
+- 生成 DOM 树后，根据 CSS 样式表，计算出 DOM 树所有节点样式；
+- 创建布局树：遍历 DOM 树所有可见节点，把这些节点加到布局中，不可见节点忽略，如 head 标签下所有内容，display: none 元素；
 
-[调用栈：为什么 JavaScript 代码会出现栈溢出](https://blog.poetries.top/browser-working-principle/guide/part2/lesson08.html)
+#### [渲染流程（下）：HTML、CSS 和 JavaScript 是如何变成页面的](https://blog.poetries.top/browser-working-principle/guide/part1/lesson06.html)
+
+- 浏览器不能直接理解 HTML 数据，需要将其转化为 DOM 树结构；
+- 生成 DOM 树后，根据 CSS 样式表，计算出 DOM 树所有节点样式；
+- 接下来创建布局树：遍历 DOM 树所有可见节点，把这些节点加到布局中，不可见节点忽略，如 head 标签下所有内容，display: none 元素。根据可见元素几何位置计算布局；
+
+#### [变量提升：javascript 代码是按顺序执行的吗](https://blog.poetries.top/browser-working-principle/guide/part2/lesson07.html)
+
+- 分层：层叠上下文属性的元素（比如定位属性元素、透明属性元素、CSS 滤镜属性元素）提升为单独的一层，需要裁剪的地方（比如出现滚动条）也会被创建为图层；
+- 图层绘制：完成图层树构建后，渲染引擎会对图层树每一层进行绘制，把一个图层拆分成小的绘制指令，再把指令按照顺序组成一个带绘制列表；
+- 有些情况图层很大，一次绘制所有图层内容，开销太大，合成线程会将图层划分为图块（256x256 或者 512x512）；
+- 合成线程将图块提交给栅格线程进行栅格化，将图块转换为位图。栅格化过程都会使用 GPU 加速，生成的位图保存周期 GPU 内存中；
+- 一旦所有图块都被栅格化，合成线程会生成一个绘制图块命令（DrawQuad），然会将命令提交给浏览器进程，viz 组件接收到该指令，将页面内容绘制到内存中，显示在屏幕上；
+- 重排：通过 JavaScript 或者 CSS 修改元素几何位置属性，会触发重新布局，解析后面一系列子阶段；重绘：不引起布局变换，直接进入绘制及其以后子阶段；合成：跳过布局和绘制阶段，执行的后续操作，发生在合成线程，非主线程；
+
+#### [调用栈：为什么 JavaScript 代码会出现栈溢出](https://blog.poetries.top/browser-working-principle/guide/part2/lesson08.html)
 
 - 每调用一个函数，JavaScript 引擎会为其创建执行上下文压入调用栈，然后，JavaScript 引擎开始执行函数代码。
 - 如果一个函数 A 调用另外一个函数 B，那么 JavaScript 引擎会为 B 函数创建执行上下文，并将 B 函数的执行上下文压入栈顶。
 - 当前函数执行完毕后，JavaScript 引擎会将该函数的执行上下文弹出栈。
 - 当分配的调用栈空间被占满时，会引发“堆栈溢出”问题。
 
-### [块级作用域：var 缺陷以及为什么要引入 let 和 const](https://blog.poetries.top/browser-working-principle/guide/part2/lesson09.html)
+#### [块级作用域：var 缺陷以及为什么要引入 let 和 const](https://blog.poetries.top/browser-working-principle/guide/part2/lesson09.html)
 
 - let、const 申明的变量不会被提升。在 javascript 引擎编译后，会保存在词法环境中。
 - 块级作用域在代码执行时，将 let、const 变量存放在词法环境的一个单独的区域。词法环境内部维护一个小型的栈结构，作用域内部变量压入栈顶。作用域执行完，从栈顶弹出。
 
-### [作用域链和闭包：代码中出现相同的变量，JavaScript 引擎如何选择](https://blog.poetries.top/browser-working-principle/guide/part2/lesson10.html)
+#### [作用域链和闭包：代码中出现相同的变量，JavaScript 引擎如何选择](https://blog.poetries.top/browser-working-principle/guide/part2/lesson10.html)
 
 -
 
-### [this：从 JavaScript 执行上下文视角讲 this](https://blog.poetries.top/browser-working-principle/guide/part2/lesson11.html)
+#### [this：从 JavaScript 执行上下文视角讲 this](https://blog.poetries.top/browser-working-principle/guide/part2/lesson11.html)
 
 当执行 new CreateObj 的时候，JavaScript 引擎做了四件事：
 
@@ -93,7 +108,7 @@ this 的使用分为：
 - 嵌套函数中的 this 不会继承外层函数的 this 值；
 - 箭头函数没有自己的执行上下文，this 是外层函数的 this。
 
-### [https://blog.poetries.top/browser-working-principle/guide/part3/lesson12.html](栈空间和堆空间：数据是如何存储的)
+#### [https://blog.poetries.top/browser-working-principle/guide/part3/lesson12.html](栈空间和堆空间：数据是如何存储的)
 
 动态语言：在使用时需要检查数据类型的语言。
 弱类型语言：支持隐式转换的语言。
@@ -103,7 +118,7 @@ JavaScript 中的 8 种数据类型，它们可以分为两大类——原始类
 
 从内存视角了解闭包：词法扫描内部函数，引用了外部函数变量，堆空间创建一个“closure”对象，保存变量。
 
-### [垃圾回收：垃圾数据如何自动回收](https://blog.poetries.top/browser-working-principle/guide/part3/lesson13.html)
+#### [垃圾回收：垃圾数据如何自动回收](https://blog.poetries.top/browser-working-principle/guide/part3/lesson13.html)
 
 - 栈中数据回收：执行状态指针 ESP 在执行栈中移动，移过某执行上下文，就会被销毁；
 - 堆中数据回收：V8 引擎采用标记-清除算法；
@@ -115,7 +130,7 @@ JavaScript 中的 8 种数据类型，它们可以分为两大类——原始类
 - 新生代区域采用标记-清除算法回收垃圾：从根元素开始，递归，可到达的元素活动元素，否则是垃圾数据；
 - 为了不造成卡顿，标记过程被切分为一个个子标记，交替进行。
 
-### [编译器和解析器：V8 如何执行一段 JavaScript 代码的](https://blog.poetries.top/browser-working-principle/guide/part3/lesson14.html)
+#### [编译器和解析器：V8 如何执行一段 JavaScript 代码的](https://blog.poetries.top/browser-working-principle/guide/part3/lesson14.html)
 
 - 计算机语言可以分为两种：编译型和解释型语言。编译型语言经过编译器编译后保留机器能读懂的二进制文件，比如 C/C++，go 语言。解释型语言是在程序运行时通过解释器对程序进行动态解释和执行，比如 Python，JavaScript 语言。
 - 编译型语言的编译过程：编译器首先将代码进行词法分析、语法分析，生成抽象语法树（AST），然后优化代码，最后生成处理器能够理解的机器码；
@@ -125,14 +140,14 @@ JavaScript 中的 8 种数据类型，它们可以分为两大类——原始类
 - 解释器 ignition 在解释执行字节码，同时会手机代码信息，发现某一部分代码是热点代码（HotSpot），编译器把热点的字节码转化为机器码，并保存起来，下次使用；
 - 字节码配合解释器和编译器的计数实现称为即时编译（JIT）。
 
-### [消息队列和事件循环：页面是怎么活起来的](https://blog.poetries.top/browser-working-principle/guide/part4/lesson15.html)
+#### [消息队列和事件循环：页面是怎么活起来的](https://blog.poetries.top/browser-working-principle/guide/part4/lesson15.html)
 
 - 每个渲染进程都有一个主线程，主线程会处理 DOM，计算样式，处理布局，JavaScript 任务以及各种输入事件；
 - 维护一个消息队列，新任务（比如 IO 线程）添加到消息队列尾部，主线程循环地从消息队列头部读取任务，执行任务；
 - 解决处理优先级高的任务：消息队列的中的任务称为宏任务，每个宏任务中都会包含一个微任务队列，在执行宏任务的过程中，如果 DOM 有变化，将该变化添加到微任务队列中；
 - 解决单个任务执行时长过久：JavaScript 通过回调功能来规避。
 
-### [webapi：setTimeout 是怎么实现的](https://blog.poetries.top/browser-working-principle/guide/part4/lesson16.html)
+#### [webapi：setTimeout 是怎么实现的](https://blog.poetries.top/browser-working-principle/guide/part4/lesson16.html)
 
 - JavaScript 调用 setTimeout 设置回调函数的时候，渲染进程会创建一个回调任务，延时执行队列存放定时器任务；
 - 当定时器任务到期，就会从延时队列中取出并执行；
@@ -279,3 +294,7 @@ function Bromise(executor) {
 - 非对称加密：浏览器发送加密套件列表给服务器，服务器选择一个加密套件，返回加密套件和公钥，浏览器用公钥加密数据，服务器用私钥解密；
 - 非对称加密缺点：加密效率太低，不能保证服务器发送给浏览器的数据安全，黑客可以获取公钥；
 - 对称加密结合非对称加密：浏览器发送对称加密套件列表、非对称加密列表和随机数 client-random 给服务器，服务器生成随机数 service-random，选择加密套件和公钥返回给浏览器，浏览器利用 client-random 和 service-random 计算出 pre-master，然后利用公钥给 pre-master 加密，向服务器发送加密后的数据，服务器用私钥解密出 pre-master 数据，结合 client-random 和 service-random 生成对称密钥，使用对称密钥传输加密数据；
+- 引入数字证书是为了证明“我就是我”，防止 DNS 被劫持，伪造服务器；
+- 证书的作用：一个是向浏览器证明服务器的身份，另一个是包含服务器公钥；
+- 数字签名过程：CA 使用 Hash 函数技术明文信息，得出信息摘要，然后 CA 使用私钥对信息摘要进行加密，加密后的秘文就是数字签名；
+- 验证数字签名：读取证书明文信息，使用相同 Hash 函数计算得到信息摘要 A，再利用 CA 的公钥解密得到 B，对比 A 和 B，如果一致，则确认证书合法；
