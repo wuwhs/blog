@@ -182,4 +182,100 @@ function Bromise(executor) {
 - 字节流转换成 DOM 三个阶段：1、字节流转换为 Token；2、维护一个 Token 栈，遇到 StartTag Token 入栈，遇到 EndTag Token 出栈；3、为每个 Token 创建一个 DOM 节点；
 - JavaScript 文件和 CSS 样式表文件都会阻塞 DOM 解析；
 
-#### [渲染流水线：CSS 如何影响首次加载时的白屏时间](https://blog.poetries.top/browser-working-principle/guide/part5/lesson22.html)
+#### [渲染流水线：CSS 如何影响首次加载时的白屏时间？](https://blog.poetries.top/browser-working-principle/guide/part5/lesson23.html)
+
+- DOM 构建结束之后，css 文件还未下载完成，渲染流水线空闲，因为下一步是合成布局树，合成布局树需要 CSSOM 和 DOM，这里需要等待 CSS 加载结束并解析成 CSSOM；
+- CSSOM 两个作用：提供给 JavaScript 操作样式表能力，为布局树的合成提供基础样式信息；
+- 在执行 JavaScript 脚本之前，如果页面中包含了外部 CSS 文件的引用，或者通过 style 标签内置了 CSS 内容，那么渲染引擎还需要将这些内容转化为 CSSOM，因为 JavaScript 有修改 CSSOM 的能力，所以在执行 JavaScript 之前，还需要依赖 CSSOM。也就是说 CSS 在部分情况下也会阻塞 DOM 的生成。
+
+#### [分层和合成机制：为什么 CSS 动画比 JavaScript 高效](https://blog.poetries.top/browser-working-principle/guide/part5/lesson24.html)
+
+- 显示器固定刷新频率是 60HZ，即每秒更新 60 张图片，图片来自显卡的前缓冲区；
+- 显卡的职责是合成新的图像，保存在后缓冲区，然后后缓冲区和前缓冲区互换，显卡更新频率和显示前刷新频率不一致，就会造成视觉上的卡顿；
+- 渲染流水线生成的每一副图片称为一帧，生成一帧的方式有重排、重绘和合成三种；
+- 重排会根据 CSSOM 和 DOM 计算布局树，重绘没有重新布局阶段；
+- 生成布局树之后，渲染引擎根据布局树特点转化为层树，每一层解析出绘制列表；
+- 栅格线程根据绘制列表中的指令生成图片，每一层对应一张图片，合成线程将这些图片合成一张图片，发送到后缓存区；
+- 合成线程会将每个图层分割成大小固定的图块，优先绘制靠近视口的图块；
+
+#### [页面性能：如何系统优化页面](https://blog.poetries.top/browser-working-principle/guide/part5/lesson25.html)
+
+- 加载阶段：减少关键资源个数，降低关键资源大小，降低关键资源的 RTT 次数；
+- 交互阶段：减少 JavaScript 脚本执行时间，避免强制同步布局：操作 DOM 的同时获取布局样式会引发，避免布局抖动：多次执行强制布局和抖动，合理利用 CSS 合成动画：标记 will-change，避免频繁的垃圾回收；
+- CSS 实现一些变形、渐变、动画等特效，这是由 CSS 触发的，并且是在合成线程中执行，这个过程称为合成，它不会触发重排或者重绘；
+
+#### [虚拟 DOM：虚拟 DOM 和真实 DOM 有何不同](https://blog.poetries.top/browser-working-principle/guide/part5/lesson26.html)
+
+- 当有数据更新时， React 会生产一个新的虚拟 DOM，然会拿新的虚拟 DOM 和之前的虚拟 DOM 进行比较，这个过程找出变化的节点，然后将变化的节点应用到 DOM 上；
+- 最开始的时候，比较两个 DOM 的过程是在一个递归函数里执行的，其核心算法是 reconciliation。通常情况，这个比较过程执行很快，不过虚拟 DOM 比较复杂时，执行比较函数可能占据主线程比较久的时间，这样会导致其他任务的等待，造成页面卡顿。React 团队重写了 reconciliation 算法，称为 Fiber reconciler，之前老的算法称为 Stack reconciler；
+
+#### [PWA：解决 web 应用哪些问题](https://blog.poetries.top/browser-working-principle/guide/part5/lesson27.html)
+
+- PWA（Progressive Web App），渐进式 Web 应用。一个渐进式过渡方案，让普通站点过渡到 Web 应用，降低站点改造代价，逐渐支持新技术，而不是一步到位；
+- PWA 引入 ServiceWorker 来试着解决离线存储和消息推送问题，引入 mainfest.json 来解决一级入口问题；
+- 暗转了 ServiceWorker 模块之后，WebApp 请求资源时，会先通过 ServiceWorker，让它判断是返回 Serviceworker 缓存的资源还是重新去网络请求资源，一切的控制权交给 ServiceWorker 来处理；
+- 在目前的 Chrome 架构中，Service Worker 是运行在浏览器进程中的，因为浏览器进程生命周期是最长的，所以在浏览器的生命周期内，能够为所有的页面提供服务；
+
+#### [WebComponent：像搭积木一样构建 web 应用](https://blog.poetries.top/browser-working-principle/guide/part5/lesson28.html)
+
+- CSS 的全局属性会阻碍组件化，DOM 也是阻碍组件化的一个因素，因为页面中只有一个 DOM，任何地方都可以直接读取和修改 DOM；
+- WebComponent 提供了对局部试图封装能力，可以让 DOM、CSSOM 和 JavaScript 运行在局部环境中；
+- template 创建模版，查找模版内容，创建影子 DOM，模版添加到影子 DOM 上；
+- 影子 DOM 可以隔离全局 CSS 和 DOM，但是 JavaScript 是不会被隔离的；
+
+#### [HTTP1：HTTP1 性能优化](https://blog.poetries.top/browser-working-principle/guide/part6/lesson29.html)
+
+- HTTP/0.9 基于 TCP 协议，三次握手建立连接，发送一个 GET 请求行（没有请求头和请求体），服务器接收请求之后，读取对应 HTML 文件，数据以 ASCII 字符流返回，传输完成断开连接；
+- HTTP/1.0 增加请求头和响应头来进行协商，在发起请求时通过请求头告诉服务器它期待返回什么类型问题、什么形式压缩、什么语言以及文件编码。引入来状态吗，Cache 机制等；
+- HTTP/1.1 改进持久化连接，解决建立 TCP 连接、传输数据和断开连接带来的大量开销，支持在一个 TCP 连接上可以传输多个 HTTP 请求，目前浏览器对于一个域名同时允许建立 6 个 TCP 持久连接；
+- HTTP/1.1 引入 Chunk transfer 支持动态生成内容：服务器将数据分割成若干任意大小的数据块，每个数据块发送时附上上个数据块的长度，最后使用一个零长度的块作为发送数据完成的标志。在 HTTP/1.1 需要在响应头中设置完整的数据大小，如 Content-Length。
+
+#### [HTTP2：如何提升网络速度](https://blog.poetries.top/browser-working-principle/guide/part6/lesson30.html)
+
+- HTTP/1.1 主要问题：TCP 慢启动；同时开启多条 TCP 连接，会竞争固定宽带；对头阻塞问题；
+- HTTP/2 在一个域名下只使用一个 TCP 长连接和消除对头阻塞问题；
+- 多路复用的实现：HTTP/2 添加了二进制分帧层，将发送或响应数据经过二进制分帧处理，转化为一个个带有请求 ID 编号的帧，服务器或者浏览器接收到响应帧后，根据相同 ID 帧合并为一条完整信息；
+- 设置请求优先级：发送请求可以设置请求优先级，服务器可以优先处理；
+- 服务器推送：请求一个 HTML 页面，服务器可以知道引用了哪些 JavaScript 和 CSS 文件，附带一起发送给浏览器；
+- 头部压缩：对请求头和响应头进行压缩；
+
+#### [HTTP3：甩掉 TCP、TCL 包袱，构建高效网络](https://blog.poetries.top/browser-working-principle/guide/part6/lesson31.html)
+
+- 虽然 HTTP/2 解决了应用层面的对头阻塞问题，不过和 HTTP/1.1 一样，HTTP/2 依然是基于 TCP 协议，而 TCP 最初是为了单连接而设计；
+- TCP 可以看成是计算机之间的一个虚拟管道，数据从一端发送到另一端会被拆分为一个个按照顺序排列的数据包，如果在传输过程中，有一个数据因为网络故障或者其他原因丢失，那么整个连接会处于暂停状态，只有等到该数据重新传输；
+- 由于 TCP 协议僵化，也不可能使用新的协议，HTTP/3 选择了一个折衷的方法，基于现有的 UDP 协议，实现类似 TC 片多路复用，传输可靠等功能，称为 QULC 协议；
+- QULC 实现类似 TCP 流量控制，传输可靠功能；集成 TLS 加密功能；实现多路复用功能；
+
+#### [同源策略：为什么 XMLHttpRequst 不能跨域请求](https://blog.poetries.top/browser-working-principle/guide/part6/lesson32.html)
+
+- 协议、域名和端口号相同的 URL 是同源的；
+- 同源策略会隔离不同源的 DOM、页面数据和网络通信；
+- 页面可以引用第三方资源，不过暴露出诸如 XSS 问题，引入内容安全策略 CSP 限制；
+- 默认 XMLHttpRequest 和 Fetch 不能跨站请求资源，引入跨域资源共享（CORS）进行跨域访问控制；
+
+#### [跨站脚本攻击 XSS：为什么 cookie 中有 httpOnly 属性](https://blog.poetries.top/browser-working-principle/guide/part6/lesson33.html)
+
+- XSS 跨站脚本，往 HTML 文件中注入恶意代码，对用户实施攻击；
+- XSS 攻击主要有存储型 XSS 攻击、反射型 XSS 攻击和 DOM 的 XSS 攻击；
+- 阻止 XSS 攻击：服务器对脚本进行过滤或转码，利用 CSP 策略，使用 HttpOnly；
+
+#### [CSRF 攻击：陌生连接不要随便点](https://blog.poetries.top/browser-working-principle/guide/part6/lesson34.html)
+
+- CSRF 跨站请求伪造，利用用户的登录状态，通过第三方站点攻击；
+- 避免 CSRF 攻击：利用 SameSite（三种模式：Strict、Lax、None） 让浏览器禁止第三方站点发起请求携带关键 Cookie；验证请求的来源站点，请求头中的 Referer 和 Origin 属性；利用 CSRF Token；
+
+#### [沙盒：页面和系统之间的隔离墙](https://blog.poetries.top/browser-working-principle/guide/part6/lesson35.html)
+
+- 浏览器被划分为浏览器内核和渲染内核两个核心模块，其中浏览器内核石油网络进程、浏览器主进程和 GPU 进程组成的，渲染内核就是渲染进程；
+- 浏览器中的安全沙箱是利用操作系统提供的安全技术，让渲染进程在执行过程中无法访问或者修改操作系统中的数据，在渲染进程需要访问系统资源的时候，需要通过浏览器内核来实现，然后将访问的结果通过 IPC 转发给渲染进程；
+- 站点隔离（Site Isolation）将同一站点（包含相同根域名和相同协议的地址）中相互关联的页面放到同一个渲染进程中执行；
+- 实现站点隔离，就可以将恶意的 iframe 隔离在恶意进程内部，使得它无法继续访问其他 iframe 进程的内容，因此无法攻击其他站点；
+
+#### [HTTPS：让数据传输更安全](https://blog.poetries.top/browser-working-principle/guide/part6/lesson36.html)
+
+- 在 TCP 和 HTTP 之间插入一个安全层，所有经过安全层的数据都会被加密或者解密；
+- 对称加密：浏览器发送加密套件列表和一个随机数 client-random，服务器会从加密套件中选取一个加密套件，然后生成一个随机数 service-random，返回给浏览器。这样浏览器和服务器都有相同 client-random 和 service-random，再用相同的方法将两者混合生成一个密钥 master secret，双方就可以进行数据加密传输了；
+- 对称加密缺点：client-random 和 service-random 的过程都是明文，黑客可以拿到协商的加密套件和双方随机数，生成密钥，数据可以被破解；
+- 非对称加密：浏览器发送加密套件列表给服务器，服务器选择一个加密套件，返回加密套件和公钥，浏览器用公钥加密数据，服务器用私钥解密；
+- 非对称加密缺点：加密效率太低，不能保证服务器发送给浏览器的数据安全，黑客可以获取公钥；
+- 对称加密结合非对称加密：浏览器发送对称加密套件列表、非对称加密列表和随机数 client-random 给服务器，服务器生成随机数 service-random，选择加密套件和公钥返回给浏览器，浏览器利用 client-random 和 service-random 计算出 pre-master，然后利用公钥给 pre-master 加密，向服务器发送加密后的数据，服务器用私钥解密出 pre-master 数据，结合 client-random 和 service-random 生成对称密钥，使用对称密钥传输加密数据；
