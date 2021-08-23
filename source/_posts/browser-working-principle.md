@@ -90,7 +90,9 @@ tags: [浏览器]
 
 #### [作用域链和闭包：代码中出现相同的变量，JavaScript 引擎如何选择](https://blog.poetries.top/browser-working-principle/guide/part2/lesson10.html)
 
--
+- 使用一个变量，JavaScript 引擎会在当前的执行上下文中查找变量，如果没有找到，会继续在 outer（执行环境指向外部执行上下文的引用）所指向的执行上下文中查找；
+- JavaScript 执行过程，作用域链是由词法作用域决定，而词法作用域是由代码中函数声明的位置决定；
+- 根据词法作用域的规则，内部函数总是可以访问其外部函数中声明的变量，当通过调用一个外部函数返回一个内部函数后，即使外部函数已经执行结束了，但是内部函数引用外部函数的变量依旧保存在内存中，把这些变量的集合称为闭包；
 
 #### [this：从 JavaScript 执行上下文视角讲 this](https://blog.poetries.top/browser-working-principle/guide/part2/lesson11.html)
 
@@ -108,7 +110,7 @@ this 的使用分为：
 - 嵌套函数中的 this 不会继承外层函数的 this 值；
 - 箭头函数没有自己的执行上下文，this 是外层函数的 this。
 
-#### [https://blog.poetries.top/browser-working-principle/guide/part3/lesson12.html](栈空间和堆空间：数据是如何存储的)
+#### [栈空间和堆空间：数据是如何存储的](https://blog.poetries.top/browser-working-principle/guide/part3/lesson12.html)
 
 动态语言：在使用时需要检查数据类型的语言。
 弱类型语言：支持隐式转换的语言。
@@ -189,6 +191,22 @@ function Bromise(executor) {
   executor(resolve, null)
 }
 ```
+
+#### [async await 使用同步方式写异步代码](https://blog.poetries.top/browser-working-principle/guide/part4/lesson20.html)
+
+- 生成器函数是一个带星号函数，而且是可以暂停执行和回复执行的；
+- 生成器函数内部执行一段代码，遇到 yield 关键字，javascript 引擎返回关键字后面的内容给外部，并且暂停该函数的执行；
+- 外部函数可以同步 next 方法恢复函数的执行；
+- 协程是一种比线程更加轻量级的存在，协程可以看成是跑在线程上的任务，一个线程可以存在多个协程，但是同时只能执行一个协程，如果 A 协程启动 B 协程，A 为 B 的父协程；
+- 协程不被操作协同内核所管理，而完全由程序所控制，这样性能提升；
+- `await xxx` 会创建一个 Promise 对象，将 `xxx` 任务提交给微任务队列；
+- 暂停当前协程的执行，将主线程的控制权力转交给父协程执行，同时将 Promise 对象返回给父协程，继续执行父协程；
+- 父协程执行结束之前会检查微任务队列，微任务队列中有 `resolve(xxx)` 等待执行，触发 then 的回调函数；
+- 回调函数被激活后，会将主线程的控制权交给协程，继续执行后续语句，完成后将控制权还给父协程。
+
+#### [页面性能分析：利用 chrome 做 web 性能分析](https://blog.poetries.top/browser-working-principle/guide/part4/lesson21.html)
+
+- Chrome 开发者工具（简称 DevTools）是一组网页制作和调试的工具，内嵌于 Google Chrome 浏览器中。它一共包含了 10 个功能面板，包括了 Elements、Console、Sources、NetWork、Performance、Memory、Application、Security、Audits 和 Layers。
 
 #### [DOM 树：JavaScript 是如何影响 DOM 树构建的](https://blog.poetries.top/browser-working-principle/guide/part5/lesson22.html)
 
