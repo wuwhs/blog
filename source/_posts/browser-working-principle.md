@@ -6,7 +6,7 @@ tags: [浏览器]
 
 ### [浏览器工作原理与实践](https://blog.poetries.top/browser-working-principle/)
 
-#### [Chrome 架构：仅仅打开了 1 个页面，为什么有 4 个进程](https://blog.poetries.top/browser-working-principle/guide/part1/lesson01.html)
+#### [Chrome 架构：仅仅打开了 1 个页面，为什么有 4 个进程](https://github.com/wuwhs/browser-working-principle-note/blob/main/1.1.Chrome%E6%9E%B6%E6%9E%84%EF%BC%9A%E4%BB%85%E4%BB%85%E6%89%93%E5%BC%80%E4%BA%861%E4%B8%AA%E9%A1%B5%E9%9D%A2%EF%BC%8C%E4%B8%BA%E4%BB%80%E4%B9%88%E6%9C%894%E4%B8%AA%E8%BF%9B%E7%A8%8B.md)
 
 **线程和进程区别**：多线程可以并行处理任务，线程不能单独存在，它是由进程来启动和管理的。一个进程是一个程序的运行实例。
 
@@ -22,7 +22,7 @@ tags: [浏览器]
 
 **面向服务架构**：把原来的各种模块重构成独立的服务，每个服务都可以在独立的进程中运行，访问服务必须使用定义好的接口，通过 IPC 通讯，使得系统更内聚、松耦合、易维护和拓展。
 
-#### [TCP 协议：如何保证页面文件能被完整送达浏览器](https://blog.poetries.top/browser-working-principle/guide/part1/lesson02.html)
+#### [TCP 协议：如何保证页面文件能被完整送达浏览器](https://github.com/wuwhs/browser-working-principle-note/blob/main/1.2.TCP%E5%8D%8F%E8%AE%AE%EF%BC%9A%E5%A6%82%E4%BD%95%E4%BF%9D%E8%AF%81%E9%A1%B5%E9%9D%A2%E6%96%87%E4%BB%B6%E8%83%BD%E8%A2%AB%E5%AE%8C%E6%95%B4%E9%80%81%E8%BE%BE%E6%B5%8F%E8%A7%88%E5%99%A8.md)
 
 - IP 头是 IP 数据包开头的信息，包含 IP 版本、源 IP 地址、目标 IP 地址、生存时间等信息；
 - UDP 头中除了目的端口，还有源端口号等信息；
@@ -31,7 +31,7 @@ tags: [浏览器]
 - 对于错误的数据包，UDP 不提供重发机制，知识丢弃当前的包，不能保证数据的可靠性，但是传输速度非常块；
 - TCP 头除了包含了目标端口和本机端口号外，还提供了用于排序的序列号，保证了数据完整地传输，它的连接可分为三个阶段：建立连接、传输数据和断开连接；
 
-#### [HTTP 请求流程：为什么很多站点第二次打开速度会很快](https://blog.poetries.top/browser-working-principle/guide/part1/lesson03.html)
+#### [HTTP 请求流程：为什么很多站点第二次打开速度会很快](https://github.com/wuwhs/browser-working-principle-note/blob/main/1.3.HTTP%E8%AF%B7%E6%B1%82%E6%B5%81%E7%A8%8B%EF%BC%9A%E4%B8%BA%E4%BB%80%E4%B9%88%E5%BE%88%E5%A4%9A%E7%AB%99%E7%82%B9%E7%AC%AC%E4%BA%8C%E6%AC%A1%E6%89%93%E5%BC%80%E9%80%9F%E5%BA%A6%E4%BC%9A%E5%BE%88%E5%BF%AB.md)
 
 - 浏览器中的 HTTP 请求从发起到结束一共经历如下八个阶段：构建请求、查找缓存、准备 IP 和端口、等待 TCP 队列、建立 TCP 连接、发起 HTTP 请求、服务器处理请求、服务器返回请求和断开连接；
 - 构建请求。浏览器构建请求行，构建好后，准备发起网络请求；
@@ -42,7 +42,7 @@ tags: [浏览器]
 - 发送 HTTP 请求。建立 TCP 连接后，浏览器就可以和服务器进行 HTTP 数据传输了，首先会向服务器发送请求行，然后以请求头形式发送一些其他信息，如果是 POST 请求还会发送请求体；
 - 服务器处理请求。首先服务器会返回响应行，随后，服务器向浏览器发送响应头和响应体。通常服务器返回数据，就要关闭 TCP 连接，如果请求头或者响应头有 Connection:keep-alive TCP 保持打开状态；
 
-#### [导航流程：从输入 URL 到页面展示这中间发生了什么](https://blog.poetries.top/browser-working-principle/guide/part1/lesson04.html)
+#### [导航流程：从输入 URL 到页面展示这中间发生了什么](https://github.com/wuwhs/browser-working-principle-note/blob/main/1.4.%E5%AF%BC%E8%88%AA%E6%B5%81%E7%A8%8B%EF%BC%9A%E4%BB%8E%E8%BE%93%E5%85%A5URL%E5%88%B0%E9%A1%B5%E9%9D%A2%E5%B1%95%E7%A4%BA%E8%BF%99%E4%B8%AD%E9%97%B4%E5%8F%91%E7%94%9F%E4%BA%86%E4%BB%80%E4%B9%88.md)
 
 - 用户输入 URL 并回车
 - 浏览器进程检查 URL，组装协议，构成完整 URL
@@ -64,13 +64,13 @@ tags: [浏览器]
   - 渲染进程接收完数据后，向浏览器发送“确认提交”
   - 浏览器进程接收到确认消息后 engine 浏览器界面状态：安全、地址 URL、前进后退的历史状态、更新 web 页面
 
-#### [渲染流程（上）：HTML、CSS 和 JavaScript 是如何变成页面的](https://blog.poetries.top/browser-working-principle/guide/part1/lesson05.html)
+#### [渲染流程（上）：HTML、CSS 和 JavaScript 是如何变成页面的](https://github.com/wuwhs/browser-working-principle-note/blob/main/1.5.%E6%B8%B2%E6%9F%93%E6%B5%81%E7%A8%8B%EF%BC%88%E4%B8%8A%EF%BC%89%EF%BC%9AHTML%E3%80%81CSS%E5%92%8CJavaScript%E6%98%AF%E5%A6%82%E4%BD%95%E5%8F%98%E6%88%90%E9%A1%B5%E9%9D%A2%E7%9A%84.md)
 
 - 浏览器不能直接理解 HTML 数据，需要将其转化为 DOM 树结构；
 - 生成 DOM 树后，根据 CSS 样式表，计算出 DOM 树所有节点样式；
 - 创建布局树：遍历 DOM 树所有可见节点，把这些节点加到布局中，不可见节点忽略，如 head 标签下所有内容，display: none 元素；
 
-#### [渲染流程（下）：HTML、CSS 和 JavaScript 是如何变成页面的](https://blog.poetries.top/browser-working-principle/guide/part1/lesson06.html)
+#### [渲染流程（下）：HTML、CSS 和 JavaScript 是如何变成页面的](https://github.com/wuwhs/browser-working-principle-note/blob/main/1.6.%E6%B8%B2%E6%9F%93%E6%B5%81%E7%A8%8B%EF%BC%88%E4%B8%8B%EF%BC%89%EF%BC%9AHTML%E3%80%81CSS%E5%92%8CJavaScript%E6%98%AF%E5%A6%82%E4%BD%95%E5%8F%98%E6%88%90%E9%A1%B5%E9%9D%A2%E7%9A%84.md)
 
 - 分层：层叠上下文属性的元素（比如定位属性元素、透明属性元素、CSS 滤镜属性元素）提升为单独的一层，需要裁剪的地方（比如出现滚动条）也会被创建为图层；
 - 图层绘制：完成图层树构建后，渲染引擎会对图层树每一层进行绘制，把一个图层拆分成小的绘制指令，再把指令按照顺序组成一个带绘制列表；
@@ -79,31 +79,31 @@ tags: [浏览器]
 - 一旦所有图块都被栅格化，合成线程会生成一个绘制图块命令（DrawQuad），然会将命令提交给浏览器进程，viz 组件接收到该指令，将页面内容绘制到内存中，显示在屏幕上；
 - 重排：通过 JavaScript 或者 CSS 修改元素几何位置属性，会触发重新布局，解析后面一系列子阶段；重绘：不引起布局变换，直接进入绘制及其以后子阶段；合成：跳过布局和绘制阶段，执行的后续操作，发生在合成线程，非主线程；
 
-#### [变量提升：javascript 代码是按顺序执行的吗](https://blog.poetries.top/browser-working-principle/guide/part2/lesson07.html)
+#### [变量提升：javascript 代码是按顺序执行的吗](https://github.com/wuwhs/browser-working-principle-note/blob/main/2.1.%E5%8F%98%E9%87%8F%E6%8F%90%E5%8D%87%EF%BC%9AJavaScript%E4%BB%A3%E7%A0%81%E6%98%AF%E6%8C%89%E9%A1%BA%E5%BA%8F%E6%89%A7%E8%A1%8C%E7%9A%84%E5%90%97.md)
 
 - JavaScript 代码在执行之前需要先编译，在编译阶段，变量和函数会被存放到变量环境中，变量默认值会被设置为 undefined；
 - 在代码执行阶段，JavaScript 引擎会从变量环境中查找自定义的变量和函数；
 - 如果在编译阶段，窜爱两个相同的函数，那么最终放在变量环境中的是最后定义的那个，后定义的覆盖先定义的；
 
-#### [调用栈：为什么 JavaScript 代码会出现栈溢出](https://blog.poetries.top/browser-working-principle/guide/part2/lesson08.html)
+#### [调用栈：为什么 JavaScript 代码会出现栈溢出](https://github.com/wuwhs/browser-working-principle-note/blob/main/2.2.%E8%B0%83%E7%94%A8%E6%A0%88%EF%BC%9A%E4%B8%BA%E4%BB%80%E4%B9%88JavaScript%E4%BB%A3%E7%A0%81%E4%BC%9A%E5%87%BA%E7%8E%B0%E6%A0%88%E6%BA%A2%E5%87%BA.md)
 
 - 每调用一个函数，JavaScript 引擎会为其创建执行上下文压入调用栈，然后，JavaScript 引擎开始执行函数代码。
 - 如果一个函数 A 调用另外一个函数 B，那么 JavaScript 引擎会为 B 函数创建执行上下文，并将 B 函数的执行上下文压入栈顶。
 - 当前函数执行完毕后，JavaScript 引擎会将该函数的执行上下文弹出栈。
 - 当分配的调用栈空间被占满时，会引发“堆栈溢出”问题。
 
-#### [块级作用域：var 缺陷以及为什么要引入 let 和 const](https://blog.poetries.top/browser-working-principle/guide/part2/lesson09.html)
+#### [块级作用域：var 缺陷以及为什么要引入 let 和 const](https://github.com/wuwhs/browser-working-principle-note/blob/main/2.3.%E5%9D%97%E7%BA%A7%E4%BD%9C%E7%94%A8%E5%9F%9F%EF%BC%9Avar%E7%BC%BA%E9%99%B7%E4%BB%A5%E5%8F%8A%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E5%BC%95%E5%85%A5let%E5%92%8Cconst.md)
 
 - let、const 申明的变量不会被提升。在 javascript 引擎编译后，会保存在词法环境中。
 - 块级作用域在代码执行时，将 let、const 变量存放在词法环境的一个单独的区域。词法环境内部维护一个小型的栈结构，作用域内部变量压入栈顶。作用域执行完，从栈顶弹出。
 
-#### [作用域链和闭包：代码中出现相同的变量，JavaScript 引擎如何选择](https://blog.poetries.top/browser-working-principle/guide/part2/lesson10.html)
+#### [作用域链和闭包：代码中出现相同的变量，JavaScript 引擎如何选择](https://github.com/wuwhs/browser-working-principle-note/blob/main/2.4.%E4%BD%9C%E7%94%A8%E5%9F%9F%E9%93%BE%E5%92%8C%E9%97%AD%E5%8C%85%EF%BC%9A%E4%BB%A3%E7%A0%81%E4%B8%AD%E5%87%BA%E7%8E%B0%E7%9B%B8%E5%90%8C%E7%9A%84%E5%8F%98%E9%87%8F%EF%BC%8CJavaScript%E5%BC%95%E6%93%8E%E5%A6%82%E4%BD%95%E9%80%89%E6%8B%A9.md)
 
 - 使用一个变量，JavaScript 引擎会在当前的执行上下文中查找变量，如果没有找到，会继续在 outer（执行环境指向外部执行上下文的引用）所指向的执行上下文中查找；
 - JavaScript 执行过程，作用域链是由词法作用域决定，而词法作用域是由代码中函数声明的位置决定；
 - 根据词法作用域的规则，内部函数总是可以访问其外部函数中声明的变量，当通过调用一个外部函数返回一个内部函数后，即使外部函数已经执行结束了，但是内部函数引用外部函数的变量依旧保存在内存中，把这些变量的集合称为闭包；
 
-#### [this：从 JavaScript 执行上下文视角讲 this](https://blog.poetries.top/browser-working-principle/guide/part2/lesson11.html)
+#### [this：从 JavaScript 执行上下文视角讲 this](https://github.com/wuwhs/browser-working-principle-note/blob/main/2.5.this%EF%BC%9A%E4%BB%8EJavaScript%E6%89%A7%E8%A1%8C%E4%B8%8A%E4%B8%8B%E6%96%87%E8%A7%86%E8%A7%92%E8%AE%B2this.md)
 
 当执行 new CreateObj 的时候，JavaScript 引擎做了四件事：
 
@@ -119,7 +119,7 @@ this 的使用分为：
 - 嵌套函数中的 this 不会继承外层函数的 this 值；
 - 箭头函数没有自己的执行上下文，this 是外层函数的 this。
 
-#### [栈空间和堆空间：数据是如何存储的](https://blog.poetries.top/browser-working-principle/guide/part3/lesson12.html)
+#### [栈空间和堆空间：数据是如何存储的](https://github.com/wuwhs/browser-working-principle-note/blob/main/3.1.%E6%A0%88%E7%A9%BA%E9%97%B4%E5%92%8C%E5%A0%86%E7%A9%BA%E9%97%B4%EF%BC%9A%E6%95%B0%E6%8D%AE%E6%98%AF%E5%A6%82%E4%BD%95%E5%AD%98%E5%82%A8%E7%9A%84.md)
 
 动态语言：在使用时需要检查数据类型的语言。
 弱类型语言：支持隐式转换的语言。
@@ -129,19 +129,19 @@ JavaScript 中的 8 种数据类型，它们可以分为两大类——原始类
 
 从内存视角了解闭包：词法扫描内部函数，引用了外部函数变量，堆空间创建一个“closure”对象，保存变量。
 
-#### [垃圾回收：垃圾数据如何自动回收](https://blog.poetries.top/browser-working-principle/guide/part3/lesson13.html)
+#### [垃圾回收：垃圾数据如何自动回收](https://github.com/wuwhs/browser-working-principle-note/blob/main/3.2.%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%EF%BC%9A%E5%9E%83%E5%9C%BE%E6%95%B0%E6%8D%AE%E5%A6%82%E4%BD%95%E8%87%AA%E5%8A%A8%E5%9B%9E%E6%94%B6.md)
 
 - 栈中数据回收：执行状态指针 ESP 在执行栈中移动，移过某执行上下文，就会被销毁；
 - 堆中数据回收：V8 引擎采用标记-清除算法；
 - V8 把堆分为两个区域——新生代和老生代，分别使用副、主垃圾回收器；
-- 副垃圾回收器负责新生代垃圾回收，小对象会被分配到该区域处理；
-- 新生代采用 scavenge 算法处理：将新生代空间分为两半，一半空闲，一半存对象，对对象区域做标记，存活对象复制排列到空闲区域，完成后，清理对象区域，角色反转；
+- 副垃圾回收器负责新生代垃圾回收，小对象（1 ～ 8M）会被分配到该区域处理；
+- 新生代采用 scavenge 算法处理：将新生代空间分为两半，一半空闲，一半存对象，对对象区域做标记，存活对象复制排列到空闲区域，没有内存碎片，完成后，清理对象区域，角色反转；
 - 新生代区域两次垃圾回收还存活的对象晋升至老生代区域；
 - 主垃圾回收器负责老生区垃圾回收，大对象，存活时间长；
 - 新生代区域采用标记-清除算法回收垃圾：从根元素开始，递归，可到达的元素活动元素，否则是垃圾数据；
 - 为了不造成卡顿，标记过程被切分为一个个子标记，交替进行。
 
-#### [编译器和解析器：V8 如何执行一段 JavaScript 代码的](https://blog.poetries.top/browser-working-principle/guide/part3/lesson14.html)
+#### [编译器和解析器：V8 如何执行一段 JavaScript 代码的](https://github.com/wuwhs/browser-working-principle-note/blob/main/3.3.%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E8%A7%A3%E6%9E%90%E5%99%A8%EF%BC%9AV8%E5%A6%82%E4%BD%95%E6%89%A7%E8%A1%8C%E4%B8%80%E6%AE%B5JavaScript%E4%BB%A3%E7%A0%81%E7%9A%84.md)
 
 - 计算机语言可以分为两种：编译型和解释型语言。编译型语言经过编译器编译后保留机器能读懂的二进制文件，比如 C/C++，go 语言。解释型语言是在程序运行时通过解释器对程序进行动态解释和执行，比如 Python，JavaScript 语言。
 - 编译型语言的编译过程：编译器首先将代码进行词法分析、语法分析，生成抽象语法树（AST），然后优化代码，最后生成处理器能够理解的机器码；
@@ -151,14 +151,14 @@ JavaScript 中的 8 种数据类型，它们可以分为两大类——原始类
 - 解释器 ignition 在解释执行字节码，同时会手机代码信息，发现某一部分代码是热点代码（HotSpot），编译器把热点的字节码转化为机器码，并保存起来，下次使用；
 - 字节码配合解释器和编译器的计数实现称为即时编译（JIT）。
 
-#### [消息队列和事件循环：页面是怎么活起来的](https://blog.poetries.top/browser-working-principle/guide/part4/lesson15.html)
+#### [消息队列和事件循环：页面是怎么活起来的](https://github.com/wuwhs/browser-working-principle-note/blob/main/4.1.%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E5%92%8C%E4%BA%8B%E4%BB%B6%E5%BE%AA%E7%8E%AF%EF%BC%9A%E9%A1%B5%E9%9D%A2%E6%98%AF%E6%80%8E%E4%B9%88%E6%B4%BB%E8%B5%B7%E6%9D%A5%E7%9A%84.md)
 
 - 每个渲染进程都有一个主线程，主线程会处理 DOM，计算样式，处理布局，JavaScript 任务以及各种输入事件；
 - 维护一个消息队列，新任务（比如 IO 线程）添加到消息队列尾部，主线程循环地从消息队列头部读取任务，执行任务；
 - 解决处理优先级高的任务：消息队列的中的任务称为宏任务，每个宏任务中都会包含一个微任务队列，在执行宏任务的过程中，如果 DOM 有变化，将该变化添加到微任务队列中；
 - 解决单个任务执行时长过久：JavaScript 通过回调功能来规避。
 
-#### [webapi：setTimeout 是怎么实现的](https://blog.poetries.top/browser-working-principle/guide/part4/lesson16.html)
+#### [webapi：setTimeout 是怎么实现的](https://github.com/wuwhs/browser-working-principle-note/blob/main/4.2.Webapi%EF%BC%9AsetTimeout%E6%98%AF%E6%80%8E%E4%B9%88%E5%AE%9E%E7%8E%B0%E7%9A%84.md)
 
 - JavaScript 调用 setTimeout 设置回调函数的时候，渲染进程会创建一个回调任务，延时执行队列存放定时器任务；
 - 当定时器任务到期，就会从延时队列中取出并执行；
@@ -168,20 +168,20 @@ JavaScript 中的 8 种数据类型，它们可以分为两大类——原始类
 - 延时执行时间最大值是 24.8 天，因为延时值是以 32 个 bit 存储的；
 - setTimeout 设置的回调函数中的 this 指向全局 window。
 
-#### [webpai：XMLHttpRequest 是怎么实现的](https://blog.poetries.top/browser-working-principle/guide/part4/lesson17.html)
+#### [webpai：XMLHttpRequest 是怎么实现的](https://github.com/wuwhs/browser-working-principle-note/blob/main/4.3.Webapi%EF%BC%9AXMLHttpRequest%E6%98%AF%E6%80%8E%E4%B9%88%E5%AE%9E%E7%8E%B0%E7%9A%84.md)
 
 - XMLHttpRequest onreadystatechange 处理流程：未初始化 -> OPENED -> HEADERS_RECEIVED -> LOADING -> DONE；
 - 渲染进程会将请求发送给网络进程，然后网络进程负责资源下载，等网络进程接收到数据后，利用 IPC 通知渲染进程；
 - 渲染进程接收到消息之后，会将 xhr 回调函数封装成任务并添加到消息队列中，等主线程循环系统执行到该任务的时候，会根据相关状态来调用回调函数。
 
-#### [宏任务和微任务：不是所有的任务都是一个待遇](https://blog.poetries.top/browser-working-principle/guide/part4/lesson18.html)
+#### [宏任务和微任务：不是所有的任务都是一个待遇](https://github.com/wuwhs/browser-working-principle-note/blob/main/4.4.%E5%AE%8F%E4%BB%BB%E5%8A%A1%E5%92%8C%E5%BE%AE%E4%BB%BB%E5%8A%A1%EF%BC%9A%E4%B8%8D%E6%98%AF%E6%89%80%E6%9C%89%E7%9A%84%E4%BB%BB%E5%8A%A1%E9%83%BD%E6%98%AF%E4%B8%80%E4%B8%AA%E5%BE%85%E9%81%87.md)
 
 - 消息队列中的任务为宏任务。渲染进程内部会维护多个消息队列，比如延时执行队列和普通消息队列，主线程采用 for 循环，不断地从这些任务队列中取出任务并执行；
 - 微任务是一个需要异步执行的函数，执行时机是在主函数执行结束之后、当前宏任务结束之前；
-- V8 在执行 javascript 脚本时，会为其创建一个全局执行上下文，同事会创建一个微任务队列；
+- V8 在执行 javascript 脚本时，会为其创建一个全局执行上下文，同时会创建一个微任务队列；
 - 执行微任务过程中产生的微任务不会推迟到下个宏任务中执行，而是在当前宏任务中继续执行；
 
-#### [使用 Promise 告别回调函数](https://blog.poetries.top/browser-working-principle/guide/part4/lesson19.html)
+#### [使用 Promise 告别回调函数](https://github.com/wuwhs/browser-working-principle-note/blob/main/4.5.%E4%BD%BF%E7%94%A8Promise%E5%91%8A%E5%88%AB%E5%9B%9E%E8%B0%83%E5%87%BD%E6%95%B0.md)
 
 - 使用 Promise 解决了回调地狱问题，消灭嵌套和多次处理；
 - 模拟实现 Promise
@@ -201,7 +201,7 @@ function Bromise(executor) {
 }
 ```
 
-#### [async await 使用同步方式写异步代码](https://blog.poetries.top/browser-working-principle/guide/part4/lesson20.html)
+#### [async await 使用同步方式写异步代码](https://github.com/wuwhs/browser-working-principle-note/blob/main/4.6.async-await%E4%BD%BF%E7%94%A8%E5%90%8C%E6%AD%A5%E6%96%B9%E5%BC%8F%E5%86%99%E5%BC%82%E6%AD%A5%E4%BB%A3%E7%A0%81.md)
 
 - 生成器函数是一个带星号函数，而且是可以暂停执行和回复执行的；
 - 生成器函数内部执行一段代码，遇到 yield 关键字，javascript 引擎返回关键字后面的内容给外部，并且暂停该函数的执行；
@@ -213,24 +213,24 @@ function Bromise(executor) {
 - 父协程执行结束之前会检查微任务队列，微任务队列中有 `resolve(xxx)` 等待执行，触发 then 的回调函数；
 - 回调函数被激活后，会将主线程的控制权交给协程，继续执行后续语句，完成后将控制权还给父协程。
 
-#### [页面性能分析：利用 chrome 做 web 性能分析](https://blog.poetries.top/browser-working-principle/guide/part4/lesson21.html)
+#### [页面性能分析：利用 chrome 做 web 性能分析](https://github.com/wuwhs/browser-working-principle-note/blob/main/5.1.%E9%A1%B5%E9%9D%A2%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%EF%BC%9A%E5%88%A9%E7%94%A8chrome%E5%81%9Aweb%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90.md)
 
 - Chrome 开发者工具（简称 DevTools）是一组网页制作和调试的工具，内嵌于 Google Chrome 浏览器中。它一共包含了 10 个功能面板，包括了 Elements、Console、Sources、NetWork、Performance、Memory、Application、Security、Audits 和 Layers。
 
-#### [DOM 树：JavaScript 是如何影响 DOM 树构建的](https://blog.poetries.top/browser-working-principle/guide/part5/lesson22.html)
+#### [DOM 树：JavaScript 是如何影响 DOM 树构建的](https://github.com/wuwhs/browser-working-principle-note/blob/main/5.2.DOM%E6%A0%91%EF%BC%9AJavaScript%E6%98%AF%E5%A6%82%E4%BD%95%E5%BD%B1%E5%93%8DDOM%E6%A0%91%E6%9E%84%E5%BB%BA%E7%9A%84.md)
 
 - HTML 解析器（HTMLParse）负责将 HTML 字节流转换为 DOM 结构；
 - HTML 解析器并不是等整个文档加载完成之后再解析，而是网络进程加载流多少数据，便解析多少数据；
 - 字节流转换成 DOM 三个阶段：1、字节流转换为 Token；2、维护一个 Token 栈，遇到 StartTag Token 入栈，遇到 EndTag Token 出栈；3、为每个 Token 创建一个 DOM 节点；
 - JavaScript 文件和 CSS 样式表文件都会阻塞 DOM 解析；
 
-#### [渲染流水线：CSS 如何影响首次加载时的白屏时间？](https://blog.poetries.top/browser-working-principle/guide/part5/lesson23.html)
+#### [渲染流水线：CSS 如何影响首次加载时的白屏时间？](https://github.com/wuwhs/browser-working-principle-note/blob/main/5.3.%E6%B8%B2%E6%9F%93%E6%B5%81%E6%B0%B4%E7%BA%BF%EF%BC%9ACSS%E5%A6%82%E4%BD%95%E5%BD%B1%E5%93%8D%E9%A6%96%E6%AC%A1%E5%8A%A0%E8%BD%BD%E6%97%B6%E7%9A%84%E7%99%BD%E5%B1%8F%E6%97%B6%E9%97%B4%EF%BC%9F.md)
 
 - DOM 构建结束之后，css 文件还未下载完成，渲染流水线空闲，因为下一步是合成布局树，合成布局树需要 CSSOM 和 DOM，这里需要等待 CSS 加载结束并解析成 CSSOM；
 - CSSOM 两个作用：提供给 JavaScript 操作样式表能力，为布局树的合成提供基础样式信息；
 - 在执行 JavaScript 脚本之前，如果页面中包含了外部 CSS 文件的引用，或者通过 style 标签内置了 CSS 内容，那么渲染引擎还需要将这些内容转化为 CSSOM，因为 JavaScript 有修改 CSSOM 的能力，所以在执行 JavaScript 之前，还需要依赖 CSSOM。也就是说 CSS 在部分情况下也会阻塞 DOM 的生成。
 
-#### [分层和合成机制：为什么 CSS 动画比 JavaScript 高效](https://blog.poetries.top/browser-working-principle/guide/part5/lesson24.html)
+#### [分层和合成机制：为什么 CSS 动画比 JavaScript 高效](https://github.com/wuwhs/browser-working-principle-note/blob/main/5.4.%E5%88%86%E5%B1%82%E5%92%8C%E5%90%88%E6%88%90%E6%9C%BA%E5%88%B6%EF%BC%9A%E4%B8%BA%E4%BB%80%E4%B9%88css%E5%8A%A8%E7%94%BB%E6%AF%94JavaScript%E9%AB%98%E6%95%88.md)
 
 - 显示器固定刷新频率是 60HZ，即每秒更新 60 张图片，图片来自显卡的前缓冲区；
 - 显卡的职责是合成新的图像，保存在后缓冲区，然后后缓冲区和前缓冲区互换，显卡更新频率和显示前刷新频率不一致，就会造成视觉上的卡顿；
@@ -240,39 +240,39 @@ function Bromise(executor) {
 - 栅格线程根据绘制列表中的指令生成图片，每一层对应一张图片，合成线程将这些图片合成一张图片，发送到后缓存区；
 - 合成线程会将每个图层分割成大小固定的图块，优先绘制靠近视口的图块；
 
-#### [页面性能：如何系统优化页面](https://blog.poetries.top/browser-working-principle/guide/part5/lesson25.html)
+#### [页面性能：如何系统优化页面](https://github.com/wuwhs/browser-working-principle-note/blob/main/5.5.%E9%A1%B5%E9%9D%A2%E6%80%A7%E8%83%BD%EF%BC%9A%E5%A6%82%E4%BD%95%E7%B3%BB%E7%BB%9F%E4%BC%98%E5%8C%96%E9%A1%B5%E9%9D%A2.md)
 
 - 加载阶段：减少关键资源个数，降低关键资源大小，降低关键资源的 RTT 次数；
 - 交互阶段：减少 JavaScript 脚本执行时间，避免强制同步布局：操作 DOM 的同时获取布局样式会引发，避免布局抖动：多次执行强制布局和抖动，合理利用 CSS 合成动画：标记 will-change，避免频繁的垃圾回收；
 - CSS 实现一些变形、渐变、动画等特效，这是由 CSS 触发的，并且是在合成线程中执行，这个过程称为合成，它不会触发重排或者重绘；
 
-#### [虚拟 DOM：虚拟 DOM 和真实 DOM 有何不同](https://blog.poetries.top/browser-working-principle/guide/part5/lesson26.html)
+#### [虚拟 DOM：虚拟 DOM 和真实 DOM 有何不同](https://github.com/wuwhs/browser-working-principle-note/blob/main/5.6.%E8%99%9A%E6%8B%9FDOM%EF%BC%9A%E8%99%9A%E6%8B%9FDOM%E5%92%8C%E5%AE%9E%E9%99%85DOM%E6%9C%89%E4%BD%95%E4%B8%8D%E5%90%8C.md)
 
 - 当有数据更新时， React 会生产一个新的虚拟 DOM，然会拿新的虚拟 DOM 和之前的虚拟 DOM 进行比较，这个过程找出变化的节点，然后将变化的节点应用到 DOM 上；
 - 最开始的时候，比较两个 DOM 的过程是在一个递归函数里执行的，其核心算法是 reconciliation。通常情况，这个比较过程执行很快，不过虚拟 DOM 比较复杂时，执行比较函数可能占据主线程比较久的时间，这样会导致其他任务的等待，造成页面卡顿。React 团队重写了 reconciliation 算法，称为 Fiber reconciler，之前老的算法称为 Stack reconciler；
 
-#### [PWA：解决 web 应用哪些问题](https://blog.poetries.top/browser-working-principle/guide/part5/lesson27.html)
+#### [PWA：解决 web 应用哪些问题](https://github.com/wuwhs/browser-working-principle-note/blob/main/5.7.PWA%EF%BC%9A%E8%A7%A3%E5%86%B3%E4%BA%86web%E5%BA%94%E7%94%A8%E5%93%AA%E4%BA%9B%E9%97%AE%E9%A2%98.md)
 
 - PWA（Progressive Web App），渐进式 Web 应用。一个渐进式过渡方案，让普通站点过渡到 Web 应用，降低站点改造代价，逐渐支持新技术，而不是一步到位；
 - PWA 引入 ServiceWorker 来试着解决离线存储和消息推送问题，引入 mainfest.json 来解决一级入口问题；
 - 暗转了 ServiceWorker 模块之后，WebApp 请求资源时，会先通过 ServiceWorker，让它判断是返回 Serviceworker 缓存的资源还是重新去网络请求资源，一切的控制权交给 ServiceWorker 来处理；
 - 在目前的 Chrome 架构中，Service Worker 是运行在浏览器进程中的，因为浏览器进程生命周期是最长的，所以在浏览器的生命周期内，能够为所有的页面提供服务；
 
-#### [WebComponent：像搭积木一样构建 web 应用](https://blog.poetries.top/browser-working-principle/guide/part5/lesson28.html)
+#### [WebComponent：像搭积木一样构建 web 应用](https://github.com/wuwhs/browser-working-principle-note/blob/main/5.8.webComponent%EF%BC%9A%E5%83%8F%E6%90%AD%E7%A7%AF%E6%9C%A8%E4%B8%80%E6%A0%B7%E6%9E%84%E5%BB%BAweb%E5%BA%94%E7%94%A8.md)
 
 - CSS 的全局属性会阻碍组件化，DOM 也是阻碍组件化的一个因素，因为页面中只有一个 DOM，任何地方都可以直接读取和修改 DOM；
 - WebComponent 提供了对局部试图封装能力，可以让 DOM、CSSOM 和 JavaScript 运行在局部环境中；
 - template 创建模版，查找模版内容，创建影子 DOM，模版添加到影子 DOM 上；
 - 影子 DOM 可以隔离全局 CSS 和 DOM，但是 JavaScript 是不会被隔离的；
 
-#### [HTTP1：HTTP1 性能优化](https://blog.poetries.top/browser-working-principle/guide/part6/lesson29.html)
+#### [HTTP1：HTTP1 性能优化](https://github.com/wuwhs/browser-working-principle-note/blob/main/6.1.HTTP1%EF%BC%9AHTTP%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96.md)
 
 - HTTP/0.9 基于 TCP 协议，三次握手建立连接，发送一个 GET 请求行（没有请求头和请求体），服务器接收请求之后，读取对应 HTML 文件，数据以 ASCII 字符流返回，传输完成断开连接；
 - HTTP/1.0 增加请求头和响应头来进行协商，在发起请求时通过请求头告诉服务器它期待返回什么类型问题、什么形式压缩、什么语言以及文件编码。引入来状态吗，Cache 机制等；
 - HTTP/1.1 改进持久化连接，解决建立 TCP 连接、传输数据和断开连接带来的大量开销，支持在一个 TCP 连接上可以传输多个 HTTP 请求，目前浏览器对于一个域名同时允许建立 6 个 TCP 持久连接；
 - HTTP/1.1 引入 Chunk transfer 支持动态生成内容：服务器将数据分割成若干任意大小的数据块，每个数据块发送时附上上个数据块的长度，最后使用一个零长度的块作为发送数据完成的标志。在 HTTP/1.1 需要在响应头中设置完整的数据大小，如 Content-Length。
 
-#### [HTTP2：如何提升网络速度](https://blog.poetries.top/browser-working-principle/guide/part6/lesson30.html)
+#### [HTTP2：如何提升网络速度](https://github.com/wuwhs/browser-working-principle-note/blob/main/6.2.HTTP2%EF%BC%9A%E5%A6%82%E4%BD%95%E6%8F%90%E5%8D%87%E7%BD%91%E7%BB%9C%E9%80%9F%E5%BA%A6.md)
 
 - HTTP/1.1 主要问题：TCP 慢启动；同时开启多条 TCP 连接，会竞争固定宽带；对头阻塞问题；
 - HTTP/2 在一个域名下只使用一个 TCP 长连接和消除对头阻塞问题；
@@ -281,39 +281,39 @@ function Bromise(executor) {
 - 服务器推送：请求一个 HTML 页面，服务器可以知道引用了哪些 JavaScript 和 CSS 文件，附带一起发送给浏览器；
 - 头部压缩：对请求头和响应头进行压缩；
 
-#### [HTTP3：甩掉 TCP、TCL 包袱，构建高效网络](https://blog.poetries.top/browser-working-principle/guide/part6/lesson31.html)
+#### [HTTP3：甩掉 TCP、TCL 包袱，构建高效网络](https://github.com/wuwhs/browser-working-principle-note/blob/main/6.3.HTTP3%EF%BC%9A%E7%94%A9%E6%8E%89TCP%E3%80%81TCL%E5%8C%85%E8%A2%B1-%E6%9E%84%E5%BB%BA%E9%AB%98%E6%95%88%E7%BD%91%E7%BB%9C.md)
 
 - 虽然 HTTP/2 解决了应用层面的对头阻塞问题，不过和 HTTP/1.1 一样，HTTP/2 依然是基于 TCP 协议，而 TCP 最初是为了单连接而设计；
 - TCP 可以看成是计算机之间的一个虚拟管道，数据从一端发送到另一端会被拆分为一个个按照顺序排列的数据包，如果在传输过程中，有一个数据因为网络故障或者其他原因丢失，那么整个连接会处于暂停状态，只有等到该数据重新传输；
 - 由于 TCP 协议僵化，也不可能使用新的协议，HTTP/3 选择了一个折衷的方法，基于现有的 UDP 协议，实现类似 TC 片多路复用，传输可靠等功能，称为 QULC 协议；
 - QULC 实现类似 TCP 流量控制，传输可靠功能；集成 TLS 加密功能；实现多路复用功能；
 
-#### [同源策略：为什么 XMLHttpRequst 不能跨域请求](https://blog.poetries.top/browser-working-principle/guide/part6/lesson32.html)
+#### [同源策略：为什么 XMLHttpRequst 不能跨域请求](https://github.com/wuwhs/browser-working-principle-note/blob/main/6.4.%E5%90%8C%E6%BA%90%E7%AD%96%E7%95%A5%EF%BC%9A%E4%B8%BA%E4%BB%80%E4%B9%88XMLHttpRequst%E4%B8%8D%E8%83%BD%E8%B7%A8%E5%9F%9F%E8%AF%B7%E6%B1%82%E8%B5%84%E6%BA%90.md)
 
 - 协议、域名和端口号相同的 URL 是同源的；
 - 同源策略会隔离不同源的 DOM、页面数据和网络通信；
 - 页面可以引用第三方资源，不过暴露出诸如 XSS 问题，引入内容安全策略 CSP 限制；
 - 默认 XMLHttpRequest 和 Fetch 不能跨站请求资源，引入跨域资源共享（CORS）进行跨域访问控制；
 
-#### [跨站脚本攻击 XSS：为什么 cookie 中有 httpOnly 属性](https://blog.poetries.top/browser-working-principle/guide/part6/lesson33.html)
+#### [跨站脚本攻击 XSS：为什么 cookie 中有 httpOnly 属性](https://github.com/wuwhs/browser-working-principle-note/blob/main/6.5.%E8%B7%A8%E7%AB%99%E8%84%9A%E6%9C%AC%E6%94%BB%E5%87%BBXSS%EF%BC%9A%E4%B8%BA%E4%BB%80%E4%B9%88cookie%E4%B8%AD%E6%9C%89httpOnly%E5%B1%9E%E6%80%A7.md)
 
 - XSS 跨站脚本，往 HTML 文件中注入恶意代码，对用户实施攻击；
 - XSS 攻击主要有存储型 XSS 攻击、反射型 XSS 攻击和 DOM 的 XSS 攻击；
 - 阻止 XSS 攻击：服务器对脚本进行过滤或转码，利用 CSP 策略，使用 HttpOnly；
 
-#### [CSRF 攻击：陌生连接不要随便点](https://blog.poetries.top/browser-working-principle/guide/part6/lesson34.html)
+#### [CSRF 攻击：陌生连接不要随便点](https://github.com/wuwhs/browser-working-principle-note/blob/main/6.6.CSRF%E6%94%BB%E5%87%BB%EF%BC%9A%E9%99%8C%E7%94%9F%E9%93%BE%E6%8E%A5%E4%B8%8D%E8%A6%81%E9%9A%8F%E4%BE%BF%E7%82%B9.md)
 
 - CSRF 跨站请求伪造，利用用户的登录状态，通过第三方站点攻击；
 - 避免 CSRF 攻击：利用 SameSite（三种模式：Strict、Lax、None） 让浏览器禁止第三方站点发起请求携带关键 Cookie；验证请求的来源站点，请求头中的 Referer 和 Origin 属性；利用 CSRF Token；
 
-#### [沙盒：页面和系统之间的隔离墙](https://blog.poetries.top/browser-working-principle/guide/part6/lesson35.html)
+#### [沙盒：页面和系统之间的隔离墙](https://github.com/wuwhs/browser-working-principle-note/blob/main/6.7.%E6%B2%99%E7%9B%92%EF%BC%9A%E9%A1%B5%E9%9D%A2%E5%92%8C%E7%B3%BB%E7%BB%9F%E4%B9%8B%E9%97%B4%E7%9A%84%E9%9A%94%E7%A6%BB%E5%A2%99.md)
 
 - 浏览器被划分为浏览器内核和渲染内核两个核心模块，其中浏览器内核石油网络进程、浏览器主进程和 GPU 进程组成的，渲染内核就是渲染进程；
 - 浏览器中的安全沙箱是利用操作系统提供的安全技术，让渲染进程在执行过程中无法访问或者修改操作系统中的数据，在渲染进程需要访问系统资源的时候，需要通过浏览器内核来实现，然后将访问的结果通过 IPC 转发给渲染进程；
 - 站点隔离（Site Isolation）将同一站点（包含相同根域名和相同协议的地址）中相互关联的页面放到同一个渲染进程中执行；
 - 实现站点隔离，就可以将恶意的 iframe 隔离在恶意进程内部，使得它无法继续访问其他 iframe 进程的内容，因此无法攻击其他站点；
 
-#### [HTTPS：让数据传输更安全](https://blog.poetries.top/browser-working-principle/guide/part6/lesson36.html)
+#### [HTTPS：让数据传输更安全](https://github.com/wuwhs/browser-working-principle-note/blob/main/6.8.HTTPS%EF%BC%9A%E8%AE%A9%E6%95%B0%E6%8D%AE%E4%BC%A0%E8%BE%93%E6%9B%B4%E5%AE%89%E5%85%A8.md)
 
 - 在 TCP 和 HTTP 之间插入一个安全层，所有经过安全层的数据都会被加密或者解密；
 - 对称加密：浏览器发送加密套件列表和一个随机数 client-random，服务器会从加密套件中选取一个加密套件，然后生成一个随机数 service-random，返回给浏览器。这样浏览器和服务器都有相同 client-random 和 service-random，再用相同的方法将两者混合生成一个密钥 master secret，双方就可以进行数据加密传输了；

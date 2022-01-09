@@ -1,6 +1,6 @@
 // 截流的实现
 // el.onscroll=throttle(func, 1000)
-
+/**
 function throttle(func, wait) {
   let context
   let args
@@ -34,4 +34,21 @@ function throttle(func, wait) {
     }
   }
   return throttled
+}
+*/
+
+// 简洁理解版
+// 函数节流: 频繁触发，但只在特定的时间内才执行一次代码
+function throttle(func, wait) {
+  let canRun = true
+  return function (...args) {
+    if (!canRun) {
+      return
+    }
+    canRun = false
+    setTimeout(() => {
+      func.apply(this, args)
+      canRun = true
+    }, wait)
+  }
 }

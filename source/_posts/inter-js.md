@@ -7,7 +7,7 @@ categories: 面试
 
 ### 介绍 js 的基本数据类型
 
-Undefined、Null、Boolean、Number、String、ECMAScript 2015 新增 Symbol（创建后独一无二且不可变的数据类型）
+Undefined、Null、Boolean、Number、String、ECMAScript 2015 新增 Symbol（创建后独一无二且不可变的数据类型）、ES2020 新增 BigInt（表示整数，没有位置限制）。
 
 ### 介绍 js 有哪些内置对象？
 
@@ -87,59 +87,9 @@ Undefined、Null、Boolean、Number、String、ECMAScript 2015 新增 Symbol（�
 1. 内存使用减少，因为只需一个父元素的事件处理程序，而不必为每个后代都添加事件处理程序。
 2. 无需从已删除的元素的元素中解绑处理程序，也无需将处理程序绑定到新元素上。
 
-### 浮点数整数位每三位添加一个逗号
+### 0.1+0.2 != 0.3
 
-```javascript
-function commafy(num) {
-  return num.toString().replace(/(\d)(?=(\d{3})+\.)/g, function ($1) {
-    return $1 + ','
-  })
-}
-```
-
-### 如何实现数组的随机排序？
-
-1. 方法一：依次取出一个位置和随机一个位置交换
-
-```javascript
-var arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-function randSort1(arr) {
-  for (var i = 0, len = arr.length; i < len; i++) {
-    var rand = parseInt(Math.random() * len)
-    var temp = arr[rand]
-    arr[rand] = arr[i]
-    arr[i] = temp
-  }
-  return arr
-}
-console.log(randSort1(arr))
-```
-
-2. 方法二：随机取出一个位置值，然后删除这个值，加入到新数组中，知道元素组为空
-
-```javascript
-var arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-function randSort2(arr) {
-  var mixedArray = []
-  while (arr.length > 0) {
-    var randomIndex = parseInt(Math.random() * arr.length)
-    mixedArray.push(arr[randomIndex])
-    arr.splice(randomIndex, 1)
-  }
-  return mixedArray
-}
-console.log(randSort2(arr))
-```
-
-3. 方法三：利用排序函数`sort()`
-
-```javascript
-var arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-arr.sort(function () {
-  return Math.random() - 0.5
-})
-console.log(arr)
-```
+`JS` 采用 `IEEE 754` 双精度版本（64 位），浮点数 0.1 用二进制表示的时候是无穷的，两个浮点数相加造成截断丢失精度。
 
 ### JavaScript 创建对象的几种方式？
 
@@ -363,34 +313,6 @@ console.log(arr)
 - 综上所述多个规则，较高（第一个最高，上一条最低）将决定 this 的值；
 - ES2015 中的箭头函数，将忽略上面的所有规则，this 被设置为它被创建时的上下文；
 
-### 实现 call()、apply、bind()
-
-```js
-// call
-Function.prototype.call = function call(context, ...args) {
-  const self = this
-  const key = Symbol('key')
-  // null undefined
-  context == null ? (context = window) : null
-  // string number
-  !/^(object|function)$/i.test(typeof context) ? (context = Object(context)) : null
-
-  // array function object
-  context[key] = self
-  const result = context[key](...args)
-  delete context[key]
-  return result
-}
-
-// bind
-Function.prototype.bind = function bind(context, ...args) {
-  const self = this
-  return function proxy() {
-    self.apply(context, args)
-  }
-}
-```
-
 ### eval 是做什么的？
 
 - 它的功能是把对应的字符串解析成 JS 代码并运行；
@@ -407,98 +329,10 @@ Function.prototype.bind = function bind(context, ...args) {
 - `undefined`表示变量声明了，但没有初始化
 - `null`表示一个对象“没有值”的值，也就是值为“空”
 
-### 写一个通用的事件绑定对象
-
-```javascript
-var EventUtil = {
-  // 添加事件
-  addHandler: function (element, type, handler) {
-    if (element.addEventListener) {
-      element.addEventListener(type, handler, false)
-    } else if (element.attachEvent) {
-      element.attachEvent('on' + type, handler)
-    }
-  },
-  // 获取事件对象
-  getEvent: function (ev) {
-    return ev || window.event
-  },
-  // 获取事件目标
-  getTarget: function (ev) {
-    return ev.target || ev.srcElement
-  },
-  // 阻止默认事件
-  preventDefault: function (ev) {
-    if (ev.preventDefault) {
-      ev.preventDefault()
-    } else {
-      ev.returnValue = false
-    }
-  },
-  // 阻止冒泡
-  stopPropagation: function (ev) {
-    if (ev.stopPropagation) {
-      ev.stopPropagation()
-    } else {
-      ev.cancelBubble = true
-    }
-  },
-  // 移除事件
-  removeHandler: function (element, type, handler) {
-    if (element.removeEventListener) {
-      element.removeEventListener(type, handler, false)
-    } else if (element.detachEvent) {
-      element.detachEvent('on' + type, handler)
-    }
-  },
-  // 获取相关元素
-  getRelatedTarget: function (ev) {
-    if (ev.relatedTarget) {
-      return ev.relatedTarget
-    } else if (ev.toElement) {
-      return ev.toElement
-    } else if (ev.fromElement) {
-      return ev.fromElement
-    }
-  },
-  // 获取鼠标滚动
-  getWheelDelta: function (ev) {
-    // Firefox
-    if (ev.DOMMouseScroll) {
-      return -ev.detail * 40
-    }
-    // 其他
-    else {
-      return ev.wheelDelta
-    }
-  },
-  // 获取keypress按下键字符的ASCLL码
-  getCharCode: function (ev) {
-    if (typeof ev.charCode == 'number') {
-      return ev.charCode
-    } else {
-      return ev.keyCode
-    }
-  },
-  // 获取剪贴板数据
-  getClipboardText: function (ev) {
-    var clipboardData = event.clipboardData || window.clipboardData
-    return clipboardData.getData('text')
-  },
-  // 设置剪贴板数据
-  setClipboardText: function (ev, value) {
-    if (ev.clipboardData) {
-      return ev.clipboardData.setData('text/plain', value)
-    } else if (windwo.clipboardData) {
-      return window.clipboardData.setData('text', value)
-    }
-  }
-}
-```
-
 ### 什么是闭包（closure），为什么要用它？
 
-闭包是指有权访问另一个函数作用域中变量的函数，创建闭包最常见的方式是一个函数内创建另一个函数，通过另一个函数访问这个函数的局部变量，利用闭包可以突破作用域链，将函数内部的变量和方法传递到外部。
+MDN 的解释：一个函数和对其周围状态（词法环境）的引用捆绑在一起，这样的组合就是闭包（closure）。也就是说，闭包让你可以在一个内层函数中访问到其外层函数的作用域。
+红宝书的解释：闭包是指有权访问另一个函数作用域中变量的函数，创建闭包最常见的方式是一个函数内创建另一个函数，通过另一个函数访问这个函数的局部变量，利用闭包可以突破作用域链，将函数内部的变量和方法传递到外部。
 
 **闭包特性**
 
@@ -553,6 +387,13 @@ Base.call(obj)
 ### js 延迟加载的方式有哪些？
 
 defer 和 async、动态创建 DOM 方式（用得最多）、按需异步载入 js
+
+### `defer` 与 `async` 区别？
+
+`defer` 是 渲染完再执行，`async` 是下载完就执行。
+
+- `defer` 要等到整个页面在内存中正常渲染结束（DOM 结构完全生成 DOMContentLoaded，以及其他脚本执行完成），才会执行；
+- `async` 一旦下载完，渲染引擎就会中断渲染，执行整个脚本以后，再继续渲染。
 
 ### Ajax 是什么？如何创建一个 Ajax？
 
@@ -760,6 +601,13 @@ server {
 
 我发现 AMD 的语法非常冗长，CommonJS 更接近其他语言 import 声明语句的用法习惯。大多数情况下，我认为 AMD 没有使用的必要，因为如果把所有 JavaScript 都捆绑进一个文件中，将无法得到异步加载的好处。此外，CommonJS 语法上更接近 Node 编写模块的风格，在前后端都使用 JavaScript 开发之间进行切换时，语境的切换开销较小。
 
+### ES6 模块与 CommonJS 模块的差异
+
+- `CommonJS` 模块输出的是一个值的拷贝，`ES6` 模块输出的是值的引用；
+- `CommonJS` 模块是运行时加载，`ES6` 模块是编译时输出接口；
+- `CommonJS` 模块的 `require()` 是同步加载模块，`ES6` 模块的 `import` 命令是异步加载，有一个独立的模块依赖的解析阶段；
+- `CommonJS` 模块的顶层 `this` 指向当前模块，`ES6` 模块之中，顶层的 `this` 指向 `undefined`。
+
 ### CommonJS 中的 require/exports 和 ES6 中的 import/export 区别？
 
 - CommonJS 模块的重要特性是加载时执行，即脚本代码在 require 的时候，就会全部执行。一旦出现某个模块被”循环加载”，就只输出已经执行的部分，还未执行的部分不会输出。
@@ -771,6 +619,10 @@ server {
 - CommonJS 规范规定，每个模块内部， module 变量代表当前模块。这个变量是一个对象，它的 exports 属性（即 module.exports ）是对外的接口。加载某个模块，其实是加载该模块的 module.exports 属性。
 
 - export 命令规定的是对外的接口，必须与模块内部的变量建立一一对应关系。
+
+参考:
+[Module 的加载实现](https://es6.ruanyifeng.com/#docs/module-loader)
+[「万字进阶」深入浅出 Commonjs 和 Es Module](https://mp.weixin.qq.com/s/y_uk7wXAfvq8FzcUZrR93w)
 
 ### `import`引入脚本文件省略后缀名，Node 会怎样查找？
 
@@ -840,40 +692,9 @@ WebPack 是一个模块打包工具，你可以使用 WebPack 管理你的模块
 5. 客户端获取到 hash，成功后客户端构造 hot-update.js script 链接，然后插入主文档
 6. hot-update.js 插入成功后，执行 hotAPI 的 createRecord 和 reload 方法，获取到 Vue 组件的 render 方法，重新 render 组件， 继而实现 UI 无刷新更新。
 
-### 函数截流和函数防抖？
+### ES6中变量声明的6中方法
 
-函数节流: 频繁触发,但只在特定的时间内才执行一次代码
-
-```javascript
-// 函数节流
-var canRun = true
-document.getElementById('throttle').onscroll = function () {
-  if (!canRun) {
-    // 判断是否已空闲，如果在执行中，则直接return
-    return
-  }
-
-  canRun = false
-  setTimeout(function () {
-    console.log('函数节流')
-    canRun = true
-  }, 300)
-}
-```
-
-函数防抖: 频繁触发,但只在特定的时间内没有触发执行条件才执行一次代码
-
-```javascript
-// 函数防抖
-var timer = false
-document.getElementById('debounce').onscroll = function () {
-  clearTimeout(timer) // 清除未执行的代码，重置回初始化状态
-
-  timer = setTimeout(function () {
-    console.log('函数防抖')
-  }, 300)
-}
-```
+`var`、`function`、`let`、`const`、`import`、`class`
 
 ### `Object.is()` 与原来的比较操作符“ ===”、“ ==”的区别？
 
@@ -1149,34 +970,6 @@ view 的变化会自动更新到 ViewModel，ViewModel 的变化也会自动同�
 
 MVC 中联系是单向的，MVP 中 P 和 V 通过接口交互，MVVM 的联系是双向的
 
-### Vue 中 MVVM 原理
-
-- 深度遍历 `data` 对象，利用 `defineProperty` API 对每个属性数据劫持（Observer）
-- 对于每个属性的 getter 绑定一个依赖队列（Dep），setter 触发（Nofity）这个依赖队列遍历执行每一项
-- 在模版编译构成中，编译到 `v-modal` 指令或者解析出具体的文本节点值时，创建一个观察者（Watcher），观察者创建后会调用 getter 方法，将观察对象插入依赖队列。
-- 通过监听元素的 `input` 事件，当用户输入即可修改数据，这样实现了从视图到数据的更新
-- 当数据变化，调用 setter，触发遍历执行依赖队列中的观察者，观察者回调更新（update）视图，这样就实现了从数据到视图的更新。
-
-### Vue 中 nextTick 原理
-
-- 在数据变化，触发观察者（`Watcher`）回调（`update`）时，会分为三种情况：赖处理（`lazy`）、同步（`sync`）和 观察者队列（`queueWatcher`）。
-- 观察者队列通过观察者 `id` 进行去重，再去通过 `nextTick` 遍历执行观察者的 `run` 函数视图更新.
-- `nextTick` 执行的目的是在 `microtask` 或者 `task` 中推入一个 `function`，当前栈执行完毕以后执行 `nextTick` 传入的 `function`.
-- 在 `Vue2.5` 之后的版本，`nextTick` 采取的策略默认走 `microTask`， 对于一些 `DOM` 交互，如 `v-on` 绑定事件回调函数的处理会强制走 `macroTask`。
-- 在 `Vue2.4` 前基于 `microTask` 实现，但是 `microTask` 的执行级别非常高，在某些场景之下甚至比事件冒泡还要快，会导致一些诡异的问题。但是全部改成 `macroTask`，对于一些有重绘和动画场景也会有性能影响。
-- `Vue` 中检测对于 `macroTask` 支持顺序： `setImmediate`（高版本 IE 和 Edge） -> `MessageChannel` -> `setTimeout`。
-- `Vue` 中检测对于 `microTask` 支持顺序： `Promise` -> `fallback macroTask`。
-
-相关拓展：
-`macroTask` 包括：`I/O` -> `渲染` -> `setImmediate` -> `requestAnimationFrame` -> `postMessage` -> `setTimeout` -> `setInterval`。
-`microTask` 包括：`process.nextTick` -> `Promise` -> `MutationObserve` -> `Object.observe`
-
-参考:
-[Vue 番外篇 -- vue.nextTick()浅析](https://juejin.im/post/6844903695935602696)
-[JavaScript 运行机制详解：再谈 Event Loop](http://www.ruanyifeng.com/blog/2014/10/event-loop.html)
-[Vue.js 升级踩坑小记](https://github.com/DDFE/DDFE-blog/issues/24) 这里黄毅老师遇到的音乐播放跟我遇到的在线客服提示音乐一样的问题：`nextTick` 异步调用时使用 `messageChannel` API 被认定为不是用户行为，音乐播放器不会被调用。
-[Tasks, microtasks, queues and schedules](https://jakearchibald.com/2015/tasks-microtasks-queues-and-schedules/)
-
 ### DOM 元素 e 的 e.getAttribute(propName)和 e.propName 有什么区别和联系？
 
 - e.getAttribute()，是标准 DOM 操作文档元素属性的方法，具有通用性可在任意文档上使用，返回元素在源文件中设置的属性；
@@ -1383,14 +1176,18 @@ Decorator
 <link rel="dns-prefetch" href="//host_name_to_prefetch.com">
 ```
 
-开启 DNS 预解析
+可参考 [前端性能优化 24 条建议（2020）](https://juejin.cn/post/6892994632968306702)
 
 ### 错误监控
 
 1.  前端错误分类：（1）及时运行错误（2）资源加载错误
 
-2.  及时运行错误的捕获方式：（1）try..catch（2）window.onerror
-
+2.  及时运行错误的捕获方式：
+    （1）try..catch 捕获代码块运行错误；
+    （2）window.onerror 捕获 js 运行错误，但是无法捕获静态资源异常和 js 代码错误；
+    （3）unhandledrejection 捕获 Promise 错误；
+    （4）React 的捕获错误 componentDidCatch；
+    （5）Vue 的捕获错误 Vue.config.errorHandler；
 3.  资源加载错误：
 
     （1）object.onerror

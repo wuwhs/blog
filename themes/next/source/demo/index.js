@@ -107,7 +107,7 @@ function createListNode(arr) {
 */
 
 // 移动指针的方式创建单向链表
-function createListNode(arr) {
+/* function createListNode(arr) {
   let result = new ListNode()
   let head = result
   arr.forEach((value) => {
@@ -119,10 +119,10 @@ function createListNode(arr) {
 }
 
 const arr = [2, 3, 4, 5, 8, 2]
-console.log(createListNode(arr))
+console.log(createListNode(arr)) */
 
 // ListNode -> array
-function spreadListNodeValue(list) {
+/* function spreadListNodeValue(list) {
   const result = []
   let l = list
   while (l.next) {
@@ -131,4 +131,51 @@ function spreadListNodeValue(list) {
   }
   result.push(l.val)
   return result
+} */
+
+/* const fs = require('fs')
+const buf = new Buffer.alloc(1024)
+
+fs.open('main.js', 'r+', function (err, fd) {
+  if (err) {
+    return console.error(err)
+  }
+
+  // 截取文件
+  fs.ftruncate(fd, 10, function (err) {
+    if (err) {
+      console.error(err)
+    }
+
+    fs.read(fd, buf, 0, buf.length, 0, function (err, bytes) {
+      if (err) {
+        console.error(err)
+      }
+      if (bytes > 0) {
+        console.log(buf.slice(0, bytes).toString())
+      }
+
+      fs.close(fd, function (err) {
+        if (err) {
+          console.error(err)
+        }
+      })
+    })
+  })
+}) */
+
+function* gen() {
+  const num1 = yield 1
+  console.log('num1: ', num1)
+  const num2 = yield 2
+  console.log('num1: ', num2)
+  return 3
 }
+const g = gen()
+console.log(g.next()) // { value: 1, done: false }
+console.log(g.next(11111))
+// 11111
+//  { value: 2, done: false }
+// console.log(g.next(22222))
+// 22222
+// { value: 3, done: true }

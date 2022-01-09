@@ -283,6 +283,7 @@ const arr = [2, 3, 6, 7]
 console.log(combinationSum(arr, 9))
 */
 
+/*
 // 寻找最长上升子序列长度
 // f(n) = max(f(i)) 0<=i<=n-1
 const getSeriseLen = function (arr) {
@@ -304,3 +305,58 @@ const getSeriseLen = function (arr) {
 
 const arr = [2, 8, 6, 7, 1, 2, 3]
 console.log(getSeriseLen(arr))
+*/
+
+/*
+// 输入是 1,2,3,5,7,8,10 输出要求是 1~3 5 7~8 10
+const parseRange = function (arr) {
+  const result = []
+  let start = 0
+  let end = 0
+  let offset = 0
+  const len = arr.length
+  while (start < len) {
+    end++
+    offset++
+    // 连续区间中断情况
+    if (arr[start] + offset !== arr[end] || end === len - 1) {
+      result.push(start === end - 1 ? arr[start] : `${arr[start]}~${arr[end - 1]}`)
+      start = end
+      offset = 0
+    }
+  }
+  return result
+}
+console.log(parseRange([1, 2, 3, 5, 7, 8, 10]))
+*/
+
+// 盛最多水的容器
+// 输入 [1, 8, 6, 2, 5, 4, 8, 3, 7] 输出49
+// 首尾指针法：两端向中间夹逼，高度较小一端向中间移动，计算当前面积，
+// 如果大于最大面积，则替换
+const maxContainer = function (arr) {
+  let left = 0
+  const len = arr.length
+  let right = len - 1
+  const result = {
+    left: 0,
+    right: 0,
+    max: 0
+  }
+  while (left < right) {
+    let temp = (right - left) * Math.min(arr[left], arr[right])
+    if (temp > result.max) {
+      result.max = temp
+      result.left = left
+      result.right = right
+    }
+    // 高度小的一方往前走一步
+    if (arr[left] > arr[right]) {
+      right = right - 1
+    } else {
+      left = left + 1
+    }
+  }
+  return result
+}
+console.log(maxContainer([1, 8, 6, 2, 5, 4, 8, 3, 7]))

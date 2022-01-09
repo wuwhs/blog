@@ -1,7 +1,7 @@
 ---
 title: inter-vue
 date: 2020-11-16 17:39:47
-tags: [vue, 面试]
+tags: [vue, interview]
 ---
 
 ### Vue 响应式原理怎么实现
@@ -30,6 +30,17 @@ tags: [vue, 面试]
 当前值发生改变时，就会执行 setter，通知依赖实例（dep）进行更新（notify），遍历依赖列表（subs）中的 watcher 执行 update。
 
 ### Vue 中 nextTick 原理
+
+简单：
+
+在下次 DOM 更新循环结束之后执行延时回调。nextTick 主要使用了宏任务和微任务。根据执行环境分别去尝试采用：
+
+- Promise
+- MutationObserver
+- setImmediate
+- setTimeout
+
+具体的：
 
 - 在数据变化，触发观察者（`Watcher`）回调（`update`）时，会分为三种情况：赖处理（`lazy`）、同步（`sync`）和 观察者队列（`queueWatcher`）。
 - 观察者队列通过观察者 `id` 进行去重，再去通过 `nextTick` 遍历执行观察者的 `run` 函数视图更新.
@@ -114,3 +125,17 @@ flushSchedulerQueue 函数负责刷新 watcher 队列，即执行 queue 数组�
 
 - ES module 只兼容现代浏览器；
 - Rollup 打包，而不是 ESBuild，原因在于构建应用重要功能还在持续开发中，特别是代码分割和 CSS 处理方面。
+
+### Vue 组件通讯方式
+
+- props 和 $emit 父组件向子组件传递数据是通过 prop 传递的，子组件传递数据给父组件是通过 $emit 触发事件来做到的；
+- $parent，$children 获取当前组件的父组件和当前组件的子组件；
+- $arrts 和 $listeners 解决了将父组件属性和监听器传递到内部组件；
+- eventBus 事件总线方式；
+- vuex 状态管理；
+
+### Vuex 原理
+
+Vuex 是基于 Vue 实现的全局状态管理器插件，利用 Vue 的响应式原理监听 state 对象的变化，再通过全局 Vue.mixin API 在每个组件的 beforeCreate 生命周期执行时将 store 对象注入到组件。
+
+参考 [「Vue 源码学习」你想知道 Vuex 的实现原理吗？](https://juejin.cn/post/6952473110377414686)
