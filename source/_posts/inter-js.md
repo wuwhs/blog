@@ -89,7 +89,11 @@ Undefined、Null、Boolean、Number、String、ECMAScript 2015 新增 Symbol（�
 
 ### 0.1+0.2 != 0.3
 
-`JS` 采用 `IEEE 754` 双精度版本（64 位），浮点数 0.1 用二进制表示的时候是无穷的，两个浮点数相加造成截断丢失精度。
+`JS` 采用 `IEEE 754` 双精度版本（64 位），即 8 个字节表示一个数字。第 1 位是符号位，决定正负；中间 11 位是指数位，决定数值大小；后面 52 位是小数位，决定精度。浮点数 0.1 用二进制表示的时候是无穷的，两个浮点数相加造成截断丢失精度。
+
+解决方案：1、差值小于 ES6 的 Number.EPSILON 极小值认为是相等；2、将数值转化成字符串，小数部分转化成整数计算；3、浮点树扩大到整数，相加，再除回去；
+
+[深度：JS 的 7 种数据类型以及它们的底层数据结构](https://mp.weixin.qq.com/s/sXFsH_TxFD9BQbEoifOc6w)
 
 ### JavaScript 创建对象的几种方式？
 
@@ -692,7 +696,7 @@ WebPack 是一个模块打包工具，你可以使用 WebPack 管理你的模块
 5. 客户端获取到 hash，成功后客户端构造 hot-update.js script 链接，然后插入主文档
 6. hot-update.js 插入成功后，执行 hotAPI 的 createRecord 和 reload 方法，获取到 Vue 组件的 render 方法，重新 render 组件， 继而实现 UI 无刷新更新。
 
-### ES6中变量声明的6中方法
+### ES6 中变量声明的 6 中方法
 
 `var`、`function`、`let`、`const`、`import`、`class`
 

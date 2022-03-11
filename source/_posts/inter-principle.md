@@ -71,6 +71,18 @@ Compilation Hooks
 | finishModule | SyncHook | 所有模块都完成构建     |
 | optimize     | SyncHook | 优化阶段开始时触发     |
 
+#### 简单实现一个 webpack
+
+- 传入一个文件路径参数，通过 fs 将文件中的内容读取出来；
+- 再通过 babylon 解析代码获取 AST，目的是为了分析代码中是否还引入了别的文件；
+- 通过 dependencies 来存储文件中的依赖，然后再将 AST 转化成 ES5代码；
+- 最后函数返回一个对象，对象中包含当前文件路径、当前文件依赖和当前文件转化后的代码；
+- 这样遍历所有依赖文件，构建出一个函数参数对象；
+- 对象的属性就是当前文件的相对路径，属性值是一个函数，函数体是当前文件下的代码，函数接受三个参数 module、exports、require；
+- 接下来就是构造一个使用参数的函数require，调用 require('./entry.js')就可以执行 `./entry.js` 对应的函数并执行，通过 `module.export` 方式导出内容。
+
+[实现小型打包工具](https://juejin.cn/book/6844733763675488269/section/6844733763780345864)
+
 #### webpack 打包流程
 
 专业版：

@@ -1,10 +1,11 @@
 ---
-title: 前端代码规范
+title: 组员重构代码千奇百怪，直接JS、ES6和Vue规范给一梭子
 date: 2021-12-01 16:25:27
 tags:
 ---
 
-为了提升前端代码书写质量，减少 bug 率，本着”高效、快乐工作，不留坑“的宗旨。现制定 JavaScrip、ES6 和 Vue 单文件组件相关代码风格规范，请在项目中参考落实。
+近期组员接手了一个“古老“的初始由后端大佬写的前端项目，业务层面的组件复用，全靠是 copy 相同代码咱不说，经过不同大佬们的维护，代码风格更是千奇百怪。该前端项目还在正常迭代更新，又不可能重写，面对 💩 一样的代码，两个接手的小前端抱着欲哭无泪，瑟瑟发抖。见状，只能安慰之，暂时发挥啊 Q 精神，规范自己的新代码，然后每次迭代开发任务重构一两个旧组件，此过程持续 2-3 个月后，上 eslint 和 prettier 自动化检测语法和格式化代码。
+本着“代码不规范，新人两行泪”的警示，总结出如下 JavaScrip、ES6 和 Vue 单文件组件相关代码风格案例，供大家参考。
 
 ## Javascript 代码风格
 
@@ -14,24 +15,24 @@ tags:
 
 ```js
 // bad ❌
-const foo = 'JDoe@example.com';
-const bar = 'John';
-const age = 23;
-const qux = true;
+const foo = 'JDoe@example.com'
+const bar = 'John'
+const age = 23
+const qux = true
 
 // good ✅
-const email = 'John@example.com';
-const firstName = 'John';
-const age = 23;
-const isActive = true;
+const email = 'John@example.com'
+const firstName = 'John'
+const age = 23
+const isActive = true
 ```
 
 布尔变量通常需要回答特定问题，例如：
 
 ```js
-isActive;
-didSubscribe;
-hasLinkedAccount;
+isActive
+didSubscribe
+hasLinkedAccount
 ```
 
 ### 避免添加不必要的上下文
@@ -46,9 +47,9 @@ const user = {
   userFirstName: 'John',
   userLastName: 'Doe',
   userAge: 23
-};
+}
 
-user.userId;
+user.userId
 
 //good ✅
 const user = {
@@ -57,21 +58,21 @@ const user = {
   firstName: 'John',
   lastName: 'Doe',
   age: 23
-};
+}
 
-user.id;
+user.id
 ```
 
 ### 避免硬编码值
 
 ```js
 // bad ❌
-setTimeout(clearSessionData, 900000);
+setTimeout(clearSessionData, 900000)
 
 //good ✅
-const SESSION_DURATION_MS = 15 * 60 * 1000;
+const SESSION_DURATION_MS = 15 * 60 * 1000
 
-setTimeout(clearSessionData, SESSION_DURATION_MS);
+setTimeout(clearSessionData, SESSION_DURATION_MS)
 ```
 
 ### 使用有意义的函数名称
@@ -111,7 +112,7 @@ function sendPushNotification(title, message, image, isSilent, delayMs) {
   // ...
 }
 
-sendPushNotification('New Message', '...', 'http://...', false, 1000);
+sendPushNotification('New Message', '...', 'http://...', false, 1000)
 
 //good ✅
 function sendPushNotification({ title, message, image, isSilent, delayMs }) {
@@ -124,9 +125,9 @@ const notificationConfig = {
   image: 'http://...',
   isSilent: false,
   delayMs: 1000
-};
+}
 
-sendPushNotification(notificationConfig);
+sendPushNotification(notificationConfig)
 ```
 
 ### 避免在一个函数中做太多事情
@@ -137,21 +138,21 @@ sendPushNotification(notificationConfig);
 // bad ❌
 function pingUsers(users) {
   users.forEach((user) => {
-    const userRecord = database.lookup(user);
+    const userRecord = database.lookup(user)
     if (!userRecord.isActive()) {
-      ping(user);
+      ping(user)
     }
-  });
+  })
 }
 
 //good ✅
 function pingInactiveUsers(users) {
-  users.filter(!isUserActive).forEach(ping);
+  users.filter(!isUserActive).forEach(ping)
 }
 
 function isUserActive(user) {
-  const userRecord = database.lookup(user);
-  return userRecord.isActive();
+  const userRecord = database.lookup(user)
+  return userRecord.isActive()
 }
 ```
 
@@ -163,19 +164,19 @@ function isUserActive(user) {
 // bad ❌
 function createFile(name, isPublic) {
   if (isPublic) {
-    fs.create(`./public/${name}`);
+    fs.create(`./public/${name}`)
   } else {
-    fs.create(name);
+    fs.create(name)
   }
 }
 
 //good ✅
 function createFile(name) {
-  fs.create(name);
+  fs.create(name)
 }
 
 function createPublicFile(name) {
-  createFile(`./public/${name}`);
+  createFile(`./public/${name}`)
 }
 ```
 
@@ -187,46 +188,46 @@ function createPublicFile(name) {
 // bad ❌
 function renderCarsList(cars) {
   cars.forEach((car) => {
-    const price = car.getPrice();
-    const make = car.getMake();
-    const brand = car.getBrand();
-    const nbOfDoors = car.getNbOfDoors();
+    const price = car.getPrice()
+    const make = car.getMake()
+    const brand = car.getBrand()
+    const nbOfDoors = car.getNbOfDoors()
 
-    render({ price, make, brand, nbOfDoors });
-  });
+    render({ price, make, brand, nbOfDoors })
+  })
 }
 
 function renderMotorcyclesList(motorcycles) {
   motorcycles.forEach((motorcycle) => {
-    const price = motorcycle.getPrice();
-    const make = motorcycle.getMake();
-    const brand = motorcycle.getBrand();
-    const seatHeight = motorcycle.getSeatHeight();
+    const price = motorcycle.getPrice()
+    const make = motorcycle.getMake()
+    const brand = motorcycle.getBrand()
+    const seatHeight = motorcycle.getSeatHeight()
 
-    render({ price, make, brand, nbOfDoors });
-  });
+    render({ price, make, brand, nbOfDoors })
+  })
 }
 
 //good ✅
 function renderVehiclesList(vehicles) {
   vehicles.forEach((vehicle) => {
-    const price = vehicle.getPrice();
-    const make = vehicle.getMake();
-    const brand = vehicle.getBrand();
+    const price = vehicle.getPrice()
+    const make = vehicle.getMake()
+    const brand = vehicle.getBrand()
 
-    const data = { price, make, brand };
+    const data = { price, make, brand }
 
     switch (vehicle.type) {
       case 'car':
-        data.nbOfDoors = vehicle.getNbOfDoors();
-        break;
+        data.nbOfDoors = vehicle.getNbOfDoors()
+        break
       case 'motorcycle':
-        data.seatHeight = vehicle.getSeatHeight();
-        break;
+        data.seatHeight = vehicle.getSeatHeight()
+        break
     }
 
-    render(data);
-  });
+    render(data)
+  })
 }
 ```
 
@@ -236,28 +237,28 @@ function renderVehiclesList(vehicles) {
 
 ```js
 // bad ❌
-let date = '21-8-2021';
+let date = '21-8-2021'
 
 function splitIntoDayMonthYear() {
-  date = date.split('-');
+  date = date.split('-')
 }
 
-splitIntoDayMonthYear();
+splitIntoDayMonthYear()
 
 // Another function could be expecting date as a string
-console.log(date); // ['21', '8', '2021'];
+console.log(date) // ['21', '8', '2021'];
 
 //good ✅
 function splitIntoDayMonthYear(date) {
-  return date.split('-');
+  return date.split('-')
 }
 
-const date = '21-8-2021';
-const newDate = splitIntoDayMonthYear(date);
+const date = '21-8-2021'
+const newDate = splitIntoDayMonthYear(date)
 
 // Original vlaue is intact
-console.log(date); // '21-8-2021';
-console.log(newDate); // ['21', '8', '2021'];
+console.log(date) // '21-8-2021';
+console.log(newDate) // ['21', '8', '2021'];
 ```
 
 另外，如果你将一个可变值传递给函数，你应该直接克隆一个新值返回，而不是直接改变该它。
@@ -265,12 +266,12 @@ console.log(newDate); // ['21', '8', '2021'];
 ```js
 // bad ❌
 function enrollStudentInCourse(course, student) {
-  course.push({ student, enrollmentDate: Date.now() });
+  course.push({ student, enrollmentDate: Date.now() })
 }
 
 //good ✅
 function enrollStudentInCourse(course, student) {
-  return [...course, { student, enrollmentDate: Date.now() }];
+  return [...course, { student, enrollmentDate: Date.now() }]
 }
 ```
 
@@ -308,7 +309,7 @@ if (firstName !== '' && firstName !== null && firstName !== undefined) {
   // ...
 }
 
-const isUserEligible = user.isVerified() && user.didSubscribe() ? true : false;
+const isUserEligible = user.isVerified() && user.didSubscribe() ? true : false
 
 //good ✅
 if (isActive) {
@@ -319,7 +320,7 @@ if (!!firstName) {
   // ...
 }
 
-const isUserEligible = user.isVerified() && user.didSubscribe();
+const isUserEligible = user.isVerified() && user.didSubscribe()
 ```
 
 ### 避免过多分支
@@ -332,25 +333,25 @@ function addUserService(db, user) {
   if (!db) {
     if (!db.isConnected()) {
       if (!user) {
-        return db.insert('users', user);
+        return db.insert('users', user)
       } else {
-        throw new Error('No user');
+        throw new Error('No user')
       }
     } else {
-      throw new Error('No database connection');
+      throw new Error('No database connection')
     }
   } else {
-    throw new Error('No database');
+    throw new Error('No database')
   }
 }
 
 //good ✅
 function addUserService(db, user) {
-  if (!db) throw new Error('No database');
-  if (!db.isConnected()) throw new Error('No database connection');
-  if (!user) throw new Error('No user');
+  if (!db) throw new Error('No database')
+  if (!db.isConnected()) throw new Error('No database connection')
+  if (!user) throw new Error('No user')
 
-  return db.insert('users', user);
+  return db.insert('users', user)
 }
 ```
 
@@ -363,16 +364,16 @@ function addUserService(db, user) {
 const getColorByStatus = (status) => {
   switch (status) {
     case 'success':
-      return 'green';
+      return 'green'
     case 'failure':
-      return 'red';
+      return 'red'
     case 'warning':
-      return 'yellow';
+      return 'yellow'
     case 'loading':
     default:
-      return 'blue';
+      return 'blue'
   }
-};
+}
 
 //good ✅
 const statusColors = {
@@ -380,9 +381,9 @@ const statusColors = {
   failure: 'red',
   warning: 'yellow',
   loading: 'blue'
-};
+}
 
-const getColorByStatus = (status) => statusColors[status] || 'blue';
+const getColorByStatus = (status) => statusColors[status] || 'blue'
 ```
 
 ### 使用可选链接
@@ -398,17 +399,17 @@ const user = {
       state: 'CA'
     }
   }
-};
+}
 
 // bad ❌
-const email = (user && user.email) || 'N/A';
-const street = (user && user.billing && user.billing.address && user.billing.address.street) || 'N/A';
-const state = (user && user.billing && user.billing.address && user.billing.address.state) || 'N/A';
+const email = (user && user.email) || 'N/A'
+const street = (user && user.billing && user.billing.address && user.billing.address.street) || 'N/A'
+const state = (user && user.billing && user.billing.address && user.billing.address.state) || 'N/A'
 
 //good ✅
-const email = user?.email ?? 'N/A';
-const street = user?.billing?.address?.street ?? 'N/A';
-const street = user?.billing?.address?.state ?? 'N/A';
+const email = user?.email ?? 'N/A'
+const street = user?.billing?.address?.street ?? 'N/A'
+const street = user?.billing?.address?.state ?? 'N/A'
 ```
 
 ### 避免回调
@@ -422,12 +423,12 @@ getUser(function (err, user) {
     getAccount(profile, function (err, account) {
       getReports(account, function (err, reports) {
         sendStatistics(reports, function (err) {
-          console.error(err);
-        });
-      });
-    });
-  });
-});
+          console.error(err)
+        })
+      })
+    })
+  })
+})
 
 //good ✅
 getUser()
@@ -435,19 +436,19 @@ getUser()
   .then(getAccount)
   .then(getReports)
   .then(sendStatistics)
-  .catch((err) => console.error(err));
+  .catch((err) => console.error(err))
 
 // or using Async/Await ✅✅
 
 async function sendUserStatistics() {
   try {
-    const user = await getUser();
-    const profile = await getProfile(user);
-    const account = await getAccount(profile);
-    const reports = await getReports(account);
-    return sendStatistics(reports);
+    const user = await getUser()
+    const profile = await getProfile(user)
+    const account = await getAccount(profile)
+    const reports = await getReports(account)
+    return sendStatistics(reports)
   } catch (e) {
-    console.error(err);
+    console.error(err)
   }
 }
 ```
@@ -459,7 +460,7 @@ async function sendUserStatistics() {
 try {
   // Possible erronous code
 } catch (e) {
-  console.log(e);
+  console.log(e)
 }
 
 //good ✅
@@ -468,16 +469,16 @@ try {
 } catch (e) {
   // Follow the most applicable (or all):
   // 1- More suitable than console.log
-  console.error(e);
+  console.error(e)
 
   // 2- Notify user if applicable
-  alertUserOfError(e);
+  alertUserOfError(e)
 
   // 3- Report to server
-  reportErrorToServer(e);
+  reportErrorToServer(e)
 
   // 4- Use a custom error handler
-  throw new CustomError(e);
+  throw new CustomError(e)
 }
 ```
 
@@ -487,43 +488,43 @@ try {
 // bad ❌
 function generateHash(str) {
   // Hash variable
-  let hash = 0;
+  let hash = 0
 
   // Get the length of the string
-  let length = str.length;
+  let length = str.length
 
   // If the string is empty return
   if (!length) {
-    return hash;
+    return hash
   }
 
   // Loop through every character in the string
   for (let i = 0; i < length; i++) {
     // Get character code.
-    const char = str.charCodeAt(i);
+    const char = str.charCodeAt(i)
 
     // Make the hash
-    hash = (hash << 5) - hash + char;
+    hash = (hash << 5) - hash + char
 
     // Convert to 32-bit integer
-    hash &= hash;
+    hash &= hash
   }
 }
 
 // good ✅
 function generateHash(str) {
-  let hash = 0;
-  let length = str.length;
+  let hash = 0
+  let length = str.length
   if (!length) {
-    return hash;
+    return hash
   }
 
   for (let i = 0; i < length; i++) {
-    const char = str.charCodeAt(i);
-    hash = (hash << 5) - hash + char;
-    hash = hash & hash; // Convert to 32bit integer
+    const char = str.charCodeAt(i)
+    hash = (hash << 5) - hash + char
+    hash = hash & hash // Convert to 32bit integer
   }
-  return hash;
+  return hash
 }
 ```
 
@@ -534,7 +535,7 @@ function generateHash(str) {
 ```js
 // bad ❌
 function printAllFilesInDirectory(dir) {
-  const directory = dir || './';
+  const directory = dir || './'
   //   ...
 }
 
@@ -553,22 +554,22 @@ const obj = {
   c: 3,
   d: 4,
   e: 5
-};
+}
 
 // bad ❌
-const f = obj.a + obj.d;
-const g = obj.c + obj.e;
+const f = obj.a + obj.d
+const g = obj.c + obj.e
 
 // good ✅
-const { a, b, c, d, e } = obj;
-const f = a + d;
-const g = c + e;
+const { a, b, c, d, e } = obj
+const f = a + d
+const g = c + e
 ```
 
 `ES6` 的解构赋值虽然好用。但是要注意解构的对象不能为 `undefined`、`null`。否则会报错，故要给被解构的对象一个默认值。
 
 ```js
-const { a, b, c, d, e } = obj || {};
+const { a, b, c, d, e } = obj || {}
 ```
 
 ### 拓展运算符合并数据
@@ -576,40 +577,40 @@ const { a, b, c, d, e } = obj || {};
 合并数组或者对象，用 ES5 的写法有些冗余
 
 ```js
-const a = [1, 2, 3];
-const b = [1, 5, 6];
+const a = [1, 2, 3]
+const b = [1, 5, 6]
 const obj1 = {
   a: 1
-};
+}
 const obj2 = {
   b: 1
-};
+}
 
 // bad ❌
-const c = a.concat(b); //[1,2,3,1,5,6]
-const obj = Object.assign({}, obj1, obj2); // {a:1, b:1}
+const c = a.concat(b) //[1,2,3,1,5,6]
+const obj = Object.assign({}, obj1, obj2) // {a:1, b:1}
 
 // good ✅
-const c = [...new Set([...a, ...b])]; //[1,2,3,5,6]
-const obj = { ...obj1, ...obj2 }; // {a:1, b:1}
+const c = [...new Set([...a, ...b])] //[1,2,3,5,6]
+const obj = { ...obj1, ...obj2 } // {a:1, b:1}
 ```
 
 ### 拼接字符
 
 ```js
-const name = '小明';
-const score = 59;
+const name = '小明'
+const score = 59
 
 // bad ❌
-let result = '';
+let result = ''
 if (score > 60) {
-  result = `${name}的考试成绩及格`;
+  result = `${name}的考试成绩及格`
 } else {
-  result = `${name}的考试成绩不及格`;
+  result = `${name}的考试成绩不及格`
 }
 
 // good ✅
-const result = `${name}${score > 60 ? '的考试成绩及格' : '的考试成绩不及格'}`;
+const result = `${name}${score > 60 ? '的考试成绩及格' : '的考试成绩不及格'}`
 ```
 
 ### includes 替代多条件判断
@@ -636,17 +637,17 @@ if( condition.includes(type) ){
 ### 列表查找某一项
 
 ```js
-const a = [1, 2, 3, 4, 5];
+const a = [1, 2, 3, 4, 5]
 
 // bad ❌
 const result = a.filter((item) => {
-  return item === 3;
-});
+  return item === 3
+})
 
 // good ✅
 const result = a.find((item) => {
-  return item === 3;
-});
+  return item === 3
+})
 ```
 
 ### 数组扁平化
@@ -658,53 +659,53 @@ const deps = {
   人事部: [5, 8, 12],
   行政部: [5, 14, 79],
   运输部: [3, 64, 105]
-};
-let member = [];
+}
+let member = []
 for (let item in deps) {
-  const value = deps[item];
+  const value = deps[item]
   if (Array.isArray(value)) {
-    member = [...member, ...value];
+    member = [...member, ...value]
   }
 }
-member = [...new Set(member)];
+member = [...new Set(member)]
 
 // good ✅
-const member = Object.values(deps).flat(Infinity);
+const member = Object.values(deps).flat(Infinity)
 ```
 
 ### 可选链操作符获取对象属性值
 
 ```js
 // bad ❌
-const name = obj && obj.name;
+const name = obj && obj.name
 
 // good ✅
-const name = obj?.name;
+const name = obj?.name
 ```
 
 ### 动态对象属性名
 
 ```js
 // bad ❌
-let obj = {};
-let index = 1;
-let key = `topic${index}`;
-obj[key] = '话题内容';
+let obj = {}
+let index = 1
+let key = `topic${index}`
+obj[key] = '话题内容'
 
 // good ✅
-obj[`topic${index}`] = '话题内容';
+obj[`topic${index}`] = '话题内容'
 ```
 
 ### 判断非空
 
 ```js
 // bad ❌
-if(value !== null && value !== undefined && value !== ''){
-    //...
+if (value !== null && value !== undefined && value !== '') {
+  //...
 }
 
 // good ✅
-if((value??'') !== ''){
+if ((value ?? '') !== '') {
   //...
 }
 ```
@@ -741,12 +742,12 @@ export default {
 
 ```js
 // bad
-mycomponent.vue;
-myComponent.vue;
+mycomponent.vue
+myComponent.vue
 
 // good
-my - component.vue;
-MyComponent.vue;
+my - component.vue
+MyComponent.vue
 ```
 
 ### 紧密耦合的组件名
@@ -865,7 +866,7 @@ export default {
   unmounted() {},
 
   methods: {}
-};
+}
 ```
 
 ### 组件选项中的空行
@@ -893,7 +894,7 @@ export default {
       // ...
     }
   }
-};
+}
 ```
 
 ### 单文件组件顶级标签的顺序

@@ -330,6 +330,7 @@ const parseRange = function (arr) {
 console.log(parseRange([1, 2, 3, 5, 7, 8, 10]))
 */
 
+/*
 // 盛最多水的容器
 // 输入 [1, 8, 6, 2, 5, 4, 8, 3, 7] 输出49
 // 首尾指针法：两端向中间夹逼，高度较小一端向中间移动，计算当前面积，
@@ -360,3 +361,145 @@ const maxContainer = function (arr) {
   return result
 }
 console.log(maxContainer([1, 8, 6, 2, 5, 4, 8, 3, 7]))
+*/
+
+/*
+// 对于栈的运用
+// 大鱼吃小鱼
+// 在水中有许多鱼，可以认为这些鱼停放在 x 轴上。
+// 再给定两个数组 Size，Dir，Size[i] 表示第 i 条鱼的大小，Dir[i] 表示鱼的方向 （0 表示向左游，1 表示向右游）。
+// 这两个数组分别表示鱼的大小和游动的方向，并且两个数组的长度相等。
+// 鱼的行为符合以下几个条件:
+// 所有的鱼都同时开始游动，每次按照鱼的方向，都游动一个单位距离；
+// 当方向相对时，大鱼会吃掉小鱼；
+// 鱼的大小都不一样。
+// 输入：Size = [4, 2, 5, 3, 1], Dir = [1, 1, 0, 0, 0]
+// 输出：3
+const restFish = function (sizes, dirs) {
+  const len = sizes.length
+  if (len <= 1) return len
+
+  // 存活下来的鱼索引栈
+  const stack = []
+  for (let i = 0; i < len; i++) {
+    const currSize = sizes[i]
+    const currDir = dirs[i]
+
+    // 栈非空，栈内鱼方向向右，当前鱼方向向左
+    let isEate = false
+    while (stack.length && dirs[stack[stack.length - 1]] === 1 && currDir === 0) {
+      // 栈内鱼比当前鱼大，当前鱼要被吃掉
+      if (sizes[stack[stack.length - 1]] > currSize) {
+        isEate = true
+        break
+      }
+      // 否则栈内鱼要被吃掉
+      stack.pop()
+    }
+
+    // 当前鱼没被吃掉了，入栈
+    if (!isEate) {
+      stack.push(i)
+    }
+  }
+  return stack
+}
+console.log(restFish([4, 2, 5, 3, 1], [1, 1, 0, 0, 0]))
+*/
+
+// 对于单调栈的应用
+// 找出数组中右边比我小的元素
+// 输入 [5, 2] 输出 [1, -1]
+// 解题思路：我的左边比我大的数，我都要把它从栈里消除掉
+// 被消除的索引对应的值是我的下标
+/* const findRightSmall = (arr) => {
+  const len = arr.length
+  const result = new Array(len).fill(-1)
+  const stack = []
+
+  for (let i = 0; i < len; i++) {
+    const item = arr[i]
+
+    while (stack.length && arr[stack[stack.length - 1]] > item) {
+      result[stack[stack.length - 1]] = i
+      stack.pop()
+    }
+    stack.push(i)
+  }
+  return result
+}
+
+const arr = [4, 5, 6, 1, 8, 2]
+console.log(findRightSmall(arr))
+ */
+
+// 寻找相同子串
+// 寻找字符串B在字符串A中出现的位置，找到了返回A匹配的第一个字符的位置，否则返回-1
+// 字符串A：“ABCBA”
+// 字符串B：“CB”
+// 返回2
+
+// 暴力算法
+/*
+const findIndex = (str1, str2) => {
+  const str1len = str1.length
+  const str2len = str2.length
+  if (str1len < str2len) return -1
+  for (let i = 0; i < str1len - str2len; i++) {
+    const subStr1 = str1.substr(i, str2len)
+    if (str2 === subStr1) return i
+  }
+  return -1
+}
+const str1 = 'ABCBA'
+const str2 = 'CB'
+console.log(findIndex(str1, str2)) */
+
+// BM算法
+// 从右往左比对，坏字符/好后缀
+
+// KMP算法
+// 算出部分匹配表 PMT：前缀子串和后缀子串交集
+const findIndex = (str, pattern, next) => {
+  let i = 0
+  let j = 0
+  while (i < str.length && j < pattern.length) {
+    if (j === -1 || str[i] === pattern[j]) {
+      i++
+      j++
+    } else {
+      j = next[j]
+    }
+  }
+  if (j === pattern.length) {
+    return i - j
+  } else {
+    return -1
+  }
+}
+
+const getNext = (pattern, next) => {
+  next[0] = -1
+  let i = 0
+  let j = -1
+  while (i < pattern.length) {
+    console.log('i: ', i)
+    if (j === -1) {
+      i++
+      j++
+    } else if (pattern[i] === pattern[j]) {
+      i++
+      j++
+      next[i] = j
+    } else {
+      j = next[j]
+    }
+  }
+}
+
+const str1 = 'ABCABCABCABCD'
+const str2 = 'ABCABCD'
+const next = new Array(str2.length)
+console.log('next: ', next)
+console.log(getNext([...str2], next), next)
+// console.log(findIndex([...str1], [...str2], next))

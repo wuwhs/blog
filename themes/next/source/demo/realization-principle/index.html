@@ -25,9 +25,23 @@
         true
       )
       $cancel.addEventListener('click', function () {
-        handle.cancel()
+        // handle.cancel()
+        toFullScreen()
       })
       $app.addEventListener('mousemove', handle, false)
+
+      function toFullScreen() {
+        let elem = document.body || document.documentElement
+        elem.webkitRequestFullScreen
+          ? elem.webkitRequestFullScreen()
+          : elem.mozRequestFullScreen
+          ? elem.mozRequestFullScreen()
+          : elem.msRequestFullscreen
+          ? elem.msRequestFullscreen()
+          : elem.requestFullScreen
+          ? elem.requestFullScreen()
+          : alert('浏览器不支持全屏')
+      }
     </script>
   </body>
 </html>
