@@ -32,7 +32,7 @@ tags: [javascript, webpack, npm, yarn]
 
 ![clipboard2.0.6](/gb/npm-yarn-lock/clipboard2.0.6.png)
 
-`2.0.7` 版本用的是 `@bable/env`，将 `babel` 更新到了 7！
+`2.0.7` 版本用的是 `@bable/env`，将 `babel` 更新到了 7！具体原因点[这里](https://tech.ipalfish.com/blog/2020/03/30/babel6-7/)
 
 ![clipboard2.0.7](/gb/npm-yarn-lock/clipboard2.0.7.png)
 

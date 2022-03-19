@@ -139,3 +139,30 @@ flushSchedulerQueue 函数负责刷新 watcher 队列，即执行 queue 数组�
 Vuex 是基于 Vue 实现的全局状态管理器插件，利用 Vue 的响应式原理监听 state 对象的变化，再通过全局 Vue.mixin API 在每个组件的 beforeCreate 生命周期执行时将 store 对象注入到组件。
 
 参考 [「Vue 源码学习」你想知道 Vuex 的实现原理吗？](https://juejin.cn/post/6952473110377414686)
+
+### Vue3 VS Vue2 的改变
+
+#### 从使用上来看
+
+- composition API。由 options（选项式）API 变成 composition（组合式）API，这种改变带来的：
+  - 防止代码逻辑分散在选项式 API 的不同位置 props、data、methods 等，组合式 API 会集中在一起；
+  - 解决 Mixins、高阶组件（HOC）和 Renderless Components（作用于插槽封装逻辑的组件）带来的逻辑复用存在的问题。
+- setup 生命周期钩子。Vue3 的组合式 API 代码逻辑在 setup 里执行，同时，`<script setup>` 作为 setup 在单文件组件使用组合式 API 编译时的语法糖，进一步简化了代码，更好的 IDE 类型推断性能，顶层的绑定（变量、函数声明和 import 引入内容）能在模版中直接使用；
+- defineAsyncComponent 包装异步组件；片段，组件支持多个根节点；
+- 废除了`.native`修饰符，用 emits 选项定义组件可触发的事件；
+- 新增 `Suspense` 和 `Teleport` 内置组件；
+- 废除了 `$listeners` 和 `$children` 属性；
+- 通过 `defineExpose` 编译宏暴露出去属性给 ref 使用；
+- 自定义 hooks。借助 React hooks 思想，可基于函数抽取和复用逻辑的能力；
+
+#### 从内部改进来看
+
+- 类型推导。 将 JavaScript 改成了 typescript，具有友好的类型推导和 IDE 语法补全；
+- 打包尺寸。 基于函数的 API 每个函数都可以作为具名 ES module export 被单独引入，对 tree-shaking 非常友好。基于函数 API 所写的代码压缩率更好，因为函数名和 setup 函数体内部的变量都可以被压缩，但对象和 class 属性/方法不可以；
+- 性能更优。重写了虚拟 DOM 的实现，编译模版的优化。
+
+  - 编译模版的优化。编译模版分为 3 个阶段，分别是：parse、transform 和 codegen。其中 parse 阶段将模版字符串转化为抽象语法树 AST；transform 阶段则是对 AST 进行了一些转换处理；codegen 阶段根据 AST 生成对应的 render 函数字符串。
+  - 静态节点提升。在 transform 阶段，会打上 PatchFlag 标记，有这个标志或者大于 0 表示要更新，否则跳过，应用在 diff 比较过程。-1 代表静态节点，无论层级嵌套多深，静态节点会被提升到 render()函数外面，它的动态节点都直接与 block 根节点绑定，无需再去遍历静态节点。参考[Vue3 模版编译原理](https://zhuanlan.zhihu.com/p/181505806)
+  - 事件缓存：cacheHandle，比如绑定一个 onclick 事件，会被视为 PROPS 动态绑定，后序替换点击事件时需要进行更新，cache[1] 自动生成并缓存一个内联函数，“神奇”的变为了一个静态节点。
+
+- 自定义渲染器，用户可以尝试 WebGL 自定义渲染器。

@@ -129,11 +129,16 @@ Webpack 插件问题点：
 
 [@babel/plugin-transform-runtime 到底是什么？](https://zhuanlan.zhihu.com/p/147083132)
 [关于 Babel 那些事儿](https://mp.weixin.qq.com/s/3lNlJKcgrdNzWEqaEx-7jQ)
+[不容错过的 Babel7 知识](https://juejin.cn/post/6844904008679686152)
 
-- Babel 只负责编译新标准引入的新语法，比如 Arrow function、Class、ES Modul 等，它不会编译原生对象新引入的方法和 API，比如 Array.includes，Map，Set 等，这些需要通过 Polyfill 来解决。
+- Babel 是将 ES6+版本的代码转换为向后兼容的 JavaScript 语法，以便能运行在当前和旧版本的浏览器或其他环境中。
+- Babel 只负责编译新标准引入的新语法，比如 Arrow function、Class、ES Module 等，它不会编译原生对象新引入的方法和 API，比如 Array.includes，Array.from，Object.assign，Map，Set 等，这些需要通过 Polyfill 来解决。
 - preset 预设是插件 plugins 的集合，预设数组加载的顺序是从从右到左，为了向后兼容，一般用户会把 `prest-es2015` 写在 `stage-0` 的前面。
-- @babel/preset-env 可以按需引入预设插件，设置参数 useBuiltIns: "usage" 可以按照用户使用 ES6 API 相应引入 Polyfill。
-- @babel/plugin-transform-runtime 可以让 Babel 在编译中复用辅助函数，从而减小打包文件体积 。
+- @babel/preset-env 可以根据配置的目标环境（browserlist），生成插件列表来编译，设置参数 useBuiltIns: "usage" 可以按照用户使用 ES6 API 相应引入 Polyfill。
+- @babel/plugin-transform-runtime 可以让 Babel 在编译中具名引入 @babel/runtime 模块复用辅助函数，从而减小打包文件体积 。
+- @babel/plugin-transform-runtime 通常仅在开发时使用，但是运行时最终代码需要依赖 @babel/runtime。
+- 直接使用 @babel/runtime 会转换原型方法，污染全局环境，可以使用 @babel/plugin-transform-runtime 配合 corejs3 可以处理辅助函数重复问题，还可以加载 polyfill，不污染全局环境。
+- V7.4.0 已经被废弃，需要单独安装 core-js 和 regenerator-runtime 模块。
 
 [嘿，不要给 async 函数写那么多 try/catch 了](https://juejin.cn/post/6844903886898069511)
 
@@ -152,7 +157,7 @@ Webpack 插件问题点：
 
 [微前端究竟是什么，可以带来什么收益](https://juejin.cn/post/6893307922902679560) 微前端概念是从微服务概念扩展而来的，摒弃大型单体方式，将前端整体分解为小而简单的块，这些块可以独立开发、测试和部署，同时仍然聚合为一个产品出现在客户面前。可以理解微前端是一种将多个可独立交付的小型前端应用聚合为一个整体的架构风格。
 
-[DevOps到底是什么意思？](https://zhuanlan.zhihu.com/p/91371659) 从瀑布式开发、敏捷开发到如今的DevOps开发。DevOps是一组过程、方法与系统的统称，用于促进开发、技术运营和质量保证部门之间的沟通、协作与整合。最终将开发、测试运维紧密联系在一起。
+[DevOps 到底是什么意思？](https://zhuanlan.zhihu.com/p/91371659) 从瀑布式开发、敏捷开发到如今的 DevOps 开发。DevOps 是一组过程、方法与系统的统称，用于促进开发、技术运营和质量保证部门之间的沟通、协作与整合。最终将开发、测试运维紧密联系在一起。
 
 ## js 原理实现
 
