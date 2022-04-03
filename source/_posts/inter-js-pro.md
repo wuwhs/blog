@@ -91,6 +91,31 @@ Babel 处理分为 3 步：解析（parse），转换（transform）和 生成�
 - 转换。Babel 接受得到 AST 并通过 babel-traverse 对其进行深度优先遍历，在此过程中对节点进行添加、更新及移除操作。这部分也是 Babel 插件介入工作的部分。
 - 生成。将经过转换的 AST 通过 babel-generator 再转换成 js 代码，过程就是深度优先遍历整个 AST，然后构建可以表示转换后的代码的字符串。
 
+### PureComponent 组件和 memo 组件
+
+- React.PureComponent 中实现了 shouldComponentUpdate()，是以浅层比较 prop 和 state 的方式实现该函数。如果对象中包含复杂的数据结构，可能无法检查深层差别，产生错误对比结果。在 state 和 prop 比较简单时，才使用，或者在深层次数据结构发生变化时调用 forceUpdate 来确保组件正确更新，可以考虑用 immutable 对象加速数据比较。
+- React.memo 为高阶组件，仅检查 props 变更，且实现中拥有 useState，useReducer 或 useContent 的 hook。
+
+### React hook
+
+- 函数式组件没有 this，不能分配和读取 this.state。
+- 引入 useState Hook，它让我们函数组件中存储内部 state。
+- 解构出 state 中的变量和对应的赋值函数，从将更新 state 变量总是替换它变成合并它的形式。
+- useEffect Hook 看做 componentDidMount、componentDidUpdate 和 componentWillUnmount 这三个函数的组合。
+- Hook 一个目的是解决 class 生命周期经常包含不相关逻辑，但又把相关逻辑分离到不同方法中的问题。比如订阅逻辑分割到 componentDidMount 和 componentWillUnmount 中。
+- hook 需要在我们组建的最顶层调用，不能放到 if、which 等语句里面。
+- 自定义 Hook 是一个函数，其名称以 use 开头，函数内部可以调用其他的 Hook。每次使用自定义 Hook，其中的所有 state 和副作用都是完全隔离的。
+
+### useCallback 和 useMemo
+
+- ClassComponent 中父组件向子组件传的值是匿名函数，在父组件更新时，该匿名函数都会生成新函数，导致子组件也会更新；
+- FunctionComponent 中父组件向子组件传的值是函数，在父组建更新时，该函数也会生成新函数，导致子组建也会更新；
+- useCallback 第一个参数回调函数，第二个参数是依赖变量。返回一个 memoized 回调函数，在依赖参数不变的情况下返回回调函数是同一个引用地址；
+- useMemo 将调用 fn 函数并返回结果，useCallback 将返回 fn 函数而不调用它；
+- useCallback 针对于子组建重复渲染的优化，useMemo 针对于当前组建高开销的计算；
+
+参考：[彻底理解 useCallback 和 useMemo](https://juejin.cn/post/6844904032113278990)
+
 ### Fiber 原理
 
 React 渲染页面分为两个阶段：
@@ -126,3 +151,14 @@ Fiber 的协调阶段可以：
 
 - Set 和 WeakSet 中的数据会去重，Set 的每一项可以是任意类型，但是 WeakSet 的每一项只能是对象类型。WeakSet 构造函数参数数组每一项都会生成 WeakSet 成员，WeakSet 中的对象是弱引用，即垃圾回收机制不考虑 WeakSet 对该对象的引用，也就是说，如果其他对象都不再引用该对象，那么垃圾回收机制会自动回收该对象的内存，不考虑该对象还存不存在 WeakSet 中，因此，WeakSet 不可被遍历。
 - Map 的键名可以是任意类型，WeakMap 只接受对象作为键名（null 除外）。WeakMap 的键名所引用的对象都是弱引用，即垃圾回收机制不将该引用考虑在内，只要所引用的对象的其他引用都被清除，垃圾回收机制就会被释放该对象所占用的内存，也就是说，一旦不需要，WeakMap 里面的键名对象和所对应的键值对会自动消失。
+
+### webpack5 做了哪些改进？
+
+- 优化了持久化缓存和缓存算法。配置 `cache: {type: 'filesystem'}` 来缓存生成的 webpack 模块和 chunk，改善构建速度。这样就无须 dll pulgin 和 cache loader。当使用[contenthash]时，webpack5 将使用真正的文件内容哈希值，之前它只使用内部结构的哈希值。
+- webpack5 默认使用 terser-webpack-plugin 进行多线程压缩和缓存，无须再引入 parallel-uglify-plugin。
+- 新增“模块联邦”功能，允许多个 webpack 构建一起工作，模块可以从指定的远程构建中导入，并以最小的限制使用。
+- 嵌套、内部模块和 CommonJS 的 tree-shaking。 跟踪对导出的嵌套属性的访问。这可以改善重新导出命名空间对象时的 tree-shaking（清除未使用的导出和混淆导出）。对模块中的标记进行分析，找出导出和引用的依赖关系。
+- 允许启动单个文件的目标现在支持运行时自动加载引导所需的依赖代码片段。
+
+参考：
+[阔别两年，webpack5 正式发布](https://mp.weixin.qq.com/s/sh7rcv6hdhYfWr1bv_ssbg)

@@ -32,7 +32,7 @@ PS：深入 `HTTP` 三次握手部分
   性能优化方案：
 
 - webpack 层面
-- http 层面
+- http 层面 移动端项目将 http1.1 -> http2，通过升级 Nginx-openresty 的 ssl，要求高于 1.0.2，然后配置 listen 443 端口加上 ssl http2 即可。
 - 页面渲染层面
 - 骨架屏
 - 延迟/异步加载
@@ -137,7 +137,7 @@ base64 -> formData
 ### 2020-10-31
 
 [预测最近面试会考 Cookie 的 SameSite 属性](https://juejin.im/post/6844904095711494151)
-2020 年 2 月份 `Chrome 80` 版本中默认屏蔽了第三方的 `Cookie`，这样会造成一些跨站 `Cookie` 鉴权问题，解决方案是在响应头加上 `set-cookie: SomeSite: None;`
+2020 年 2 月份 `Chrome 80` 版本中默认屏蔽了第三方的 `Cookie`，这样会造成一些跨站 `Cookie` 鉴权问题，解决方案是在响应头加上 `set-cookie: SameSite: None;`
 
 [微前端究竟是什么，可以带来什么收益](https://juejin.cn/post/6893307922902679560) 微前端概念是从微服务概念扩展而来的，摒弃大型单体方式，将前端整体分解为小而简单的块，这些块可以独立开发、测试和部署，同时仍然聚合为一个产品出现在客户面前。可以理解微前端是一种将多个可独立交付的小型前端应用聚合为一个整体的架构风格。
 
@@ -149,4 +149,8 @@ base64 -> formData
 
 [跨域资源共享 CORS 详解](https://www.ruanyifeng.com/blog/2016/04/cors.html)
 
-### 2021
+### 2022-3-21
+
+[跨域请求如何携带 cookie?](https://juejin.cn/post/7066420545327218725)
+
+分为两步处理，处理跨域，响应头设置 `Access-Control-Allow-Origin: https://simple.com` 允许特定的域名发送跨域请求；处理携带 cookie，响应头设置`Access-Control-Allow-Credentials：true` 允许携带身份（Cookie，authorization）。

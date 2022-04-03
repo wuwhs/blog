@@ -1213,11 +1213,55 @@ Decorator
 
 属于资源加载错误，可以被捕获到。处理：在客户端，script 标签增加`crossorigin`属性，服务端增加 HTTP 响应头增加`Access-Control-Allow-Origin:*/`
 
-4. 上报错误的基本原理
+4.  上报错误的基本原理
+    （1）优先使用`Navigator.sendBeacon`，它通过 HTTP POST 将数据一步传输到服务器且不会影响页面卸载
+    （2）用`Ajax`通信上报
+    （3）用`Image`对象上报
 
-1. 用`Ajax`通信上报
-1. 用`Image`对象上报
+        ```javascript
+        new Image().src = 'http://xxx.com/posterror?error=xxx'
+        ```
 
-   ```javascript
-   new Image().src = 'http://xxx.com/posterror?error=xxx'
-   ```
+5.  检测卡顿和奔溃
+    （1）卡顿是显示器刷新下一帧画面还没准备好，导致连续多次展示相同画面，从而让用户感知不流畅（丢帧），可以用 requestAnimationFrame 方法模拟实现，在浏览器下一次执行重绘之前执行 rAF 回调，可以通过每秒内 rAF 执行次数来计算 FPS。
+    （2）奔溃时主线程被阻塞，对于奔溃的监控只能在独立于 JS 主线程的 Worker 线程中进行，Web Worker 心跳检测的方式对主线程进行探测。
+
+### 性能监控
+
+- FP（First Paint）：当前页面首次渲染的时间点，通常开始访问 Web 页面的时间点到 FP 的时间点的这段时间视为白屏时间，简单来说就是有屏幕中像素点开始渲染的时刻为 FP。
+- FCP（First Contentful Paint）：当前页面首次有内容渲染的时间点，这里的内容通常指的是文本、图片、svg 或 canvas 元素。
+
+  ```js
+  function getPaintTimings() {
+    const { performance } = window
+    if (performance) {
+      const paintEntries = performance.getEntriesByType('paint')
+      return {
+        FP: paintEntries.find((entry) => entry.name === 'first-paint').startTime,
+        FCP: paintEntries.find((entry) => entry.name === 'first-contentful-paint').startTime
+      }
+    }
+  }
+  ```
+
+- FMP（First Meaningful Paint）：首次绘制有意义内容，在这个时刻，页面整体布局和文字内容全部渲染完成，用户能看到主要内容，产品通常也关注该指标。
+  通过 MutationObserve 监听 document 整体的 DOM 变化，在回调计算之前 DOM 树的分数，分数变化最剧烈的时刻即为 FMP 的时间点。
+- LCP（Largest Contentful Paint）：用于度量视口中最大的内容元素何时可见，可以用来确定页面的主要内容何时在屏幕上完成渲染。
+
+  ```js
+  const observer = new PerformanceObserver((entryList) => {
+    for (const entry of entryList.getEntries()) {
+      console.log('LCP Candidate: ', entry.startTime, entry)
+    }
+  })
+  observer.observe({ type: 'largest-contentful-paint', buffered: true })
+  ```
+
+- TTI（Time To Interactive）：从页面加载开始到页面处于完全可交互状态所花费的时间。
+- FID（First Input Delay）：用户第一次与页面交互的延迟时间。
+
+Lighthouse 几项重要指标：
+Performance（性能）、Accessibility（可访问性）、Best practices（最佳实践）、SEO 和 PWA。
+其中 Performance 指标矩阵由以下组成：FCP、TTI、LCP、Speed index
+
+参考：[深入浅出前端监控](https://mp.weixin.qq.com/s/I9tTlYjKmnfrpyc6hibY1Q)
