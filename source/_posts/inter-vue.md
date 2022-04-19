@@ -9,7 +9,7 @@ tags: [vue, interview]
 - 响应式核型是通过 Object.defineProperty 拦截对数据的访问和设置。
 - 响应式数据分为两类：
   - 对象。循环遍历对象的所有属性，为每个属性设置 getter、setter，以达到拦截访问和设置的目的的，如果属性值依旧为对象，则递归属性值上的每个 key 设置 getter、setter。
-  - 数组。增强数组的那 7 个可以改变自身的原型方法，然后拦截对这些方法的操作。
+  - 数组。增强数组的那 7 个（push、pop、shift、unshift、splice、reverse 和 sort）可以改变自身的原型方法，然后拦截对这些方法的操作。
   - 访问数据时（obj.key）进行依赖收集，在 dep 中存储相关的 watcher。
   - 设置数据时有 dep 通知相关的 watcher 去更新。
 
@@ -78,6 +78,8 @@ tags: [vue, interview]
 - 如果发现配置项上有 el 选项，则自动调用$mount  方法，否则手动调用$mount。
 - 接下来进入挂载阶段。
 
+参考：[Vue 源码解读（2）—— Vue 初始化过程](https://juejin.cn/post/6950084496515399717)
+
 ### methods、computed 和 watch 区别
 
 #### 使用场景
@@ -89,7 +91,7 @@ tags: [vue, interview]
 #### 区别
 
 - methods 每次执行都调用。
-- computed 第一次执行数据被缓存，实现原理它本事是一个 watcher，缓存是因为 watcher.dirty 属性控制。
+- computed 第一次执行数据被缓存，实现原理它本质是一个 watcher，缓存是因为 watcher.dirty 属性控制。
 - watch Watcher 对象的实例。
 
 ### Vue 的异步更新机制是如何实现的？
@@ -108,6 +110,12 @@ flushSchedulerQueue 函数负责刷新 watcher 队列，即执行 queue 数组�
 
 - 将传递的回调函数用 try catch 包裹，然后放入 callbacks 数组。
 - 执行 timerFunc 函数，在浏览器的异步任务队列放入一个刷新 callbacks 数组的函数。
+
+### 为什么 Vue 中不要用 index 作为 key？
+
+- sameNode 判断是否复用节点：key、tag、是否有 data 存在、是否是注释节点、是否是相同的 input type；
+- 通过头尾指针内部收缩算法来比较同级节点是否是 sameNode；
+- 用 index 作为 key，当列表数据第一位删除后 ，在对应的新 VNode 中节点的 key 也更新，在 patchVNode 时，会复用原来的第一个节点，第二个节点...发现新节点里少了一个就会删除。这样将原本删除第一位节点变成了删除最后一位节点，其他节点复用也错了。
 
 ### vite 的认识
 
@@ -163,6 +171,6 @@ Vuex 是基于 Vue 实现的全局状态管理器插件，利用 Vue 的响应�
 
   - 编译模版的优化。编译模版分为 3 个阶段，分别是：parse、transform 和 codegen。其中 parse 阶段将模版字符串转化为抽象语法树 AST；transform 阶段则是对 AST 进行了一些转换处理；codegen 阶段根据 AST 生成对应的 render 函数字符串。
   - 静态节点提升。在 transform 阶段，会打上 PatchFlag 标记，有这个标志或者大于 0 表示要更新，否则跳过，应用在 diff 比较过程。-1 代表静态节点，无论层级嵌套多深，静态节点会被提升到 render()函数外面，它的动态节点都直接与 block 根节点绑定，无需再去遍历静态节点。参考[Vue3 模版编译原理](https://zhuanlan.zhihu.com/p/181505806)
-  - 事件缓存：cacheHandle，比如绑定一个 onclick 事件，会被视为 PROPS 动态绑定，后序替换点击事件时需要进行更新，cache[1] 自动生成并缓存一个内联函数，“神奇”的变为了一个静态节点。
+  - 事件缓存：cacheHandle，比如绑定一个 onclick 事件，会被视为 PROPS 动态绑定，后序替换点击事件时需要进行更新，cache[1] 自动生成并缓存一个内联函数，“神奇”的变为了一个静态节点。Ps：相当于 React 中 useCallback 自动化。
 
 - 自定义渲染器，用户可以尝试 WebGL 自定义渲染器。

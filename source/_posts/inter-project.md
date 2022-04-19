@@ -227,3 +227,20 @@ ipcMain.handle('some-name', async (event, someArgument) => {
 
 网络性能检测 API PerformanceObserver(callback) 构造函数，观察的性能事件被记录时调用回调 callback 函数，第一个参数是性能观察条目列表，第二个参数是观察者对象。
 实例 observer.observe 观察性能事件类型。
+
+#### 项目优化
+
+对在线客服访客端做过的优化实践：
+
+在 1-2 年的业务迭代开发，发现本地构建变慢，生产访问也慢，用 Lighthouse 对站点进行检测，performance 指标只有 55 分，给出的改进建议前几条是：1、代码覆盖率地 50%左右，2、图片加载拥堵，3、建议使用 HTTP2 等。
+
+措施：
+
+- webpack 构建打包方面：1、js 压缩混淆由 uglify 替换成多线程压缩，压缩率更好的 terser；2、使用 cache-loader 做二次构建缓存；3、在 optization 优化选项分别对 node_modules 和代码目录做 splitChunk，代码输出块控制在 200k 左右；4、生产构建使用 gzip-plugin 打 gzip 压缩副本；5、生产构建 publicPath 配置 CDN 域名；6、image-compress-plugin 做图片压缩；
+- HTTP 请求方面：1、升级 Nginx-openresty 的 ssl 模块，要求高于 1.0.2，然后配置 listen 443 端口加上 ssl http2 即可；2、开启 Nginx 的 gzip 开关，gzip_type 设定匹配 HTML、CSS 和 JavaScript 文件，再调整 gzip_cache 的分片数量和大小；3、调整 Nginx 对 JavaScript、CSS 和图片的强缓存和协商缓存时间；4、开启 CDN 加速；
+- 代码方面：1、将所有弹窗和卡片组建改成异步组件；2、图标集成 icon-font；
+- 正在解决的问题：将所有图片替换成 webp 格式，高保真，体积小有点，但是我们的 h5 有部分渠道是嵌入到小程序里，小程序不支持该格式，Nodejs 做中间转换层；
+
+成果：
+
+通过神策埋点数据统计，首屏打开 P90 从 6s 到秒开；Lighthouse 站点 Performance 性能指标从 55-88；

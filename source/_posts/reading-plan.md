@@ -143,7 +143,20 @@ base64 -> formData
 
 ### 2021-3-7
 
-[ES2021 新特性提前知，附案例](https://juejin.cn/post/6914538946751889422) 1、String.prototype.replaceAll 替换字符串中所有指定字符； 2、Promise.any 其中一个成功则成功，全部失败则返回失败；3、WeakRef 创建一个弱引用；4、逻辑运算符：或等（||=）且等（&&=)数字分隔符。
+[ES2021 新特性提前知，附案例](https://juejin.cn/post/6914538946751889422)
+
+[ES7-ES12](https://mp.weixin.qq.com/s/QxaHOQIJW2nx0a_cVd824g)
+
+- 空值合并运算符（`??`），左侧的数为 undefined 或者 null 时，返回右侧操作数，否则返回左侧；
+- 可选链操作符（`?.`），读取对象链深处属性的值，不必验证链中的每个属性是否有效；
+- BigInt，表示任意大的整数，不能和 Math 和 Number 对象混合运算，否则会丢失精度；
+- String.prototype.matchAll()，返回一个包含所有匹配正则表达式的结果及分组捕获组的迭代器；
+- Promise.allSettled()，并发任务中，无论一个任务正常或者异常，都返回对应的状态；
+- 逻辑运算法符和赋值表达式 `a&&=b` -> `a&&a=b`，`a||=b` -> `a||a=b`，`a??=b` -> `a??a=b`；
+- String.prototype.replaceAll()，返回一个新字符串，新字符串中所有满足 pattern 的部分会被 replacement 替换；
+- 数字分隔符，较长数字每 3 位添加一个分隔符（`_`或者`,`）；
+- Promise.any()，返回第一个成功（resolve）的结果，全部为失败（reject）走 catch；
+- WeakRef 创建一个弱引用；
 
 ### 2021-3-13
 
