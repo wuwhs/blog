@@ -2,7 +2,7 @@
 // 控制最大并发请求，并将所有请求结果按照顺序输出
 // 实现思想：首先并发maxNum个请求，
 // 这些请求中有结果取 next 指针指向的下一个待请求，执行请求，next 指针移到下一位
-// 知道 next 指针到头，并且所有请求都有返回则结束
+// 直到 next 指针到头，并且所有请求都有返回则结束
 
 const fetch = function (url) {
   return new Promise((resolve) => {

@@ -1,5 +1,5 @@
 /** 广度优先遍历算法 */
-
+/*
 // 目标点
 const target = [4, 2]
 
@@ -76,3 +76,4 @@ const maze = [
 ]
 bfs(maze, 0, 3)
 console.log('shortest path count is: ', maze[target[0]][target[1]])
+*/

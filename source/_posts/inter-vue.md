@@ -6,17 +6,17 @@ tags: [vue, interview]
 
 ### Vue 响应式原理怎么实现
 
-- 响应式核型是通过 Object.defineProperty 拦截对数据的访问和设置。
+- 响应式核心是通过 Object.defineProperty 拦截对数据的访问和设置。
 - 响应式数据分为两类：
-  - 对象。循环遍历对象的所有属性，为每个属性设置 getter、setter，以达到拦截访问和设置的目的的，如果属性值依旧为对象，则递归属性值上的每个 key 设置 getter、setter。
+  - 对象。循环遍历对象的所有属性，为每个属性设置 getter、setter，以达到拦截访问和设置的目的，如果属性值依旧为对象，则递归属性值上的每个 key 设置 getter、setter。
   - 数组。增强数组的那 7 个（push、pop、shift、unshift、splice、reverse 和 sort）可以改变自身的原型方法，然后拦截对这些方法的操作。
-  - 访问数据时（obj.key）进行依赖收集，在 dep 中存储相关的 watcher。
-  - 设置数据时有 dep 通知相关的 watcher 去更新。
+- 访问数据时（obj.key）进行依赖收集，在 dep 中存储相关的 watcher。
+- 设置数据时由 dep 通知相关的 watcher 去更新。
 
 ### Vue 中 MVVM 原理
 
 - 深度遍历 `data` 对象，利用 `defineProperty` API 对每个属性数据劫持（Observer）
-- 对于每个属性的 getter 绑定一个依赖队列（Dep），setter 触发（Nofity）这个依赖队列遍历执行每一项
+- 对于每个属性的 getter 绑定一个依赖队列（Dep），setter 触发（Notify）这个依赖队列遍历执行每一项
 - 在模版编译构成中，编译到 `v-modal` 指令、解析出具体的文本节点值或者用户手动 watcher 时，创建一个观察者（Watcher），观察者创建后会调用 getter 方法，将其所有的依赖的观察对象插入当前依赖队列（subs）。
 - 通过监听元素的 `input` 事件，当用户输入即可修改数据，这样实现了从视图到数据的更新
 - 当数据变化，调用 setter，触发遍历执行依赖队列中的观察者，观察者回调更新（update）视图，这样就实现了从数据到视图的更新。
@@ -35,9 +35,18 @@ tags: [vue, interview]
 
 在下次 DOM 更新循环结束之后执行延时回调。nextTick 主要使用了宏任务和微任务。根据执行环境分别去尝试采用：
 
+V2.6+
+
 - Promise
 - MutationObserver
 - setImmediate
+- setTimeout
+
+V2.5
+
+- Promise
+- setImmediate
+- MessageChannel
 - setTimeout
 
 具体的：
@@ -59,8 +68,6 @@ tags: [vue, interview]
 [JavaScript 运行机制详解：再谈 Event Loop](http://www.ruanyifeng.com/blog/2014/10/event-loop.html)
 [Vue.js 升级踩坑小记](https://github.com/DDFE/DDFE-blog/issues/24) 这里黄毅老师遇到的音乐播放跟我遇到的在线客服提示音乐一样的问题：`nextTick` 异步调用时使用 `messageChannel` API 被认定为不是用户行为，音乐播放器不会被调用。
 [Tasks, microtasks, queues and schedules](https://jakearchibald.com/2015/tasks-microtasks-queues-and-schedules/)
-
-### Vue3 中 Proxy 和 Vue2 中 Object.defineProperty 对比
 
 ### Vue 初始化过程（new Vue(options)）都做了什么？
 
@@ -104,12 +111,11 @@ Vue 的异步更新机制的核心是利用浏览器的异步任务队列来实�
 
 如果此时浏览器的异步任务队列中没有一个叫 flushCallbacks 的函数，则执行 timeFunc 函数，将 flushCallbacks 函数放入异步任务队列。如果异步任务队列中已经存在 flushCallbacks 函数，等待其执行完成以后再放入下一个 flushCallbacks 函数。
 
+flushCallbacks 函数负责执行 callbacks 数组中的所有 flushSchedulerQueue 函数。
+
 flushSchedulerQueue 函数负责刷新 watcher 队列，即执行 queue 数组中每一个 watcher 的 run 方法，从而进入更新阶段，比如执行组件更新函数或者执行用户 watch 的回调函数。
 
-### Vue 的 nexttick API 的实现
-
-- 将传递的回调函数用 try catch 包裹，然后放入 callbacks 数组。
-- 执行 timerFunc 函数，在浏览器的异步任务队列放入一个刷新 callbacks 数组的函数。
+nextTick -> flushcallback -> callbacks[flushSchedulerQueue] -> [watcher]
 
 ### 为什么 Vue 中不要用 index 作为 key？
 
@@ -126,7 +132,7 @@ flushSchedulerQueue 函数负责刷新 watcher 队列，即执行 queue 数组�
 - 按需编译：用户源码需频繁变动的模块，根据路由使用实时编译；
 - 客户端强缓存：请求过的模块响应头 max-age=31536000，immutable 强缓存，如果版本模块发生变化则用附加版本 query 使其失效；
 - 产物优化：没有 runtime 和模版代码；
-- 分包处理：不需要用户干预，默认启动一系列只能分包规则，尽量减少模块的重复打包，tree-shaking，按需打包，公共依赖当作独立 chunk；
+- 分包处理：不需要用户干预，默认启动一系列智能分包规则，尽量减少模块的重复打包，tree-shaking，按需打包，公共依赖当作独立 chunk；
 - 静态资源处理：提供了 URL，字符串，module，assembly，worker 等处理方式；
 
 缺点：

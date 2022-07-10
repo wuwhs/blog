@@ -77,7 +77,7 @@ Undefined、Null、Boolean、Number、String、ECMAScript 2015 新增 Symbol（�
   基于 `var` 声明的时候，`for` 和 `while` 差不多。
   基于 `let` 声明的时候，`for` 循环性能更好【原理：没有创造全局不释放的变量】。
 - `for of` 循环底层：
-  迭代器 iterator 规范，具备 `next` 方法，每次返回一个对象，具备 `value/done` 属性。
+  迭代器 规范，具备 `next` 方法，每次返回一个对象，具备 `value/done` 属性。
   让对象具备可迭代性并且使用 `for of` 循环
 
 ### 请解释事件委托（event delegation）
@@ -155,13 +155,6 @@ Undefined、Null、Boolean、Number、String、ECMAScript 2015 新增 Symbol（�
 
   var person = new Person()
   ```
-
-### 使用`new`操作符创建对象过程？
-
-1. 创建一个新对象；
-2. 将构造函数的作用域赋值给新函数（因此`this`就指向了这个新对象）；
-3. 执行构造函数中的代码（为这个新对象添加属性）；
-4. 返回新对象。
 
 ### JavaScript 继承的几种实现方式？
 
@@ -307,6 +300,8 @@ Undefined、Null、Boolean、Number、String、ECMAScript 2015 新增 Symbol（�
 当需要从局部函数查找某一属性或方法时，如果当前作用域没有找到，就会上溯到上层作用域查找，
 直至全局函数，这种组织形式就是作用域链。
 
+从底层来看，函数在编译时会创建一个执行上下文，声明的变量和函数都会保存在执行上下文，如果在当前执行上下文没有找到变量，就会沿着 outer 指针查找到上一级执行上下文，直到找到全局执行上下文。那么 outer 指针是怎么知道指向的执行上下文呢？是通过词法作用域决定，而词法作用域是变量或者函数声明位置决定。
+
 ### 谈谈 This 对象的理解
 
 - 如果有 new 关键字，this 指向 new 出来的那个对象；
@@ -337,6 +332,7 @@ Undefined、Null、Boolean、Number、String、ECMAScript 2015 新增 Symbol（�
 
 MDN 的解释：一个函数和对其周围状态（词法环境）的引用捆绑在一起，这样的组合就是闭包（closure）。也就是说，闭包让你可以在一个内层函数中访问到其外层函数的作用域。
 红宝书的解释：闭包是指有权访问另一个函数作用域中变量的函数，创建闭包最常见的方式是一个函数内创建另一个函数，通过另一个函数访问这个函数的局部变量，利用闭包可以突破作用域链，将函数内部的变量和方法传递到外部。
+浏览器基本原理的解释：根据词法作用域的规则，内部函数总是可以访问其外部函数中声明的变量，当通过调用一个外部函数返回一个内部函数后，即使外部函数已经执行结束了，但是内部函数引用外部函数的变量依旧保存在内存中，把这些变量的集合称为闭包；
 
 **闭包特性**
 
@@ -378,14 +374,28 @@ use strict 是一种 ECMAscript 5 添加的（严格）运行模式,这种模式
 
 ### new 操作符具体干什么的？
 
-- 创建一个空对象，并且`this`变量引用该对象，同时还继承了该函数的原型
-- 属性和方法被加入到`this`引用的对象中
-- 新创建的对象由`this`所引用，并且最后隐式的返回`this`
+- 创建一个空对象；
+- 根据原型链，设置空对象的 `__proto__` 为构造函数的 `prototype`；
+- 构造函数的 `this` 指向这个对象，执行构造函数，为这个新对象添加属性；
+- 判断函数的返回值类型，如果是引用类型，就返回这个引用类型对象，否则返回这个新对象。
 
-```javascript
-var obj = {}
-obj.__proto__ = Base.prototype
-Base.call(obj)
+```js
+function myNew(Fn) {
+  // ES6 中 new.target 指向构造函数
+  myNew.target = Fn
+
+  // const obj = {}
+  // obj.__proto__=Fn.prototype
+  // 创建一个对象，对象原型指向构造函数原型
+  const obj = Object.create(Fn.prototype)
+
+  // 调用构造函数，并将this绑定到该对象
+  const result = Fn.apply(obj, [...arguments])
+
+  // 构造函数执行返回值，如果是非引用类型，返回创建的对象，否则直接返回构造函数的返回值
+  const type = typeof result
+  return (type === 'object' && result !== null) || type === 'function' ? res : obj
+}
 ```
 
 ### js 延迟加载的方式有哪些？
@@ -608,7 +618,9 @@ server {
 ### ES6 模块与 CommonJS 模块的差异
 
 - `CommonJS` 模块输出的是一个值的拷贝，`ES6` 模块输出的是值的引用；
-- `CommonJS` 模块是运行时加载，`ES6` 模块是编译时输出接口；
+- `CommonJS` 模块是运行时加载，`ES6` 模块是编译时输出接口（静态编译）；
+- `CommonJS` 是单值导出， `ES6 Module` 可以是导出多个；
+- `CommonJS` 是动态语法可以写在判断里，`ES6 Module` 静态语法只能写在顶层；
 - `CommonJS` 模块的 `require()` 是同步加载模块，`ES6` 模块的 `import` 命令是异步加载，有一个独立的模块依赖的解析阶段；
 - `CommonJS` 模块的顶层 `this` 指向当前模块，`ES6` 模块之中，顶层的 `this` 指向 `undefined`。
 
@@ -627,6 +639,10 @@ server {
 参考:
 [Module 的加载实现](https://es6.ruanyifeng.com/#docs/module-loader)
 [「万字进阶」深入浅出 Commonjs 和 Es Module](https://mp.weixin.qq.com/s/y_uk7wXAfvq8FzcUZrR93w)
+
+### tree-shaking 原理
+
+tree-shaking 是通过清除多余代码方式来优化打包体积的技术。ES6 Module 引入进行静态分析，故而编译的时候正确判断到底加载了那些模块。静态分析程序流，判断那些模块和变量未被使用或者引用，进而删除对应代码。
 
 ### `import`引入脚本文件省略后缀名，Node 会怎样查找？
 
@@ -1265,3 +1281,10 @@ Performance（性能）、Accessibility（可访问性）、Best practices（最
 其中 Performance 指标矩阵由以下组成：FCP、TTI、LCP、Speed index
 
 参考：[深入浅出前端监控](https://mp.weixin.qq.com/s/I9tTlYjKmnfrpyc6hibY1Q)
+
+### 哈希碰撞
+
+两个不同的 key 经过 hash 计算后，得到相同的 hash 值。解决方法：开放寻址法、再 hash 法和拉链法。
+开放寻址法：地址冲突，探测其他存储单元；
+再 hash 法：使用第二、三 hash 法；
+拉链法：每一格都是链表，冲突往后插；

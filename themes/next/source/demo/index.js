@@ -164,16 +164,16 @@ fs.open('main.js', 'r+', function (err, fd) {
   })
 }) */
 
-function* gen() {
-  const num1 = yield 1
-  console.log('num1: ', num1)
-  const num2 = yield 2
-  console.log('num1: ', num2)
-  return 3
-}
-const g = gen()
-console.log(g.next()) // { value: 1, done: false }
-console.log(g.next(11111))
+// function* gen() {
+//   const num1 = yield 1
+//   console.log('num1: ', num1)
+//   const num2 = yield 2
+//   console.log('num1: ', num2)
+//   return 3
+// }
+// const g = gen()
+// console.log(g.next()) // { value: 1, done: false }
+// console.log(g.next(11111))
 // 11111
 //  { value: 2, done: false }
 // console.log(g.next(22222))

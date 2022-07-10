@@ -1,5 +1,5 @@
 ---
-title: daily reading note
+title: 日常阅读笔记
 date: 2017-04-02 19:00:00
 tags: javascript
 categories: javascript
@@ -7,30 +7,30 @@ categories: javascript
 
 ### 记录日常看书、看博客小记
 
-##### DOM2 DOM3 有关属性
+#### DOM2 DOM3 有关属性
 
 **检测节点是否相等 isSomeNode isEqualNode**
 
-```
-div1 = document.createElement("div");
-div2 = document.createElement("div");
+```js
+div1 = document.createElement('div')
+div2 = document.createElement('div')
 
-div1.isSameNode(div1); // true
-div1.isSameNode(div2); // false
-div1.isEqualNode(div2); // true
+div1.isSameNode(div1) // true
+div1.isSameNode(div2) // false
+div1.isEqualNode(div2) // true
 ```
 
 **获取框架文档对象 contentDocument contentWindow**
 
-```
-var iframe = document.getElementById("myIframe");
-var iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+```js
+var iframe = document.getElementById('myIframe')
+var iframeDoc = iframe.contentDocument || iframe.contentWindow.document
 ```
 
 **获取行间样式遇到 float 要用 styleFloat**
 
-```
-myDiv.styleFloat = "left";
+```js
+myDiv.styleFloat = 'left'
 ```
 
 **几个重要样式属性和方法**
@@ -42,30 +42,30 @@ myDiv.styleFloat = "left";
 - removeProperty(propertyName)
 - setProperty(propertyName, value, priority)
 
-```
-var demo = document.getElementById("demo");
-var prop, val, i, len;
+```js
+var demo = document.getElementById('demo')
+var prop, val, i, len
 
-for(var i = 0, len = demo.style.length; i < len; i++) {
-    prop = demo.style[i];
-    val = demo.style.getPropertyValue(prop);
+for (var i = 0, len = demo.style.length; i < len; i++) {
+  prop = demo.style[i]
+  val = demo.style.getPropertyValue(prop)
 
-    console.log(prop, val);
+  console.log(prop, val)
 }
 ```
 
 **计算样式 computedStyle
 ie9-使用 oDiv.currentStyle**
 
-```
-var computedStyle = document.getComputedStyle(oDiv, null);
+```js
+var computedStyle = document.getComputedStyle(oDiv, null)
 
-var bl = computedStyle.borderLeftStyle;
+var bl = computedStyle.borderLeftStyle
 ```
 
 **对样式表操作**
 
-```
+```js
 var sheet = null;
 for(var i = 0, len = document.styleSheets.length; i++) {
     sheet =document.styleSheets[i];
@@ -73,20 +73,20 @@ for(var i = 0, len = document.styleSheets.length; i++) {
 }
 ```
 
-```
-var sheet = document.styleSheets[0];
-var rules = sheet.cssRules || sheet.rules;
-var value = rules[0];
-rule.style.backgroundColor = "red";
+```js
+var sheet = document.styleSheets[0]
+var rules = sheet.cssRules || sheet.rules
+var value = rules[0]
+rule.style.backgroundColor = 'red'
 // 插入一条样式到样式表
-sheet.insertRule("body", "background-color:red;", 0);
+sheet.insertRule('body', 'background-color:red;', 0)
 ```
 
 ——2017/11/24
 
 ---
 
-##### 样式相关
+#### 样式相关
 
 **偏移量**
 
@@ -98,18 +98,18 @@ sheet.insertRule("body", "background-color:red;", 0);
 
 > offsetTop = 元素上边框至包含元素的上内边框之间的像素距离；
 
-```
+```js
 // 想知道某个元素再页面上的偏移量
 function getElementLeft(ele) {
-    var actualLeft = ele.offsetLeft;
-    var current = ele.offsetParent;
+  var actualLeft = ele.offsetLeft
+  var current = ele.offsetParent
 
-    while(current !== null) {
-        actualLeft += current.offsetLeft;
-        current = current.offsetParent;
-    }
+  while (current !== null) {
+    actualLeft += current.offsetLeft
+    current = current.offsetParent
+  }
 
-    return actualLeft;
+  return actualLeft
 }
 ```
 
@@ -163,7 +163,7 @@ getBoundingClientRect()方法，返回一个对象，包括四个属性：left�
 
 ---
 
-##### 范围
+#### 范围
 
 > selectNode() 选择整个节点
 
@@ -171,144 +171,136 @@ getBoundingClientRect()方法，返回一个对象，包括四个属性：left�
 
 html
 
-```
-<p id="p1"><b>Hello</b>World!</p>
+```js
+<p id='p1'>
+  <b>Hello</b>World!
+</p>
 ```
 
 js
 
-```
-var p1 = document.getElementById("p1"),
-    helloNode = p1.firstChild.firstChild,
-    worldNode = p1.lastChild,
-    range = document.createRange();
+```js
+var p1 = document.getElementById('p1'),
+  helloNode = p1.firstChild.firstChild,
+  worldNode = p1.lastChild,
+  range = document.createRange()
 
-var span = document.createElement("span");
-span.style.color = "red";
+var span = document.createElement('span')
+span.style.color = 'red'
 
-range.selectNode(helloNode); // 选择整个节点
-range.surroundContents(span); // 包含选择的节点
-
-```
-
-```
-range.deleteContents(); // 删除范围选区
-var fragment = range.extractContents(); // 移除范围选区，返回文档片段
-var fragment = range.cloneContents(); // 赋值范围选区
-
-span.appendChild(document.createTextNode("Inserted Text"));
-range.insertNode(span); // 在选区前插入一个节点
-
+range.selectNode(helloNode) // 选择整个节点
+range.surroundContents(span) // 包含选择的节点
 ```
 
-##### 事件
+```js
+range.deleteContents() // 删除范围选区
+var fragment = range.extractContents() // 移除范围选区，返回文档片段
+var fragment = range.cloneContents() // 赋值范围选区
+
+span.appendChild(document.createTextNode('Inserted Text'))
+range.insertNode(span) // 在选区前插入一个节点
+```
+
+#### 事件
 
 为了兼容所有浏览器，一般对元素添加、删除事件做如下处理（不过一般 IE9+都没有必要这么做）
 
-```
+```js
 var EventUtil = {
-    // 添加事件
-    addHandler: function(element, type, handler) {
-        if(element.addEventListener) {
-            element.addEventListener(type, handler, false);
-        }
-        else if(element.attachEvent) {
-            element.attachEvent("on" + type, handler);
-        }
-    },
-    // 获取事件对象
-    getEvent: function(ev) {
-        return ev ? ev : window.event;
-    },
-    // 获取事件目标
-    getTarget: function(ev) {
-        return ev.target || ev.srcElement;
-    },
-    // 阻止默认事件
-    preventDefault: function(ev) {
-        if(ev.preventDefault) {
-            ev.preventDefault();
-        }
-        else {
-            ev.returnValue = false;
-        }
-    },
-    // 移除事件
-    removeHandler: function(element, type, handler) {
-        if(element.removeEventListener) {
-            element.removeEventListener(type, handler, false);
-        }
-        else if(element.detachEvent) {
-            element.detachEvent("on" + type, handler);
-        }
-    },
-    // 阻止冒泡
-    stopPropagation: function(ev) {
-        if(ev.stopPropagation) {
-            ev.stopPropagation();
-        }
-        else {
-            ev.cancelBubble = true;
-        }
-    },
-    // 获取相关元素
-    getRelatedTarget: function(ev) {
-        if(ev.relatedTarget) {
-            return ev.relatedTarget;
-        }
-        else if(ev.toElement) {
-            return ev.toElement;
-        }
-        else if(ev.fromElement) {
-            return ev.fromElement;
-        }
-    },
-    // 获取鼠标滚动
-    getWheelDelta: function(ev) {
-        // 其他 对应mousewheel事件
-        if(ev.wheelDelta) {
-            return ev.wheelDelta;
-        }
-        // 兼容Firefox 对应DOMMouseScroll
-        else {
-            return -ev.detail * 40;
-        }
-    },
-    // 获取keypress按下键字符的ASCLL码
-    getCharCode: function(ev) {
-        if(typeof ev.charCode == "number") {
-            return ev.charCode;
-        }
-        else {
-            return ev.keyCode;
-        }
-    },
-    // 获取剪贴板数据
-    getClipboardText: function(ev) {
-        var clipboardData = (event.clipboardData || window.clipboardData);
-        return clipboardData.getData("text");
-    },
-    // 设置剪贴板数据
-    setClipboardText: function(ev, value) {
-        if(ev.clipboardData) {
-            return event.clipboardData.setData("text/plain", value);
-        }
-        else if(window.clipboardData){
-            return window.clipboardData.setData("text", value);
-        }
+  // 添加事件
+  addHandler: function (element, type, handler) {
+    if (element.addEventListener) {
+      element.addEventListener(type, handler, false)
+    } else if (element.attachEvent) {
+      element.attachEvent('on' + type, handler)
     }
-};
+  },
+  // 获取事件对象
+  getEvent: function (ev) {
+    return ev ? ev : window.event
+  },
+  // 获取事件目标
+  getTarget: function (ev) {
+    return ev.target || ev.srcElement
+  },
+  // 阻止默认事件
+  preventDefault: function (ev) {
+    if (ev.preventDefault) {
+      ev.preventDefault()
+    } else {
+      ev.returnValue = false
+    }
+  },
+  // 移除事件
+  removeHandler: function (element, type, handler) {
+    if (element.removeEventListener) {
+      element.removeEventListener(type, handler, false)
+    } else if (element.detachEvent) {
+      element.detachEvent('on' + type, handler)
+    }
+  },
+  // 阻止冒泡
+  stopPropagation: function (ev) {
+    if (ev.stopPropagation) {
+      ev.stopPropagation()
+    } else {
+      ev.cancelBubble = true
+    }
+  },
+  // 获取相关元素
+  getRelatedTarget: function (ev) {
+    if (ev.relatedTarget) {
+      return ev.relatedTarget
+    } else if (ev.toElement) {
+      return ev.toElement
+    } else if (ev.fromElement) {
+      return ev.fromElement
+    }
+  },
+  // 获取鼠标滚动
+  getWheelDelta: function (ev) {
+    // 其他 对应mousewheel事件
+    if (ev.wheelDelta) {
+      return ev.wheelDelta
+    }
+    // 兼容Firefox 对应DOMMouseScroll
+    else {
+      return -ev.detail * 40
+    }
+  },
+  // 获取keypress按下键字符的ASCLL码
+  getCharCode: function (ev) {
+    if (typeof ev.charCode == 'number') {
+      return ev.charCode
+    } else {
+      return ev.keyCode
+    }
+  },
+  // 获取剪贴板数据
+  getClipboardText: function (ev) {
+    var clipboardData = event.clipboardData || window.clipboardData
+    return clipboardData.getData('text')
+  },
+  // 设置剪贴板数据
+  setClipboardText: function (ev, value) {
+    if (ev.clipboardData) {
+      return event.clipboardData.setData('text/plain', value)
+    } else if (window.clipboardData) {
+      return window.clipboardData.setData('text', value)
+    }
+  }
+}
 ```
 
 扫盲：
 以前认为在页面卸载的时候没有办法去控制，当初没有注意到 window 下的 beforeunload 事件
 
-```
-EventUtil.addHandler(window, "beforeunload", function(ev) {
-    var msg = "before unload?";
-    ev.returnValue = "before unload?";
-    return "before unload ?";
-});
+```js
+EventUtil.addHandler(window, 'beforeunload', function (ev) {
+  var msg = 'before unload?'
+  ev.returnValue = 'before unload?'
+  return 'before unload ?'
+})
 ```
 
 新认识一个事件，**DOMContentLoaded**事件在形成完整的 DOM 数之后就触发，不会理会图片、JavaScript 文件、css 文件或其他资源是否已经下载完毕。
@@ -319,23 +311,22 @@ EventUtil.addHandler(window, "beforeunload", function(ev) {
 
 ##### 自定义事件
 
-```
-EventUtil.addHandler(selfBtn, "myEvent", function(ev) {
-    ev = EventUtil.getEvent(ev);
+```js
+EventUtil.addHandler(selfBtn, 'myEvent', function (ev) {
+  ev = EventUtil.getEvent(ev)
 
-    console.log("btn myEvent:", ev.detail);
-});
+  console.log('btn myEvent:', ev.detail)
+})
 
-EventUtil.addHandler(document, "myEvent", function (ev) {
-    ev = EventUtil.getEvent(ev);
+EventUtil.addHandler(document, 'myEvent', function (ev) {
+  ev = EventUtil.getEvent(ev)
 
-    console.log("document myEvent:", ev.detail);
-});
+  console.log('document myEvent:', ev.detail)
+})
 
-var event = document.createEvent("CustomEvent");
-event.initCustomEvent("myEvent", true, false, "hello my event");
-selfBtn.dispatchEvent(event);
-
+var event = document.createEvent('CustomEvent')
+event.initCustomEvent('myEvent', true, false, 'hello my event')
+selfBtn.dispatchEvent(event)
 ```
 
 —— 2017/12/6
@@ -466,65 +457,63 @@ console.log("选中项的在options集合中的索引：", options[$isStudent.se
 
 以前总迷惑，为嘛能够直接
 
-```
+```js
 if(aaa === undefined)
 ```
 
 看到别人偏偏
 
-```
+```js
 if(typeof aaa == "undefined")
 ```
 
 今天才明白其中道理：因为在 js 中 undefined 可以被重写，这样防止页面中有 undefined 变量存在。下面来看看区别：
 
-```
-(function(undefined) {
-    var a;
-    console.log("test1: ", a === undefined); // false
-    console.log("test1: ", "abc" === undefined); // true
-})("abc");
-
-(function(undefined) {
-    // var a;
-    console.log("test2: ", typeof a === "undefined"); // true
-    console.log("test2: ", "abc" === undefined); // true
-})("abc");
+```js
+;(function (undefined) {
+  var a
+  console.log('test1: ', a === undefined) // false
+  console.log('test1: ', 'abc' === undefined) // true
+})('abc')
+;(function (undefined) {
+  // var a;
+  console.log('test2: ', typeof a === 'undefined') // true
+  console.log('test2: ', 'abc' === undefined) // true
+})('abc')
 ```
 
 **作用于安全构造函数**
 构造函数其实是一个使用 new 操作符调用的函数。当使用 new 调用时，构造函数内用到的 this 对象会指向新创建的对象实例。
 
-```
+```js
 function Person(name, age) {
-    this.name = name;
-    this.age = age;
+  this.name = name
+  this.age = age
 }
 
-var person = new Person("wuwh", "22");
-console.log( person.name );
-console.log( person.age );
+var person = new Person('wuwh', '22')
+console.log(person.name)
+console.log(person.age)
 ```
 
 如果构造函数被当作普通函数调用，this 就会指向 window 对象，添加成 window 下的属性。
 
-```
-var person = Person("wuwh", "22");
-console.log(window.name);
-console.log(window.age);
+```js
+var person = Person('wuwh', '22')
+console.log(window.name)
+console.log(window.age)
 ```
 
 解决这个问题的方法时创建一个作用域安全的构造函数，原理是在进行任何更改前，确认 this 对象是指向正确的实例。
 
-```
+```js
 function Person(name, age) {
-    if(this instanceof Person) {
-        this.name = name;
-        this.age = age;
-    }
-    else {
-        return new Person(name, age);
-    }
+  if (this instanceof Person) {
+    this.name = name
+    this.age = age
+  } else {
+    return new Person(name, age)
+  }
 }
 ```
 
@@ -543,11 +532,11 @@ postMessage()方法接收两个参数：
 1. 一条消息
 2. 一个表示消息接收方来自哪个域下的字符串
 
-```
-var frameWindow = document.querySelector("iframe").contentWindow;
-setTimeout(function() {
-    frameWindow.postMessage("hello", "http://localhost");
-}, 1000);
+```js
+var frameWindow = document.querySelector('iframe').contentWindow
+setTimeout(function () {
+  frameWindow.postMessage('hello', 'http://localhost')
+}, 1000)
 ```
 
 接收到 XDM 消息时，会触发 window 对象的 message 事件，改事件会包含三个重要信息：
@@ -556,14 +545,14 @@ setTimeout(function() {
 2. origin：发送消息的文档所在的域；
 3. source：发送消息的文档 window 对象的代理，用于发送上一条消息的窗口中调用 postMessage()。
 
-```
+```js
 // 接收XDM消息
-window.addEventListener("message", function(ev) {
-    console.log("ev.origin:", ev.origin);
-    console.log("ev.data:", ev.data);
-    console.log("ev.source:", ev.source);
-    ev.source.postMessage("Received!", "http://localhost");
-});
+window.addEventListener('message', function (ev) {
+  console.log('ev.origin:', ev.origin)
+  console.log('ev.data:', ev.data)
+  console.log('ev.source:', ev.source)
+  ev.source.postMessage('Received!', 'http://localhost')
+})
 ```
 
 **拖放事件**
@@ -584,16 +573,16 @@ window.addEventListener("message", function(ev) {
 
 认识一个新的事件属性 dataTransfer，用于从被拖放元素向放置目标传递字符串格式的数据。
 
-```
+```js
 // 设置文本和url数据
-ev.dataTransfer.setData("URL", location.href);
-ev.dataTransfer.setData("text", "hello drag");
+ev.dataTransfer.setData('URL', location.href)
+ev.dataTransfer.setData('text', 'hello drag')
 
 // 接收文本和url数据
-console.log("dataTransfer url:", dataTransfer.getData("URL") || dataTransfer.getData("text/uri-list"));
-console.log("dataTransfer text:", dataTransfer.getData("text"));
+console.log('dataTransfer url:', dataTransfer.getData('URL') || dataTransfer.getData('text/uri-list'))
+console.log('dataTransfer text:', dataTransfer.getData('text'))
 
-console.log("dataTransfer file:", dataTransfer.file);
+console.log('dataTransfer file:', dataTransfer.file)
 ```
 
 —— 2017/12/9
@@ -608,51 +597,49 @@ console.log("dataTransfer file:", dataTransfer.file);
 
 1. 在第一次调用过程中，该函数被覆盖为另一个合适方式执行的函。
 
-```
+```js
 function createXHR() {
-    if(typeof XMLHttpRequest != "undefined") {
-        createXHR = function() {
-            return new XMLHttpRequest();
-        }
+  if (typeof XMLHttpRequest != 'undefined') {
+    createXHR = function () {
+      return new XMLHttpRequest()
     }
-    else if(typeof ActiveXObject != "undefined") {
-        createXHR = function() {
-            return new ActiveXObject("MSXML2.XMLHTTP");
-        }
+  } else if (typeof ActiveXObject != 'undefined') {
+    createXHR = function () {
+      return new ActiveXObject('MSXML2.XMLHTTP')
     }
+  }
 
-    return createXHR();
+  return createXHR()
 }
 ```
 
 2. 函数声明时就自执行指定恰当的函数。
 
-```
+```js
 var createXHR = (function () {
-    if(typeof XMLHttpRequest != "undefined") {
-        createXHR = function() {
-            return new XMLHttpRequest();
-        }
+  if (typeof XMLHttpRequest != 'undefined') {
+    createXHR = function () {
+      return new XMLHttpRequest()
     }
-    else if(typeof ActiveXObject != "undefined") {
-        createXHR = function() {
-            return new ActiveXObject("MSXML2.XMLHTTP");
-        }
+  } else if (typeof ActiveXObject != 'undefined') {
+    createXHR = function () {
+      return new ActiveXObject('MSXML2.XMLHTTP')
     }
+  }
 
-    return createXHR();
-})();
+  return createXHR()
+})()
 ```
 
 **函数绑定**
 
 指定一个函数内 this 环境，ES5 原生可以用 bind，bind 实现原理时这样的：
 
-```
+```js
 function bind(fn, context) {
-    return function() {
-        fn.apply(context, arguments);
-    }
+  return function () {
+    fn.apply(context, arguments)
+  }
 }
 ```
 
@@ -664,14 +651,14 @@ bind 一般用于事件处理程序以及 setTimeout()和 setInterval()。因为
 
 实现可以传参的 bind 函数。
 
-```
+```js
 function bind(fn, context) {
-    var args = Array.prototype.slice.call(arguments);
-    return function() {
-        var innerArgs = Array.prototype.slice.call(arguments);
-        var finalArgs = args.concat(innerArgs);
-        return fn.apply(context, finalArgs);
-    }
+  var args = Array.prototype.slice.call(arguments)
+  return function () {
+    var innerArgs = Array.prototype.slice.call(arguments)
+    var finalArgs = args.concat(innerArgs)
+    return fn.apply(context, finalArgs)
+  }
 }
 ```
 
@@ -679,39 +666,39 @@ function bind(fn, context) {
 
 Object.preventExtensions() 防止给对象添加新属性和方法。
 
-```
+```js
 var person = {
-    name: "wuwh"
-};
-Object.preventExtensions(person);
-person.age = 22;
-console.log(person.age); // undefined
+  name: 'wuwh'
+}
+Object.preventExtensions(person)
+person.age = 22
+console.log(person.age) // undefined
 ```
 
 Object.seal() 防止删除对象属性和方法。
 
-```
+```js
 var person = {
-    name: "wuwh"
-};
-Object.seal(person);
-delete person.name;
-console.log(person.name); // wuwh
+  name: 'wuwh'
+}
+Object.seal(person)
+delete person.name
+console.log(person.name) // wuwh
 ```
 
 Object.freeze() 冻结对象，既不可以拓展，也不可以密封，还不可以修改。
 
-```
+```js
 var person = {
-    name: "wuwh"
-};
-Object.freeze(person);
-person.age = 22;
-console.log(person.age); // undefined
-delete person.name;
-console.log(person.name); // wuwh
-person.name = "xiohua";
-console.log(person.name); // wuwh
+  name: 'wuwh'
+}
+Object.freeze(person)
+person.age = 22
+console.log(person.age) // undefined
+delete person.name
+console.log(person.name) // wuwh
+person.name = 'xiohua'
+console.log(person.name) // wuwh
 ```
 
 **定时器**
@@ -868,156 +855,162 @@ Symbol 是 ES6 中引入的一个第七种数据类型（前六种分别是 unde
 
 Symbol 函数相同入参，返回值不相等
 
-```
-let sym1 = Symbol("my symbol");
-let sym2 = Symbol("my symbol");
-console.log(sym1 == sym2); // false
+```js
+let sym1 = Symbol('my symbol')
+let sym2 = Symbol('my symbol')
+console.log(sym1 == sym2) // false
 ```
 
 Symbol 值不能和其他类型的值进行运算，包括自身。但是可以显示转化成字符串，也可以转化成布尔值
 
-```
-let sym = Symbol("my symbol");
-console.log(Boolean(sym));
-console.log(sym.toString()); // Symbol(my symbol)
-console.log(sym + ".gif"); // Uncaught TypeError
+```js
+let sym = Symbol('my symbol')
+console.log(Boolean(sym))
+console.log(sym.toString()) // Symbol(my symbol)
+console.log(sym + '.gif') // Uncaught TypeError
 ```
 
 Symbol 值作为对象属性
 
-```
-let mySymbol = Symbol();
+```js
+let mySymbol = Symbol()
 
-let a = {};
-a[mySymbol] = "Hello";
-console.log("a:", a);
+let a = {}
+a[mySymbol] = 'Hello'
+console.log('a:', a)
 
 let b = {
-    [mySymbol]: "Hello"
-};
-console.log("b:", b);
+  [mySymbol]: 'Hello'
+}
+console.log('b:', b)
 
-let c = {};
-Object.defineProperty(c, mySymbol, {value: "Hello"});
-console.log("c:", c);
+let c = {}
+Object.defineProperty(c, mySymbol, { value: 'Hello' })
+console.log('c:', c)
 ```
 
 获取对象所有 Symbol 属性名
 
-```
-const obj = {};
-let a = Symbol("a");
-let b = Symbol("b");
+```js
+const obj = {}
+let a = Symbol('a')
+let b = Symbol('b')
 
-obj[a] = "Hello";
-obj[b] = "World";
+obj[a] = 'Hello'
+obj[b] = 'World'
 
-const objSymbols = Object.getOwnPropertySymbols(obj);
-console.log("Object.getOwnPropertySymbols(obj):", Object.getOwnPropertySymbols(obj)); // [Symbol(a), Symbol(b)]
+const objSymbols = Object.getOwnPropertySymbols(obj)
+console.log('Object.getOwnPropertySymbols(obj):', Object.getOwnPropertySymbols(obj)) // [Symbol(a), Symbol(b)]
 
-console.log("Object.getOwnPropertyNames(obj):", Object.getOwnPropertyNames(obj)); // []
+console.log('Object.getOwnPropertyNames(obj):', Object.getOwnPropertyNames(obj)) // []
 
-console.log("Reflect.ownKeys(obj):", Reflect.ownKeys(obj)); // [Symbol(a), Symbol(b)]
+console.log('Reflect.ownKeys(obj):', Reflect.ownKeys(obj)) // [Symbol(a), Symbol(b)]
 ```
 
 Symbol.for() 搜索返回已有参数名称的 Symbol 值，没有则会新建以改字符串为名称的 Symbol 值
 
-```
-let s1 = Symbol.for("foo");
-let s2 = Symbol.for("foo");
-console.log("symbol for s1 == s2:", s1 === s2);
+```js
+let s1 = Symbol.for('foo')
+let s2 = Symbol.for('foo')
+console.log('symbol for s1 == s2:', s1 === s2)
 // Symbol.keyFor 返回已登记Symbol类型值的key
-console.log(Symbol.keyFor(s1)); // foo
-console.log(Symbol.keyFor(Symbol("aaa"))); // undefined
+console.log(Symbol.keyFor(s1)) // foo
+console.log(Symbol.keyFor(Symbol('aaa'))) // undefined
 ```
 
 Symbol.for 登记的名字是全局环境的
 
-```
-let iframe = document.createElement("iframe");
-iframe.src = location.href;
+```js
+let iframe = document.createElement('iframe')
+iframe.src = location.href
 
-document.body.appendChild(iframe);
+document.body.appendChild(iframe)
 
-console.log(iframe.contentWindow.Symbol.for("foo") === window.Symbol.for("foo"));
+console.log(iframe.contentWindow.Symbol.for('foo') === window.Symbol.for('foo'))
 ```
 
 #### ES6 之 Proxy
 
 Proxy 属于一种“元编程”，即对编程语言进行编程。可以理解成在木匾对象之前架设一层“拦截”
 
-```
-let proxy = new Proxy({}, {
-    get: function(target, property) {
-        return "wuwh";
+```js
+let proxy = new Proxy(
+  {},
+  {
+    get: function (target, property) {
+      return 'wuwh'
     }
-});
+  }
+)
 
-console.log(proxy.time); // wuwh
-console.log(proxy.name); // wuwh
+console.log(proxy.time) // wuwh
+console.log(proxy.name) // wuwh
 ```
 
 Proxy 实例可以作为其他对象的原型对象
 
-```
-let proxy = new Proxy({}, {
-    get: function(target, property) {
-        return "wuwh";
+```js
+let proxy = new Proxy(
+  {},
+  {
+    get: function (target, property) {
+      return 'wuwh'
     }
-});
+  }
+)
 
-let obj = Object.create(proxy);
-console.log(proxy.time);
+let obj = Object.create(proxy)
+console.log(proxy.time)
 ```
 
 Proxy 的一些实例方法
 
-```
+```js
 let handler = {
-    get: function(target, name) {
-        if(name === "prototype") {
-            return Object.prototype;
-        }
-        return "Hello, " + name;
-    },
-
-    apply: function(target, thisBinding, args) {
-        return args[0];
-    },
-
-    construct: function(target, args) {
-        return {value: args[1]};
+  get: function (target, name) {
+    if (name === 'prototype') {
+      return Object.prototype
     }
-};
+    return 'Hello, ' + name
+  },
 
-var fproxy = new Proxy(function(x, y) {
-    return x + y;
-}, handler);
+  apply: function (target, thisBinding, args) {
+    return args[0]
+  },
 
-console.log(fproxy(1, 2)); // 1 被apply拦截
-console.log(new fproxy(1, 2)); // {value: 2} 被construct拦截
-console.log(fproxy.time); // Hello, time 被get拦截
+  construct: function (target, args) {
+    return { value: args[1] }
+  }
+}
+
+var fproxy = new Proxy(function (x, y) {
+  return x + y
+}, handler)
+
+console.log(fproxy(1, 2)) // 1 被apply拦截
+console.log(new fproxy(1, 2)) // {value: 2} 被construct拦截
+console.log(fproxy.time) // Hello, time 被get拦截
 ```
 
 writable 和 configurable 属性都为 false 时，则该属性不能被代理，通过 Proxy 对象访问该属性会报错
 
-```
-let obj = {};
-    Object.defineProperty(obj, "foo", {
-        value: 123,
-        writable: false,
-        configurable: false
-    });
+```js
+let obj = {}
+Object.defineProperty(obj, 'foo', {
+  value: 123,
+  writable: false,
+  configurable: false
+})
 
-    const handler = {
-        get: function(target, propKey) {
-            return "wuwh";
-        }
-    };
+const handler = {
+  get: function (target, propKey) {
+    return 'wuwh'
+  }
+}
 
-    const proxy = new Proxy(obj, handler);
+const proxy = new Proxy(obj, handler)
 
-    console.log(proxy.foo);
+console.log(proxy.foo)
 ```
 
 —— 2017/12/15
@@ -1048,91 +1041,90 @@ Reflect 对象一共有 13 个静态方法。
 
 在 name 属性部署了读取函数（getter）或者是设置函数（setter），this 绑定 receiver
 
-```
+```js
 var obj = {
-    foo: 1,
-    set bar(value) {
-        return this.foo = value;
-    }
-};
-
-var receiveObj = {
-    foo: 5
+  foo: 1,
+  set bar(value) {
+    return (this.foo = value)
+  }
 }
 
-Reflect.set(obj, "bar", 3, receiveObj);
-console.log("obj.bar:", obj.foo);
-console.log("receiveObj.bar:", receiveObj.foo);
+var receiveObj = {
+  foo: 5
+}
+
+Reflect.set(obj, 'bar', 3, receiveObj)
+console.log('obj.bar:', obj.foo)
+console.log('receiveObj.bar:', receiveObj.foo)
 ```
 
 如果 Proxy 对象和 Reflect 对象联合使用，前者拦截赋值操作，后者完成赋值的默认行为，而且传入 receiver，那么 Reflect.set 会触发 Proxy.defineProperty
 
-```
+```js
 var obj = {
-    name: "wuwh"
-};
+  name: 'wuwh'
+}
 
 var loggedObj = new Proxy(obj, {
-    set: function(target, key, value, receiver) {
-        console.log("set...");
-        Reflect.set(target, key, value, receiver);
-    },
-    defineProperty(target, key, attribute) {
-        console.log("defineProperty...");
-        Reflect.defineProperty(target, key, attribute);
-    }
-});
+  set: function (target, key, value, receiver) {
+    console.log('set...')
+    Reflect.set(target, key, value, receiver)
+  },
+  defineProperty(target, key, attribute) {
+    console.log('defineProperty...')
+    Reflect.defineProperty(target, key, attribute)
+  }
+})
 
-loggedObj.name = "xiaohua"; // set... defineProperty...
+loggedObj.name = 'xiaohua' // set... defineProperty...
 ```
 
 **Reflect.constructor(target, args)**
 
-```
+```js
 function Geeting(name) {
-    this.name = name;
+  this.name = name
 }
 
 // new 的写法
-const instance = new Greeting("张三");
+const instance = new Greeting('张三')
 
 // Reflect.construct的写法
-const instance = Reflect.construct(Greeting, ["张三"]);
+const instance = Reflect.construct(Greeting, ['张三'])
 ```
 
 **Reflect.getPrototypeOf(obj) && Reflect.setPrototypeOf(obj, newProto)**
 
 设置和读取对象的**proto**属性
 
-```
+```js
 function FancyThing() {}
-const myObj = new FancyThing();
+const myObj = new FancyThing()
 const obj = {
-    constructor: FancyThing,
-    name: "wuwh"
-};
+  constructor: FancyThing,
+  name: 'wuwh'
+}
 
-Reflect.setPrototypeOf(myObj, obj);
+Reflect.setPrototypeOf(myObj, obj)
 
-console.log(Reflect.getPrototypeOf(myObj)); // obj
+console.log(Reflect.getPrototypeOf(myObj)) // obj
 ```
 
 **Reflect.ownKeys**
 
-```
+```js
 var obj = {
-    foo: 1,
-    bar: 2,
-    [Symbol.for("foo")]: 3,
-    [Symbol.for("baz")]: 4
-};
+  foo: 1,
+  bar: 2,
+  [Symbol.for('foo')]: 3,
+  [Symbol.for('baz')]: 4
+}
 
-console.log(Object.getOwnPropertyNames(obj)); // ["foo", "bar"]
+console.log(Object.getOwnPropertyNames(obj)) // ["foo", "bar"]
 
-console.log(Object.getOwnPropertySymbols(obj)); // [Symbol(foo), Symbol(baz)]
+console.log(Object.getOwnPropertySymbols(obj)) // [Symbol(foo), Symbol(baz)]
 
-console.log(Reflect.ownKeys(obj)); // ["foo", "bar", Symbol(foo), Symbol(baz)]
-
+console.log(Reflect.ownKeys(obj)) // ["foo", "bar", Symbol(foo), Symbol(baz)]
 ```
 
 #### ES6 之 Set 和 Map
@@ -1141,20 +1133,20 @@ console.log(Reflect.ownKeys(obj)); // ["foo", "bar", Symbol(foo), Symbol(baz)]
 
 Set 是 ES6 新数据结构，类似于数组，但是成员都是唯一的，没有重复的值
 
-```
-var s = new Set();
-[1, 2, 3, 4, 5, 1, 2, 3].forEach(function(x) {
-    return s.add(x);
-});
+```js
+var s = new Set()
+;[1, 2, 3, 4, 5, 1, 2, 3].forEach(function (x) {
+  return s.add(x)
+})
 
-for(let i of s) {
-    console.log("set i:", i);
+for (let i of s) {
+  console.log('set i:', i)
 }
 ```
 
 可以看成是一种数组的去重方法 变量解构
 
-```
+```js
 const set = new Set([1, 2, 3, 4, 1, 2, 3]);
 console.log([...set]); */
 
@@ -1165,132 +1157,132 @@ console.log(set); //Set {NaN}
 
 两个对象被视为不相等
 
-```
-let set1 = new Set([{}, {}]);
-console.log(set1); // Set {{}, {}}
+```js
+let set1 = new Set([{}, {}])
+console.log(set1) // Set {{}, {}}
 ```
 
 Set 的方法 add、delete、clear 和 has
 
-```
-let s = new Set([0, 1]);
+```js
+let s = new Set([0, 1])
 
-s.add(2).add(3);
+s.add(2).add(3)
 
-console.log(s); // Set {0, 1, 2, 3}
-console.log(s.has(3)); // true
+console.log(s) // Set {0, 1, 2, 3}
+console.log(s.has(3)) // true
 
-s.delete(2);
-console.log(s); // Set {0, 1, 3}
+s.delete(2)
+console.log(s) // Set {0, 1, 3}
 
-s.clear();
-console.log(s); // Set(0) {}
+s.clear()
+console.log(s) // Set(0) {}
 ```
 
 可以看成是一种数组的去重方法 Array.from
 
-```
-const set = new Set([1, 2, 3, 4, 1, 2, 3]);
-console.log(Array.from(set));
+```js
+const set = new Set([1, 2, 3, 4, 1, 2, 3])
+console.log(Array.from(set))
 ```
 
 实现并集，交集和差集
 
+```js
+let a = new Set([1, 2, 3])
+let b = new Set([4, 3, 2])
+
+let union = new Set([...a, ...b])
+console.log(union) // Set(4) {1, 2, 3, 4}
+
+let intersect = new Set([...a].filter((x) => b.has(x)))
+console.log(intersect) // Set(2) {2, 3}
+
+let difference = new Set([...a].filter((x) => !b.has(x)))
+console.log(difference) // Set(1) {1}
 ```
-let a = new Set([1, 2, 3]);
-let b = new Set([4, 3, 2]);
 
-let union = new Set([...a, ...b]);
-console.log(union); // Set(4) {1, 2, 3, 4}
-
-let intersect = new Set([...a].filter(x => b.has(x)));
-console.log(intersect); // Set(2) {2, 3}
-
-let difference = new Set([...a].filter(x => !b.has(x)));
-console.log(difference); // Set(1) {1}
-```
-
-```
+```js
 // 垃圾回收机制依赖引用计数，如果一个值的引用次数不为0，垃圾回收机制就不会释放这块内存。
 // 结束使用该值之后，有时会忘记取消引用，导致内存无法释放，进而可能会引发内存泄漏。
 // WeakSet 中的对象都是弱引用，即垃圾回收机制不考虑 WeakSet 对该对象的引用
 // WeakSet成员类型只能是对象类型
-let ws = new WeakSet([1, 2]); // Uncaught TypeError: Invalid value used in weak set
-console.log(ws);
+let ws = new WeakSet([1, 2]) // Uncaught TypeError: Invalid value used in weak set
+console.log(ws)
 ```
 
 Map 数据结构类似对象，也是键值对的集合，但是“键”的范围不限于字符串，各种类型的值都可以
 
-```
-let m = new Map();
-let o = {msg: "hello"};
+```js
+let m = new Map()
+let o = { msg: 'hello' }
 
-m.set(o, "world");
+m.set(o, 'world')
 
-console.log(m); // Map(1) {{…} => "world"}
-console.log(m.get(o)); // world
+console.log(m) // Map(1) {{…} => "world"}
+console.log(m.get(o)) // world
 
-console.log(m.has(o)); // true
-console.log(m.delete(o)); // true
-console.log(m.has(o)); // false
+console.log(m.has(o)) // true
+console.log(m.delete(o)) // true
+console.log(m.has(o)) // false
 ```
 
 Map 可以接收一个数组作为参数，数组成员是一个个表示键值对的数组
 
-```
+```js
 let m = new Map([
-    ["name", "wuwh"],
-    ["age", 22]
-]);
+  ['name', 'wuwh'],
+  ['age', 22]
+])
 
-console.log(m); // Map(2) {"name" => "wuwh", "age" => 22}
-console.log(m.size); // 2
-console.log(m.get("name")); // wuwh
+console.log(m) // Map(2) {"name" => "wuwh", "age" => 22}
+console.log(m.size) // 2
+console.log(m.get('name')) // wuwh
 ```
 
 事实上不仅仅是数组，任何具有 Iterator 接口、 每个成员都是一个双元素的数组，都可以当作 Map 构造函数的参数
 
-```
+```js
 let set = new Set([
-    ["foo", 1],
-    ["bar", 2]
-]);
+  ['foo', 1],
+  ['bar', 2]
+])
 
-console.log(set); // Set(2) {Array(2), Array(2)}
+console.log(set) // Set(2) {Array(2), Array(2)}
 
-let m = new Map(set);
-console.log(m); // Map(2) {"foo" => 1, "bar" => 2}
+let m = new Map(set)
+console.log(m) // Map(2) {"foo" => 1, "bar" => 2}
 ```
 
 一个键值多次赋值，后面的会覆盖前面的
 
-```
-let m = new Map();
-m.set(1, "aaa").set(1, "bbb");
-console.log(m); // Map(1) {1 => "bbb"}
+```js
+let m = new Map()
+m.set(1, 'aaa').set(1, 'bbb')
+console.log(m) // Map(1) {1 => "bbb"}
 ```
 
 Map 的键实际上是跟内存地址绑定的，只要内存地址不一样，就视为两个键
 
-```
-let m = new Map();
+```js
+let m = new Map()
 
-m.set(["a"], 1);
-console.log(m.get(["a"])); // undefined
+m.set(['a'], 1)
+console.log(m.get(['a'])) // undefined
 ```
 
 forEach 方法接受第二个参数，用来绑定 this
 
-```
+```js
 let reporter = {
-    report: function(key, value) {
-        console.log(key, value);
-    }
-};
+  report: function (key, value) {
+    console.log(key, value)
+  }
+}
 
-m.forEach(function(value, key, map) {
-    this.report(key, value);
-}, reporter);
+m.forEach(function (value, key, map) {
+  this.report(key, value)
+}, reporter)
 ```
 
 —— 2017/12/18
@@ -1317,136 +1309,139 @@ m.forEach(function(value, key, map) {
 
 Promise 新建后立即执行，所以首先输出的是 Promise。然后，then 方法指定的回调函数，将在当前脚本所有同步任务执行完才会执行，所以 resolved 最后输出。
 
-```
-let promise = new Promise(function(resolve, reject) {
-  console.log('Promise');
-  resolve();
-});
+```js
+let promise = new Promise(function (resolve, reject) {
+  console.log('Promise')
+  resolve()
+})
 
-promise.then(function() {
-  console.log('resolved.');
-});
+promise.then(function () {
+  console.log('resolved.')
+})
 
-console.log('Hi!');
+console.log('Hi!')
 
 // Promise
 // Hi!
 // resolved
-
 ```
 
 Promise 实现 ajax
 
-```
-const getJSON = function(url) {
-    const promise = new Promise(function(resolve, reject) {
-        const handler = function() {
-            if (this.readyState == 4) {
-                if (this.status == 200) {
-                    resolve(this.response);
-                } else {
-                    reject(new Error(this.statusText));
-                }
-            }
-        };
+```js
+const getJSON = function (url) {
+  const promise = new Promise(function (resolve, reject) {
+    const handler = function () {
+      if (this.readyState == 4) {
+        if (this.status == 200) {
+          resolve(this.response)
+        } else {
+          reject(new Error(this.statusText))
+        }
+      }
+    }
 
-        const xhr = new XMLHttpRequest();
-        xhr.open("GET", url);
-        xhr.onreadystatechange = handler;
-        xhr.responseType = "json";
-        xhr.send();
-    });
+    const xhr = new XMLHttpRequest()
+    xhr.open('GET', url)
+    xhr.onreadystatechange = handler
+    xhr.responseType = 'json'
+    xhr.send()
+  })
 
-    return promise;
+  return promise
 }
 ```
 
 第一个回调函数完成以后， 会将返回结果作为参数， 传入第二个回调函数。
 
-```
-getJSON("js/data.json").then(function(res) {
-    console.log("then res:", res);
-    return res;
-})
-.then(function(res) {
-    console.log("then then res:", res);
-});
+```js
+getJSON('js/data.json')
+  .then(function (res) {
+    console.log('then res:', res)
+    return res
+  })
+  .then(function (res) {
+    console.log('then then res:', res)
+  })
 ```
 
 前一个回调函数，有可能返回的还是一个 Promise 对象，这时后一个回调函数，
 就会等待该 promise 对象的状态发生变化，才会被调用，否则不会被调用。
 
-```
-getJSON("js/data.json").then(function(res) {
-    console.log("then res:", res);
-    return getJSON(res.src);
-})
-.then(function(res) {
-    console.log("then then res:", res);
-})
-.catch(function(error) {
-    console.log("error:", error.message);
-});
+```js
+getJSON('js/data.json')
+  .then(function (res) {
+    console.log('then res:', res)
+    return getJSON(res.src)
+  })
+  .then(function (res) {
+    console.log('then then res:', res)
+  })
+  .catch(function (error) {
+    console.log('error:', error.message)
+  })
 ```
 
 resolve 语句后，抛出错误，不会被捕获，等于没有抛出，Promise 状态一旦改变，不会再改变。
 
-```
-const promise = new Promise(function(resolve, reject) {
-    resolve("ok");
-    throw new Error("wrong");
-});
+```js
+const promise = new Promise(function (resolve, reject) {
+  resolve('ok')
+  throw new Error('wrong')
+})
 
-promise.then(function(value) {
-    console.log("resolve:", value); // ok
-}).catch(function(error) {
-    console.log("reject:", error.message);
-});
+promise
+  .then(function (value) {
+    console.log('resolve:', value) // ok
+  })
+  .catch(function (error) {
+    console.log('reject:', error.message)
+  })
 ```
 
 catch、then 中抛出的错误都会一级一级往后冒泡，直到被后面的 catch 捕获到。
 
-```
-const promise = function() {
-    return new Promise(function(resolve, reject) {
-        resolve(x + 1);
-    });
-};
+```js
+const promise = function () {
+  return new Promise(function (resolve, reject) {
+    resolve(x + 1)
+  })
+}
 
 promise()
-    .catch(function(error) {
-        console.error("error:", error.message);
-        // error: x is not defined
-    })
-    .then(function() {
-        console.log("carry on"); // carry on
-        console.log("carry on", y);
-    })
-    .catch(function(error) {
-        console.error("error:", error.message); // error: y is not defined
-    });
+  .catch(function (error) {
+    console.error('error:', error.message)
+    // error: x is not defined
+  })
+  .then(function () {
+    console.log('carry on') // carry on
+    console.log('carry on', y)
+  })
+  .catch(function (error) {
+    console.error('error:', error.message) // error: y is not defined
+  })
 ```
 
 p1 和 p2 都是 Promise 的实例，但是 p2 的 resolve 方法将 p1 作为参数，这时 p1 的状态就会传递给 p2，也就是说，p1 的状态决定了 p2 的状态
 
-```
-const p1 = new Promise(function(resolve, reject) {
-    setTimeout(function() {
-        console.log("timeout p1");
-        resolve("p1");
-    }, 3000);
-});
+```js
+const p1 = new Promise(function (resolve, reject) {
+  setTimeout(function () {
+    console.log('timeout p1')
+    resolve('p1')
+  }, 3000)
+})
 
-const p2 = new Promise(function(resolve, reject) {
-    setTimeout(function() {
-        console.log("timeout p2");
-        resolve(p1);
-    }, 1000);
-});
+const p2 = new Promise(function (resolve, reject) {
+  setTimeout(function () {
+    console.log('timeout p2')
+    resolve(p1)
+  }, 1000)
+})
 
-p2.then(function(res) {
-    console.log("p2 res:", res);
-});
+p2.then(function (res) {
+  console.log('p2 res:', res)
+})
 
 // timeout p2
 // timeout p1
@@ -1457,17 +1452,15 @@ p2.then(function(res) {
 
 ---
 
-#### ES6 之 Promise
-
 立即 resolved 的 Promise 是在本轮事件循环的末尾执行，总是晚于本轮循环的同步任务
 
-```
+```js
 new Promise((resolve, reject) => {
-    resolve(1);
-    console.log("resolve...");
-}).then(res => {
-    console.log(res);
-});
+  resolve(1)
+  console.log('resolve...')
+}).then((res) => {
+  console.log(res)
+})
 // resolve...
 // 1
 ```
@@ -1475,61 +1468,60 @@ new Promise((resolve, reject) => {
 所有 Promise 实例的状态都变成 fulfilled，Promise.all 状态才会变成 fulfiled
 只要有一个别被 rejected，Promise.all 状态就变成 rejected
 
-```
-let getJSON = function(url) {
-    return new Promise(function(resolve, reject) {
-        function handler() {
-            if(this.readyState == 4) {
-                if(this.status == 200 || this.tatus == 304) {
-                    resolve(this.response);
-                }
-                else {
-                    reject(this.statusText);
-                }
-            }
+```js
+let getJSON = function (url) {
+  return new Promise(function (resolve, reject) {
+    function handler() {
+      if (this.readyState == 4) {
+        if (this.status == 200 || this.tatus == 304) {
+          resolve(this.response)
+        } else {
+          reject(this.statusText)
         }
+      }
+    }
 
-        let xhr = new XMLHttpRequest();
-        xhr.open("GET", url);
-        xhr.onreadystatechange = handler;
-        xhr.responseType = "json";
-        xhr.send(null);
-    });
-};
+    let xhr = new XMLHttpRequest()
+    xhr.open('GET', url)
+    xhr.onreadystatechange = handler
+    xhr.responseType = 'json'
+    xhr.send(null)
+  })
+}
 
-Promise.all([getJSON("data/data1.json"), getJSON("data/data2.json")])
-.then(function(res) {
-    console.log("all success:", res);
-})
-.catch(function(error) {
-    console.log("error:", error);
-});
+Promise.all([getJSON('data/data1.json'), getJSON('data/data2.json')])
+  .then(function (res) {
+    console.log('all success:', res)
+  })
+  .catch(function (error) {
+    console.log('error:', error)
+  })
 ```
 
 其中一个实例状态率先发生改变，Promise.race 的状态就跟着改变，这个率先改变实例的返回值作为回调入参
 
-```
-Promise.race([fetch("data/data1.json"), fetch("data/data2.json")])
-.then(function(res) {
-    console.log("all success:", res);
-})
-.catch(function(error) {
-    console.log("error:", error);
-});
+```js
+Promise.race([fetch('data/data1.json'), fetch('data/data2.json')])
+  .then(function (res) {
+    console.log('all success:', res)
+  })
+  .catch(function (error) {
+    console.log('error:', error)
+  })
 ```
 
 立即 resolve 得 Promise 对象，是本轮“事件循环”得结束时，而不是下一轮“事件循环”的开始
 
-```
+```js
 setTimeout(() => {
-    console.log("tree");
-}, 0);
+  console.log('tree')
+}, 0)
 
-Promise.resolve().then(function() {
-    console.log("two");
-});
+Promise.resolve().then(function () {
+  console.log('two')
+})
 
-console.log("one");
+console.log('one')
 
 // one
 // two
@@ -1538,30 +1530,28 @@ console.log("one");
 
 Promise.reject()方法的参数，会原封不动地作为 reject 的理由，变成后续方法的参数
 
-```
+```js
 const thenable = {
-    then(resolve, reject) {
-        reject("some wrong!");
-    }
-};
+  then(resolve, reject) {
+    reject('some wrong!')
+  }
+}
 
-Promise.reject(thenable)
-.catch(function(error) {
-    console.log(error === thenable); // true
-});
+Promise.reject(thenable).catch(function (error) {
+  console.log(error === thenable) // true
+})
 ```
 
 捕获最后抛出来的错误
 
-```
-Promise.prototype.done = function(fulfiled, rejected) {
-    this.then(fulfiled, rejected)
-    .catch(function(error) {
-        console.error(error);
-    });
-};
+```js
+Promise.prototype.done = function (fulfiled, rejected) {
+  this.then(fulfiled, rejected).catch(function (error) {
+    console.error(error)
+  })
+}
 
-Promise.reject().done();
+Promise.reject().done()
 ```
 
 —— 2017/12/22
@@ -1574,67 +1564,64 @@ Promise.reject().done();
 
 模拟 next 方法
 
-```
-var it = makeIterator(['a', 'b']);
+```js
+var it = makeIterator(['a', 'b'])
 
 it.next() // { value: "a", done: false }
 it.next() // { value: "b", done: false }
 it.next() // { value: undefined, done: true }
 
 function makeIterator(array) {
-  var nextIndex = 0;
+  var nextIndex = 0
   return {
-    next: function() {
-      return nextIndex < array.length ?
-        {value: array[nextIndex++], done: false} :
-        {value: undefined, done: true};
+    next: function () {
+      return nextIndex < array.length ? { value: array[nextIndex++], done: false } : { value: undefined, done: true }
     }
-  };
+  }
 }
 ```
 
 解构、拓展运算符都会默认调用 iterator 接口
 覆盖原生遍历器
 
-```
-let str = new String("hi");
+```js
+let str = new String('hi')
 
-console.log([...str]); // ["h", "i"]
+console.log([...str]) // ["h", "i"]
 
-str[Symbol.iterator] = function() {
-    return {
-        next: function() {
-            if(this.first) {
-                this.first = false;
-                return {value: "wuwh", done: false};
-            }
-            else {
-                return {done: true};
-            }
-        },
-        first: true
-    };
-};
+str[Symbol.iterator] = function () {
+  return {
+    next: function () {
+      if (this.first) {
+        this.first = false
+        return { value: 'wuwh', done: false }
+      } else {
+        return { done: true }
+      }
+    },
+    first: true
+  }
+}
 
-console.log([...str]); // ["wuwh"]
+console.log([...str]) // ["wuwh"]
 ```
 
 yield\*后面跟的是一个可遍历的结构，它会调用该结构的遍历器接口。
 
-```
+```js
 let generator = function* () {
-    yield 1;
-    yield* [2, 3];
-    yield 4
-};
+  yield 1
+  yield* [2, 3]
+  yield 4
+}
 
-let iterator = generator();
+let iterator = generator()
 
-console.log(iterator.next());
-console.log(iterator.next());
-console.log(iterator.next());
-console.log(iterator.next());
-console.log(iterator.next());
+console.log(iterator.next())
+console.log(iterator.next())
+console.log(iterator.next())
+console.log(iterator.next())
+console.log(iterator.next())
 ```
 
 > 一个数据结构只要部署了 Symbol.iterator 属性，就被视为具有 iterator 接口，就可以用
@@ -1644,41 +1631,41 @@ console.log(iterator.next());
 
 DOM NodeList 对象部署了 iterator 接口
 
-```
-let ps = document.querySelectorAll("p");
+```js
+let ps = document.querySelectorAll('p')
 
-for(let p of ps) {
-    console.log(p);
+for (let p of ps) {
+  console.log(p)
 }
 ```
 
 for...of 能正确识别 32 位 UTF-16 字符
 
-```
-for(let x of "\a\uD83D\uDC0A") {
-    console.log(x);
+```js
+for (let x of 'a\uD83D\uDC0A') {
+  console.log(x)
 }
 ```
 
 并不是所有类似数组的对象都具有 iterator 接口
 
-```
+```js
 let arrayLike = {
-    0: "a",
-    1: "b",
-    length: 2
-};
-
-for(let x of arrayLike) {
-    console.log(x); // Uncaught TypeError: arrayLike[Symbol.iterator] is not a function
+  0: 'a',
+  1: 'b',
+  length: 2
 }
 
-console.log(Array.from(arrayLike));
+for (let x of arrayLike) {
+  console.log(x) // Uncaught TypeError: arrayLike[Symbol.iterator] is not a function
+}
+
+console.log(Array.from(arrayLike))
 ```
 
 forEach 缺点:break 或 return 不奏效
 
-```
+```js
 let arr = [1, 2, 3];
 arr.forEach(function(item) {
     console.log(item);
@@ -1694,280 +1681,279 @@ arr.forEach(function(item) {
 
 Generator 函数调用并不执行,返回的也不是函数运行的结果,而是一个指向内部状态的指针对象,也就是遍历器对象。
 
-```
-function * helloWorldGenerator() {
-    yield "hello";
-    yield "world";
-    return "ending";
+```js
+function* helloWorldGenerator() {
+  yield 'hello'
+  yield 'world'
+  return 'ending'
 }
 
-let hw = helloWorldGenerator();
+let hw = helloWorldGenerator()
 
-console.log(hw.next()); // {value: "hello", done: false}
-console.log(hw.next()); // {value: "world", done: false}
-console.log(hw.next()); // {value: "ending", done: false}
-console.log(hw.next()); // {value: undefined, done: true}
+console.log(hw.next()) // {value: "hello", done: false}
+console.log(hw.next()) // {value: "world", done: false}
+console.log(hw.next()) // {value: "ending", done: false}
+console.log(hw.next()) // {value: undefined, done: true}
 ```
 
 yield 表达式只能用在 Generator 函数里面，用在其他地方都会报错
 
 yield 表达式在另个一表达式中，必须放在圆括号里面。放在函数参数或放到赋值表达式的右边，可以不加括号。
 
-```
+```js
 function foo() {}
 
 function* demo() {
-    foo(yield "a", yield "b");
-    let input = "abc" +(yield 123);
+  foo(yield 'a', yield 'b')
+  let input = 'abc' + (yield 123)
 }
 
-let f = demo();
-console.log("f:", f);
-console.log("f.next():", f.next());
-console.log("f.next():", f.next());
-console.log("f.next():", f.next());
-console.log("f.next():", f.next());
+let f = demo()
+console.log('f:', f)
+console.log('f.next():', f.next())
+console.log('f.next():', f.next())
+console.log('f.next():', f.next())
+console.log('f.next():', f.next())
 ```
 
 任意一个对象的 Symbol.iterator 方法，等于该对象的遍历器生成函数，调用该函数会返回该对象的一个遍历器对象。
 
 由于 Generator 函数就是遍历器生成函数，依次可以把 Generator 赋值给对象的 Symbol.iterator,从而使得该对象具有 Interator 接口。
 
-```
-let myIterable = {};
+```js
+let myIterable = {}
 myIterable[Symbol.iterator] = function* () {
-    yield 1;
-    yield 2;
-    yield 3;
-};
-console.log([...myIterable]); // [1, 2, 3]
+  yield 1
+  yield 2
+  yield 3
+}
+console.log([...myIterable]) // [1, 2, 3]
 ```
 
 Generator 函数执行后，返回一个遍历器对象。该对象本身也具有 Symbol.iterator 属性，执行后返回自身。
 
-```
+```js
 function* gen() {}
 
-let g = gen();
+let g = gen()
 
-console.log( g[Symbol.iterator]() === g ); // true
+console.log(g[Symbol.iterator]() === g) // true
 ```
 
 yield 表达式本身没有返回值，或者说总是返回 undefined。next 方法可以带一个参数，该参数就会被当作上一个 yield 表达式的返回值。
 
-```
+```js
 function* foo(x) {
-    let y = 2 * (yield (x + 1));
-    let z = yield(y / 3);
-    return (x + y + z);
+  let y = 2 * (yield x + 1)
+  let z = yield y / 3
+  return x + y + z
 }
 
-let a = foo(5);
-console.log(a.next()); // {value: 6, done: false}
-console.log(a.next()); // {value: NaN, done: false}
-console.log(a.next()); // {value: NaN, done: true}
+let a = foo(5)
+console.log(a.next()) // {value: 6, done: false}
+console.log(a.next()) // {value: NaN, done: false}
+console.log(a.next()) // {value: NaN, done: true}
 
-let b = foo(5);
-console.log(b.next());  // {value: 6, done: false}
-console.log(b.next(3)); // {value: 2, done: false}
-console.log(b.next(6)); // {value: 17, done: true}
+let b = foo(5)
+console.log(b.next()) // {value: 6, done: false}
+console.log(b.next(3)) // {value: 2, done: false}
+console.log(b.next(6)) // {value: 17, done: true}
 ```
 
 遍历斐波拉契数列
 
-```
+```js
 function* fibonacci(large) {
-    let [prev, curr] = [0, 1];
-    for(let i = 0; i < large; i++) {
-        [prev, curr] = [curr, prev + curr];
-        yield curr;
-    }
+  let [prev, curr] = [0, 1]
+  for (let i = 0; i < large; i++) {
+    ;[prev, curr] = [curr, prev + curr]
+    yield curr
+  }
 }
 
-for(let n of fibonacci(100)) {
-    console.log(n);
+for (let n of fibonacci(100)) {
+  console.log(n)
 }
 ```
 
 原生对象没有 iterator 接口，无法用 for...of 遍历，可以通过 Generator 函数加上遍历接口。
 
-```
+```js
 function* objectEntries(obj) {
-    let propKeys = Reflect.ownKeys(obj);
-    for(let propKey of propKeys) {
-        yield [propKey, obj[propKey]];
-    }
+  let propKeys = Reflect.ownKeys(obj)
+  for (let propKey of propKeys) {
+    yield [propKey, obj[propKey]]
+  }
 }
 
-let o = {first: "wu", last: "wh"};
+let o = { first: 'wu', last: 'wh' }
 
-for(let [key, value] of objectEntries(o)) {
-    console.log(`${key}: ${value}`);
+for (let [key, value] of objectEntries(o)) {
+  console.log(`${key}: ${value}`)
 }
 ```
 
 扩展运算符、解构赋值和 Array.from 方法内部调用都是遍历器接口。
 
-```
+```js
 function* numbers() {
-    yield 1;
-    yield 2;
-    yield 3;
-    return 0;
-    yield 4;
+  yield 1
+  yield 2
+  yield 3
+  return 0
+  yield 4
 }
 
 // 扩展运算符
-console.log([...numbers()]);
+console.log([...numbers()])
 
 // Array.from()
-console.log(Array.from(numbers()));
+console.log(Array.from(numbers()))
 
 // 解构赋值
-let [x, y] = numbers();
-console.log(x, y);
+let [x, y] = numbers()
+console.log(x, y)
 ```
 
 在 Generator 函数内部，调用另一个 Generator 函数，默认情况下是没有效果的。
 
 yield\* 后面的 Generator 函数（没有 return 语句时），等同于在 Generator 内部部署了一个 for...of 函数。
 
-```
+```js
 function* foo() {
-    yield "a";
-    yield "b";
+  yield 'a'
+  yield 'b'
 }
 
 function* bar() {
-    yield "x";
-    yield* foo();
-    yield "y";
+  yield 'x'
+  yield* foo()
+  yield 'y'
 }
 
-for(let v of bar()) {
-    console.log(v); // "x"  // "y"
+for (let v of bar()) {
+  console.log(v) // "x"  // "y"
 }
 ```
 
 被代理的 Generator 函数有 return 语句，那么就可以向代理它的 Generator 函数返回数据。
 
-```
+```js
 function* foo() {
-    yield 2;
-    yield 3;
-    return "foo";
+  yield 2
+  yield 3
+  return 'foo'
 }
 
 function* bar() {
-    yield 1;
-    let v = yield* foo();
-    console.log("v: ", v);
-    yield 4;
+  yield 1
+  let v = yield* foo()
+  console.log('v: ', v)
+  yield 4
 }
 
-let it = bar();
+let it = bar()
 
-console.log(it.next()); // {value: 1, done: false}
-console.log(it.next()); // {value: 2, done: false}
-console.log(it.next()); // {value: 3, done: false}
-console.log(it.next()); // v:  foo
-console.log(it.next()); // {value: 4, done: false}
-console.log(it.next()); // { value: undefined, done: true }
+console.log(it.next()) // {value: 1, done: false}
+console.log(it.next()) // {value: 2, done: false}
+console.log(it.next()) // {value: 3, done: false}
+console.log(it.next()) // v:  foo
+console.log(it.next()) // {value: 4, done: false}
+console.log(it.next()) // { value: undefined, done: true }
 ```
 
 将 Generator 函数内部 this 指向它的原型上，可以 new 命令。
 
-```
+```js
 function* gen() {
-    this.a = 1;
-    yield this.b = 2;
-    yield this.c = 3;
+  this.a = 1
+  yield (this.b = 2)
+  yield (this.c = 3)
 }
 
 function F() {
-    return gen.call(gen.prototype);
+  return gen.call(gen.prototype)
 }
 
-var f = new F();
+var f = new F()
 
 // 遍历完后，才会有相应的属性
-console.log(f.next()); // {value: 2, done: false}
-console.log(f.next()); // {value: 3, done: false}
-console.log(f.next()); // {value: undefined, done: true}
+console.log(f.next()) // {value: 2, done: false}
+console.log(f.next()) // {value: 3, done: false}
+console.log(f.next()) // {value: undefined, done: true}
 
-console.log(f.a); // 1
-console.log(f.b); // 2
-console.log(f.c); // 3
+console.log(f.a) // 1
+console.log(f.b) // 2
+console.log(f.c) // 3
 ```
 
 return 方法返回给定的值，并且终结遍历 Generator 函数。
 
-```
+```js
 function* gen() {
-    yield 1;
-    yield 2;
-    yield 3;
+  yield 1
+  yield 2
+  yield 3
 }
 
-let g = gen();
+let g = gen()
 
-console.log(g.next());
-g.return("foo");
-console.log(g.next());
+console.log(g.next())
+g.return('foo')
+console.log(g.next())
 ```
 
 Generator 函数内部没有部署 try...catch，那么 throw 抛出的错误，被外部 try...catch 捕获。
 Generator 函数内部和外部，都没有部署 try...catch，程序将会报错，中断执行。
 
-```
+```js
 function* gen() {
-    while (true) {
-        // try {
-        //     yield;
-        // }
-        // catch(e) {
-        //     console.log("内部捕获", e);
-        // }
+  while (true) {
+    // try {
+    //     yield;
+    // }
+    // catch(e) {
+    //     console.log("内部捕获", e);
+    // }
 
-        yield;
-        console.log("内部捕获", e);
-    }
-};
+    yield
+    console.log('内部捕获', e)
+  }
+}
 
-let g = gen();
-g.next();
+let g = gen()
+g.next()
 
 // g.throw("a");
 // g.throw("b");
 
 try {
-    g.throw("a");
-    g.throw("b");
-}
-catch (e) {
-    console.log("外部捕获", e);
+  g.throw('a')
+  g.throw('b')
+} catch (e) {
+  console.log('外部捕获', e)
 }
 ```
 
 next()、throw()、return()这三个方法本质时同一件事，可以放在一起理解。它们的作用都是让 Generator 函数恢复执行，并且使用不同的语句替换 yield 表达式。
 
-```
+```js
 function* gen(x, y) {
-    let res = yield x + y;
-    return res;
+  let res = yield x + y
+  return res
 }
 
-let g = gen(1, 2);
+let g = gen(1, 2)
 
-console.log(g.next()); // {value: 3, done: false}
+console.log(g.next()) // {value: 3, done: false}
 // 相当于把 let res = yield x + y; 换成 let res = 1;
-console.log(g.next(1)); // {value: 1, done: true}
+console.log(g.next(1)) // {value: 1, done: true}
 
 // 相当于把 let res = yield x + y; 换成 let res = throw(new Error("something wrong"));
-g.throw(new Error("something wrong")); // Uncaught Error: something wrong
+g.throw(new Error('something wrong')) // Uncaught Error: something wrong
 
 // 相当于把 let res = yield x + y; 换成 let res = return 2;
-console.log(g.return(2));
+console.log(g.return(2))
 ```
 
 —— 2017/12/26
@@ -1978,67 +1964,67 @@ console.log(g.return(2));
 
 对于多个异步操作，要等到上一个操作完才执行下一个，这时候就需要封装一个，Generator 函数自动执行器。
 
-```
+```js
 function run(fn) {
-    let g = fn();
+  let g = fn()
 
-    function next(err, data) {
-        let res = g.next(data);
-        if (res.done) return;
-        res.value(next);
-    }
+  function next(err, data) {
+    let res = g.next(data)
+    if (res.done) return
+    res.value(next)
+  }
 
-    next();
+  next()
 }
 
 function* gen() {
-    let f1 = yield readFileThunk("fileA");
-    let f2 = yield readFileThunk("fileB");
-    // ...
-    let fn = yield readFileThunk("fileN");
+  let f1 = yield readFileThunk('fileA')
+  let f2 = yield readFileThunk('fileB')
+  // ...
+  let fn = yield readFileThunk('fileN')
 }
 
-run(gen);
+run(gen)
 ```
 
 回调函数。将异步操作包装成 Thunk 函数，在回调函数里面交回执行权。
 
 Promise 对象。将异步操作包装成 Promise 对象，用 then 方法交回执行权。
 
-```
+```js
 // co函数源码
 function co(gen) {
-    var ctx = this;
+  var ctx = this
 
-    return new Promise(function (resolve, reject) {
-        if (typeof gen === 'function') gen = gen.call(ctx);
-        if (!gen || typeof gen.next !== 'function') return resolve(gen);
+  return new Promise(function (resolve, reject) {
+    if (typeof gen === 'function') gen = gen.call(ctx)
+    if (!gen || typeof gen.next !== 'function') return resolve(gen)
 
-        onFulfilled();
-        function onFulfilled(res) {
-            var ret;
-            try {
-                ret = gen.next(res);
-            } catch (e) {
-                return reject(e);
-            }
-            next(ret);
-        }
-    });
+    onFulfilled()
+    function onFulfilled(res) {
+      var ret
+      try {
+        ret = gen.next(res)
+      } catch (e) {
+        return reject(e)
+      }
+      next(ret)
+    }
+  })
 }
 
 function next(ret) {
-    if (ret.done) return resolve(ret.value);
-    var value = toPromise.call(ctx, ret.value);
-    if (value && isPromise(value)) return value.then(onFulfilled, onRejected);
-    return onRejected(
-        new TypeError(
-            'You may only yield a function, promise, generator, array, or object, '
-            + 'but the following object was passed: "'
-            + String(ret.value)
-            + '"'
-        )
-    );
+  if (ret.done) return resolve(ret.value)
+  var value = toPromise.call(ctx, ret.value)
+  if (value && isPromise(value)) return value.then(onFulfilled, onRejected)
+  return onRejected(
+    new TypeError(
+      'You may only yield a function, promise, generator, array, or object, ' +
+        'but the following object was passed: "' +
+        String(ret.value) +
+        '"'
+    )
+  )
 }
 ```
 
@@ -2227,163 +2213,163 @@ console.log(new Bar()); // false
 
 子类必须在 constructor 方法中调用 super 方法，否则新建实例时会报错，如果子类没有定义 constructor 方法，这个方法会被默认添加。在子类构造函数中，只有调用 super 之后，才可以使用 this 关键字，否则报错。
 
-```
+```js
 class ColorPaint extends Point {
-    constructor(x, y, color) {
-        // this.color = color;
-        super(x, y);
-        this.color = color;
-    }
+  constructor(x, y, color) {
+    // this.color = color;
+    super(x, y)
+    this.color = color
+  }
 }
 
-let cp = new ColorPaint(25, 8, "red");
-console.log(cp instanceof Point); // true
-console.log(cp instanceof ColorPaint); // true
-console.log(Reflect.getPrototypeOf(ColorPaint) === Point); // true
+let cp = new ColorPaint(25, 8, 'red')
+console.log(cp instanceof Point) // true
+console.log(cp instanceof ColorPaint) // true
+console.log(Reflect.getPrototypeOf(ColorPaint) === Point) // true
 ```
 
 super 虽然代表了父类 A 的构造函数，但是返回的是子类 B 的实例，即 super 内部 this 指的是 B。
 
-```
+```js
 class A {
-    constructor() {
-        console.log(new.target.name);
-    }
+  constructor() {
+    console.log(new.target.name)
+  }
 }
 
 class B extends A {
-    constructor() {
-        super();
-    }
+  constructor() {
+    super()
+  }
 }
 
-new A(); // A
-new B(); // B
+new A() // A
+new B() // B
 ```
 
 super 作为对象时，在普通方法中，指向父类的原型对象；在静态方法中指向父类。
 
-```
+```js
 class A {
-    p() {
-        return 2;
-    }
+  p() {
+    return 2
+  }
 }
 
 class B extends A {
-    constructor() {
-        super();
-        console.log(super.p());
-    }
+  constructor() {
+    super()
+    console.log(super.p())
+  }
 }
 
-let b = new B();
+let b = new B()
 ```
 
 ES6 规定，通过调用父类方法时，方法内部的 this 指向子类。
 
-```
+```js
 class A {
-    constructor() {
-        this.x = 1;
-    }
-    print() {
-        console.log(this.x);
-    }
+  constructor() {
+    this.x = 1
+  }
+  print() {
+    console.log(this.x)
+  }
 }
 
 class B extends A {
-    constructor() {
-        super();
-        this.x = 2;
-    }
-    m() {
-        // 实际上执行的是super.print.call(this)
-        super.print();
-    }
+  constructor() {
+    super()
+    this.x = 2
+  }
+  m() {
+    // 实际上执行的是super.print.call(this)
+    super.print()
+  }
 }
 
-let b = new B();
-b.m(); // 2
+let b = new B()
+b.m() // 2
 ```
 
 如果 super 作为对象，用在静态方法中，这时 super 将指向父类，而不是父类原型对象。
 
-```
+```js
 class Parent {
-    static myMethod(msg) {
-        console.log("static ", msg);
-    }
+  static myMethod(msg) {
+    console.log('static ', msg)
+  }
 
-    myMethod(msg) {
-        console.log("instance ", msg);
-    }
+  myMethod(msg) {
+    console.log('instance ', msg)
+  }
 }
 
 class Child extends Parent {
-    static myMethod(msg) {
-        super.myMethod(msg);
-    }
+  static myMethod(msg) {
+    super.myMethod(msg)
+  }
 
-    myMethod(msg) {
-        super.myMethod(msg);
-    }
+  myMethod(msg) {
+    super.myMethod(msg)
+  }
 }
 
 // 调用静态方法
-Child.myMethod(1); // static  1
+Child.myMethod(1) // static  1
 
 // 调用原型方法
-var c = new Child(); // instance  2
-c.myMethod(2);
+var c = new Child() // instance  2
+c.myMethod(2)
 ```
 
-```
-class A { }
+```js
+class A {}
 
-class B extends A { }
+class B extends A {}
 
-console.log(B.__proto__ === A); // true
-console.log(B.prototype.__proto__ === A.prototype); // true
+console.log(B.__proto__ === A) // true
+console.log(B.prototype.__proto__ === A.prototype) // true
 ```
 
 A 作为一个基类，就是一个普通函数，所以直接继承 Funtion.prototype，A 调用后返回一个空对象，所以，A.prototype.**proto**指向构造函数的 prototype 属性。
 
-```
-class A { }
+```js
+class A {}
 
-console.log(A.__proto__ === Function.prototype); // true
-console.log(A.prototype.__proto__ === Object.prototype); // true
+console.log(A.__proto__ === Function.prototype) // true
+console.log(A.prototype.__proto__ === Object.prototype) // true
 ```
 
 原生构造函数可以被继承
 
-```
+```js
 class VersionedArray extends Array {
-    constructor() {
-        super();
-        this.history = [[]];
-    }
-    commit() {
-        this.history.push(this.slice());
-    }
-    revert() {
-        this.splice(0, this.length, ...this.history[this.history.length - 1]);
-    }
+  constructor() {
+    super()
+    this.history = [[]]
+  }
+  commit() {
+    this.history.push(this.slice())
+  }
+  revert() {
+    this.splice(0, this.length, ...this.history[this.history.length - 1])
+  }
 }
 
-let x = new VersionedArray();
+let x = new VersionedArray()
 
-x.push(1);
-x.push(2);
-console.log(x);
-console.log(x.history);
+x.push(1)
+x.push(2)
+console.log(x)
+console.log(x.history)
 
-x.commit();
-console.log(x.history);
+x.commit()
+console.log(x.history)
 
-x.push(3);
-console.log(x.history);
+x.push(3)
+console.log(x.history)
 ```
 
 #### ES6 之 Module
@@ -2392,85 +2378,83 @@ console.log(x.history);
 
 通常情况下，export 输出的变量就是本来的名字，但是也可以使用 as 关键字重命名。
 
-```
+```js
 function v1() {}
 function v2() {}
 
-export {
-    v1 as streamV1,
-    v2 as streamV2
-}
+export { v1 as streamV1, v2 as streamV2 }
 ```
 
 export 命令规定是对外接口，必须与模块内部变量建立一一对应关系。
 
-```
+```js
 // 变量写法一
-export var m = 1;
+export var m = 1
 
 // 变量写法二
-var m = 1;
-export {m};
+var m = 1
+export { m }
 
 // 变量写法三
-var n = 1;
-export {n as m};
+var n = 1
+export { n as m }
 
 // 函数写法一
-export function f() {};
+export function f() {}
 
 // 函数写法二
 function f() {}
-export {f};
-
+export { f }
 ```
 
 export 语句输出的接口，与其对应的值是动态绑定关系
 
-```
-export var foo = 'bar';
-setTimeout(() => foo = 'baz', 500);
+```js
+export var foo = 'bar'
+setTimeout(() => (foo = 'baz'), 500)
 ```
 
 **import**
 import 命令具有提升效果，会提升到整个模块的头部，首先执行。
 
-```
-foo();
+```js
+foo()
 
-import { foo } from 'my_module';
+import { foo } from 'my_module'
 ```
 
 目前阶段，通过 Babel 转码，CommonJS 模块的 require 命令和 ES6 模块的 import 命令，可以写在同一个模块里面，但是最好不要这样做。因为 import 在静态解析阶段执行，所以它是一个模块之中最早执行的。
 
 注意，模块整体加载所在的那个对象（上例是 circle），应该是可以静态分析的，所以不允许运行时改变。下面的写法都是不允许的。
 
-```
-import * as circle from './circle';
+```js
+import * as circle from './circle'
 
 // 下面两行都是不允许的
-circle.foo = 'hello';
-circle.area = function () {};
+circle.foo = 'hello'
+circle.area = function () {}
 ```
 
 export default 命令为模块指定默认输出。其他模块加载该模块时，import 命令可以为该匿名函数指定任意名字。
 
 第一组是使用 export default 时，对应的 import 语句不需要使用大括号；第二组是不使用 export default 时，对应的 import 语句需要使用大括号。
 
-```
+```js
 // 第一组
-export default function crc32() { // 输出
+export default function crc32() {
+  // 输出
   // ...
 }
 
-import crc32 from 'crc32'; // 输入
+import crc32 from 'crc32' // 输入
 
 // 第二组
-export function crc32() { // 输出
+export function crc32() {
+  // 输出
   // ...
-};
+}
 
-import {crc32} from 'crc32'; // 输入
+import { crc32 } from 'crc32' // 输入
 ```
 
 —— 2017/12/28
@@ -2501,103 +2485,103 @@ ES6 模块与 CommonJS 模块之间的差异：
 
 复制数组
 
-```
-const a1 = [1, 2];
+```js
+const a1 = [1, 2]
 // const a2 = [...a1];
-const [...a2] = a1;
-a2[0] = 2;
-console.log('a1:', a1); // [1, 2]
+const [...a2] = a1
+a2[0] = 2
+console.log('a1:', a1) // [1, 2]
 ```
 
 拓展运算符值会部署了 iterator 接口的对象转化为数组，包括字符串、Set、Map、generator 函数、数组、NodeList 等
 
 类似数组的对象（array-like object）和可遍历（iterable）的对象可用 Array.from 方法转化
 
-```
+```js
 let arrayLike = {
-    '0': 'a',
-    '1': 'b',
-    length: 1
-};
-console.log(Array.from(arrayLike)); // ["a"]
+  0: 'a',
+  1: 'b',
+  length: 1
+}
+console.log(Array.from(arrayLike)) // ["a"]
 ```
 
 Array.from 还可以接受第二个参数，作用类似于数组的 map 方法，用来对每个元素进行处理，将处理后的值放入返回的数组。
 
-```
-console.log(Array.from(arrayLike, x => x.repeat(2)));
+```js
+console.log(Array.from(arrayLike, (x) => x.repeat(2)))
 ```
 
 Array.of 方法用于将一组值，转化为数组
 
-```
-console.log(Array.of(3, 10, 9));
-console.log(Array.of());
+```js
+console.log(Array.of(3, 10, 9))
+console.log(Array.of())
 ```
 
 将指定位置的成员复制到其他位置
 
-```
-console.log([1, 2, 3, 4, 5].copyWithin(0, 3, 4)); // [4, 2, 3, 4, 5]
+```js
+console.log([1, 2, 3, 4, 5].copyWithin(0, 3, 4)) // [4, 2, 3, 4, 5]
 ```
 
 find 找出第一个符合条件数组成员，
 findIndex 找出第一个符合条件数组成员索引
 
-```
-let f = [1, 3, 5, 7].find(n => n > 3);
-console.log(f);
+```js
+let f = [1, 3, 5, 7].find((n) => n > 3)
+console.log(f)
 ```
 
 fill 填充数组
 
-```
-console.log(new Array(3).fill(6));
+```js
+console.log(new Array(3).fill(6))
 ```
 
 fill 方法还可以接受第二个和第三个参数，用于指定填充的起始位置和结束位置。
 
-```
-console.log([1, 2, 3, 4].fill('a', 1, 4)); // [1, "a", "a", "a"]
+```js
+console.log([1, 2, 3, 4].fill('a', 1, 4)) // [1, "a", "a", "a"]
 ```
 
 include 表示某个数组是否包含给定的值第二个参数表示搜索的起始位置
 
-```
-console.log([1, 2, 3, NaN].includes(NaN)); //true
-console.log([1, 2, 3, 4, 5].includes(3, 1)); // true
+```js
+console.log([1, 2, 3, NaN].includes(NaN)) //true
+console.log([1, 2, 3, 4, 5].includes(3, 1)) // true
 ```
 
 数组空位相关
 
-```
+```js
 // 数组空位是没有任何值的
-console.log(0 in [undefined, undefined, undefined]); // true
-console.log(0 in [,,]); // false
+console.log(0 in [undefined, undefined, undefined]) // true
+console.log(0 in [, ,]) // false
 
-let arr = [, 'a'];
+let arr = [, 'a']
 
 // forEach(), filter(), reduce(), every() 和some()都会跳过空位
 arr.forEach((item, index) => {
-    console.log(index); // 1
-});
+  console.log(index) // 1
+})
 
 // join()和toString()会将空位视为undefined，而undefined和null会被处理成空字符串。
-console.log([undefined, , 'a'].join(''));
+console.log([undefined, , 'a'].join(''))
 
 // for...of可以遍历到空位
-for(let i of arr) {
-    console.log(i); // a undefined
+for (let i of arr) {
+  console.log(i) // a undefined
 }
 
 // 拓展运算符将空位转为undefined
-console.log([...[2, , 3]]); // [2, undefined, 3]
+console.log([...[2, , 3]]) // [2, undefined, 3]
 
 // Array.from将数组空位转化为undefined
-console.log(Array.from([4, , 5])); // [4, undefined, 5]
+console.log(Array.from([4, , 5])) // [4, undefined, 5]
 
 // fill()会将空位视为正常数组位置
-console.log(new Array(3).fill('a')); // ["a", "a", "a"]
+console.log(new Array(3).fill('a')) // ["a", "a", "a"]
 
 // entries() 、keys() 、values() 、find()和findIndex()会将空位处理成undefined。
 ```
@@ -2606,133 +2590,135 @@ console.log(new Array(3).fill('a')); // ["a", "a", "a"]
 
 codePointAt 方法在第一个字符上，正确地识别了“𠮷”，返回了它的十进制码点 134071（即十六进制的 20BB7）。在第二个字符（即“𠮷”的后两个字节）和第三个字符“a”上，codePointAt 方法的结果与 charCodeAt 方法相同。
 
-```
-let s = '𠮷';
-console.log(s.charCodeAt(0)); // 55362
-console.log(s.charCodeAt(1)); // 57271
+```js
+let s = '𠮷'
+console.log(s.charCodeAt(0)) // 55362
+console.log(s.charCodeAt(1)) // 57271
 
-console.log(s.codePointAt(0)); // 134071
-console.log(s.codePointAt(1)); // 57271
+console.log(s.codePointAt(0)) // 134071
+console.log(s.codePointAt(1)) // 57271
 
-console.log(s.codePointAt(0).toString(16)); // 134071
-console.log(s.codePointAt(1).toString(16)); // 57271
+console.log(s.codePointAt(0).toString(16)) // 134071
+console.log(s.codePointAt(1).toString(16)) // 57271
 
-let text = String.fromCodePoint(0x20bb7, 0xdfb7);
+let text = String.fromCodePoint(0x20bb7, 0xdfb7)
 
 // for...of能正确遍历出utf-16字符
-for(let t of text) {
-    console.log(t);
+for (let t of text) {
+  console.log(t)
 }
 ```
 
 endsWith 的行为与其他两个方法有所不同，它针对前 n 个字符，而其他两个方法针对从第 n 个位置直到字符串结束。
 
-```
-let str = 'Hello world';
-console.log(str.startsWith('llo', 2)); // true
-console.log(str.endsWith('d', 11)); // true
-console.log(str.includes('wo', 1)); // true
+```js
+let str = 'Hello world'
+console.log(str.startsWith('llo', 2)) // true
+console.log(str.endsWith('d', 11)) // true
+console.log(str.includes('wo', 1)) // true
 ```
 
 repeat()
 
-```
+```js
 // 小数会被取整
-console.log('x'.repeat(3.6));  // "xxx"
+console.log('x'.repeat(3.6)) // "xxx"
 //  0 - -1 被视为0
-console.log('y'.repeat(-0.1)); // ""
+console.log('y'.repeat(-0.1)) // ""
 // 非数字，转化成数字
-console.log('z'.repeat('z')); // ""
+console.log('z'.repeat('z')) // ""
 ```
 
 padStart() padEnd()
 
-```
+```js
 // 头部补全
-console.log('x'.padStart(5, 'ab')); // "ababx"
+console.log('x'.padStart(5, 'ab')) // "ababx"
 // 尾部补全
-console.log('x'.padEnd(5, 'ab')); // "xabab"
+console.log('x'.padEnd(5, 'ab')) // "xabab"
 // 原字符串长度，等于或大于指定最小长度，则返回原字符串
-console.log('xxx'.padStart(3, 'ab')); // "xxx"
+console.log('xxx'.padStart(3, 'ab')) // "xxx"
 // 用来补全的字符串与原字符串，两者的长度之和超过了指定的最小长度，则会截去超出位数的补全字符串
-console.log('xxx'.padStart(5, 'abcdef')); // "abxxx"
+console.log('xxx'.padStart(5, 'abcdef')) // "abxxx"
 // 省略第二个参数，默认使用空格补全长度
-console.log('xxx'.padStart(5)); // "  xxx"
+console.log('xxx'.padStart(5)) // "  xxx"
 
-console.log('12'.padStart(10, 'YYYY-MM-DD')); // "YYYY-MM-12"
+console.log('12'.padStart(10, 'YYYY-MM-DD')) // "YYYY-MM-12"
 ```
 
 模板字符串里可以嵌套
 
-```
-let $body = document.querySelector('body');
+```js
+let $body = document.querySelector('body')
 
 const data = [
-    {first: 'wu', last: 'wenhua'},
-    {first: 'xiao', last: 'hua'}
-];
+  { first: 'wu', last: 'wenhua' },
+  { first: 'xiao', last: 'hua' }
+]
 
-const temp = d => `
+const temp = (d) => `
     <table>
-        ${d.map(item => {
+        ${d
+          .map((item) => {
             return `
                 <tr>
                     <td>${item.first}</td>
                     <td>${item.last}</td>
                 </tr>
-            `;
-        }).join('')}
+            `
+          })
+          .join('')}
     </table>
-`;
+`
 
-console.log(temp(data));
+console.log(temp(data))
 
-$body.innerHTML= temp(data);
+$body.innerHTML = temp(data)
 ```
 
 执行一段字符串
 
-```
-let str = `return ` + '`Hello ${name}`';
-let func = new Function('name', str);
-console.log(func);
-console.log(func('wuwh'));
+```js
+let str = `return ` + '`Hello ${name}`'
+let func = new Function('name', str)
+console.log(func)
+console.log(func('wuwh'))
 ```
 
 标签模板
 
-```
+```js
 function passthru(literals, ...values) {
-    let output = '';
-    let index;
+  let output = ''
+  let index
 
-    for(index = 0; index < values.length; index++) {
-        output += literals[index] + values[index];
-    }
+  for (index = 0; index < values.length; index++) {
+    output += literals[index] + values[index]
+  }
 
-    output += literals[index];
-    return output;
+  output += literals[index]
+  return output
 }
 
-let name = 'wen';
-let age = 22;
+let name = 'wen'
+let age = 22
 
-let str = passthru`My name is ${name}, I am ${age} old`; // tag函数调用
+let str = passthru`My name is ${name}, I am ${age} old` // tag函数调用
 
-console.log(str);
+console.log(str)
 ```
 
 tag 函数的第一个参数 strings，有一个 raw 属性，也指向一个数组
 
-```
-tag`abc\nefg`;
+```js
+tag`abc\nefg`
 
 function tag(str) {
-    console.log(str.raw[0]); // abc\nefg
+  console.log(str.raw[0]) // abc\nefg
 }
 
 // 充当模板字符串的处理函数，返回一个斜杠都被转义的字符串
-console.log(String.raw`abc\nefg`);
+console.log(String.raw`abc\nefg`)
 ```
 
 —— 2018/1/3
@@ -2743,190 +2729,199 @@ console.log(String.raw`abc\nefg`);
 
 把表达式放到方括号里，作为对象的属性名
 
-```
-let propKey = 'foo';
+```js
+let propKey = 'foo'
 let obj = {
-    [propKey]: true,
-    ['a' + 'b']: 'ab'
-};
-console.log(obj.ab); // "ab"
+  [propKey]: true,
+  ['a' + 'b']: 'ab'
+}
+console.log(obj.ab) // "ab"
 ```
 
 把表达式放到方括号里，作为对象下的方法名
 
-```
+```js
 let obj = {
-    ['h' + 'ello']() {
-        return 'hi';
-    }
-};
-console.log(obj.hello()); // "hi"
+  ['h' + 'ello']() {
+    return 'hi'
+  }
+}
+console.log(obj.hello()) // "hi"
 ```
 
 属性名表达式如果是一个对象，默认情况下会自动转化为字符串[object Object]
 
-```
-const propKey = {a: 1};
+```js
+const propKey = { a: 1 }
 const obj = {
-    [propKey]: 1
-};
-console.log(obj);
+  [propKey]: 1
+}
+console.log(obj)
 ```
 
 getter 和 setter 函数 name 属性在该方法的属性描述对象的 get 和 set 属性上面
 
-```
+```js
 const obj = {
-    get foo() {},
-    set foo(x) {}
-};
+  get foo() {},
+  set foo(x) {}
+}
 
-const descriptor = Object.getOwnPropertyDescriptor(obj, 'foo');
-console.log(descriptor.get.name); // "foo"
-console.log(descriptor.set.name); // "foo"
+const descriptor = Object.getOwnPropertyDescriptor(obj, 'foo')
+console.log(descriptor.get.name) // "foo"
+console.log(descriptor.set.name) // "foo"
 ```
 
 Function 构造函数创造的函数，name 属性返回 anonymous
 
-```
-console.log((new Function()).name); // anonymous
+```js
+console.log(new Function().name) // anonymous
 ```
 
 bind 方法创造的函数，name 属性返回 bound 加上原函数的名字
 
-```
-let doSomething = function() {};
-console.log(doSomething.bind().name); // bound doSomething
+```js
+let doSomething = function () {}
+console.log(doSomething.bind().name) // bound doSomething
 ```
 
 Object.is() 同值相等 不同于运算符（===），一是+0 不等于-0，二是 NaN 等于自身
 
-```
-console.log(Object.is(+0, -0)); // false
-console.log(Object.is(NaN, NaN)); // true
+```js
+console.log(Object.is(+0, -0)) // false
+console.log(Object.is(NaN, NaN)) // true
 ```
 
 assign
 
-```
-let a = Object.assign(2);
-console.log(typeof a);
+```js
+let a = Object.assign(2)
+console.log(typeof a)
 
 // 由于undefined和null无法转成对象，所以如果它们作为参数，就会报错
 // Object.assign(undefined);
 
 // 非首参，undefined和null无法转成对象就会跳过
-let b = Object.assign(a, undefined);
-console.log(a === b); //true
+let b = Object.assign(a, undefined)
+console.log(a === b) //true
 
 // 其他类型的值（数值、字符串和布尔值）不会产生效果
-let c = Object.assign(a, 2, true, undefined);
-console.log(c);
-console.log(a === c); // true
+let c = Object.assign(a, 2, true, undefined)
+console.log(c)
+console.log(a === c) // true
 // Object.assign拷贝的属性是有限制的，只拷贝源对象的自身属性（不拷贝继承属性），
 // 也不拷贝不可枚举的属性（enumerable: false）
 
 // source对象的foo属性是一个取值函数，Object.assign不会复制这个取值函数，
 // 只会拿到值以后，将这个值复制过去
 const source = {
-    get foo() {return 1}
-};
+  get foo() {
+    return 1
+  }
+}
 
-const target = {};
+const target = {}
 
-console.log( Object.assign(target, source) ); // {foo: 1}
+console.log(Object.assign(target, source)) // {foo: 1}
 ```
 
 ES6 规定，所有 class 的原型方法都是不可枚举的
 
-```
-let cd = Object.getOwnPropertyDescriptor(class { foo() { } }.prototype, 'foo').enumerable;
-console.log(cd); // false
+```js
+let cd = Object.getOwnPropertyDescriptor(
+  class {
+    foo() {}
+  }.prototype,
+  'foo'
+).enumerable
+console.log(cd) // false
 ```
 
 Reflect.ownKeys 遍历对象属性类型顺序 数字 -> 字符串 -> Symbol
 
-```
-console.log(Reflect.ownKeys({ [Symbol()]: 0, a: 1, 0: 2 })); // ["0", "a", Symbol()]
+```js
+console.log(Reflect.ownKeys({ [Symbol()]: 0, a: 1, 0: 2 })) // ["0", "a", Symbol()]
 ```
 
 ES2017 引入了 Object.getOwnPropertyDescriptors 方法，返回指定对象所有自身属性（非继承属性）的描述对象
 
-```
+```js
 const obj = {
-    foo: 123,
-    [Symbol('aaa')]: 'aaa',
-    get bar() { return 'abc' }
-};
+  foo: 123,
+  [Symbol('aaa')]: 'aaa',
+  get bar() {
+    return 'abc'
+  }
+}
 
-console.log(Object.getOwnPropertyDescriptors(obj));
+console.log(Object.getOwnPropertyDescriptors(obj))
 ```
 
 getOwnPropertyDescriptors 可应用于将两个对象合并，包括 set 和 get
 
-```
-const shallowMerge = (target, source) => Object.defineProperties(
-    target,
-    Object.getOwnPropertyDescriptors(source)
-);
+```js
+const shallowMerge = (target, source) => Object.defineProperties(target, Object.getOwnPropertyDescriptors(source))
 
-console.log(shallowMerge({}, { set foo(val) { console.log(val) } }));
+console.log(
+  shallowMerge(
+    {},
+    {
+      set foo(val) {
+        console.log(val)
+      }
+    }
+  )
+)
 ```
 
 对象上部署**proto**属性，一下三种方法都能达到效果
 
-```
-let prot = {};
+```js
+let prot = {}
 const obj1 = {
-    __proto__: prot,
-    foo: 123
-};
+  __proto__: prot,
+  foo: 123
+}
 
-const obj2 = Object.assign(
-    Object.create(prot),
-    {
-        foo: 123
-    }
-);
+const obj2 = Object.assign(Object.create(prot), {
+  foo: 123
+})
 
 const obj3 = Object.create(
-    prot,
-    Object.getOwnPropertyDescriptors({
-        foo: 123
-    })
-);
+  prot,
+  Object.getOwnPropertyDescriptors({
+    foo: 123
+  })
+)
 
-console.log('obj1:', obj1);
-console.log('obj2:', obj2);
-console.log('obj3:', obj3);
+console.log('obj1:', obj1)
+console.log('obj2:', obj2)
+console.log('obj3:', obj3)
 ```
 
 super 关键字表示原型对象时，只能用在对象的方法之中，用在其他地方都会报错，super 等价于 Object.getPrototypeOf(this)
 
-```
+```js
 const obj = {
-    a: 2,
-    getShow() {
-        return super.show();
-    }
-};
+  a: 2,
+  getShow() {
+    return super.show()
+  }
+}
 
-Object.setPrototypeOf(
-    obj,
-    {
-        a: 1,
-        show() {
-            return this.a;
-        }
-    }
-);
+Object.setPrototypeOf(obj, {
+  a: 1,
+  show() {
+    return this.a
+  }
+})
 
-console.log(obj.getShow()); // 2
+console.log(obj.getShow()) // 2
 ```
 
 拓展运算符的解构赋值，不能复制继承自原型对象的属性
 
-```
+```js
 let a = { a: 1 };
 let b = { b: 2 };
 a.__proto__ = b;
@@ -2949,26 +2944,26 @@ console.log(z); // 3
 
 ---
 
-```
+```js
 {
-    // 有默认值的参数不是尾参数，无法只省略该参数
-    function f(x = 1, y) {
-        return [x, y];
-    }
+  // 有默认值的参数不是尾参数，无法只省略该参数
+  function f(x = 1, y) {
+    return [x, y]
+  }
 
-    // f(, 2); // 报错
-    // 传入undefined，将触发默认值
-    console.log(f(undefined, null)); // [1, null]
+  // f(, 2); // 报错
+  // 传入undefined，将触发默认值
+  console.log(f(undefined, null)) // [1, null]
 }
 ```
 
-```
+```js
 // 指定默认值后，函数的length属性将失真
-console.log((function (a, b, c = 5) { }).length); // 2
-console.log((function (...rest) { }).length); // 0
+console.log(function (a, b, c = 5) {}.length) // 2
+console.log(function (...rest) {}.length) // 0
 
 // 设置了默认值的参数不是尾参数，那么length属性也不再计入后面的参数了
-console.log((function (a = 5, b, c) { }).length); // 0
+console.log(function (a = 5, b, c) {}.length) // 0
 ```
 
 —— 2018/1/5
@@ -2979,17 +2974,17 @@ console.log((function (a = 5, b, c) { }).length); // 0
 
 箭头函数不能当作构造函数，原因在于箭头函数内部没有 this，而是引用外层的 this
 
-```
+```js
 let Fn = () => {
-    this.age = '20';
-};
+  this.age = '20'
+}
 
-let fn = new Fn(); // Uncaught TypeError: Fn is not a constructor
+let fn = new Fn() // Uncaught TypeError: Fn is not a constructor
 ```
 
 箭头函数不能用作 Generator 函数
 
-```
+```js
 let g = function* () => {
     yield 1;
 };
@@ -2999,54 +2994,54 @@ console.log( g().next() ); // Uncaught SyntaxError: Unexpected token =>
 
 箭头函数没有自己的 this，所以 bind 方法无效，内部的 this 指向外部的 this
 
-```
-let res = (function() {
-    return [
-        (() => this.x).bind({x: 'inner'})()
-    ];
-}).call({x: 'outer'});
+```js
+let res = function () {
+  return [(() => this.x).bind({ x: 'inner' })()]
+}.call({ x: 'outer' })
 
-console.log('res:', res); // ["outer"]
+console.log('res:', res) // ["outer"]
 ```
 
 "尾调用优化"意义：函数执行到最后一步，不保留外层函数的调用帧，只会保存内部函数调用帧，这样节省了内存。注意，只有不再用到外层函数内部变量，内层函数的调用帧才会取代外层函数的调用帧，否则无法进行“尾调用优化”。
 
-```
+```js
 function addOne(a) {
-    var one = 1;
-    function inner(b) {
-        return b + one; // 含有外层变量one
-    }
-    return inner(a);
+  var one = 1
+  function inner(b) {
+    return b + one // 含有外层变量one
+  }
+  return inner(a)
 }
 ```
 
 尾递归的实现，往往需要改写递归函数，确保最后一步只调用自身，做到这一点的方法，就是把所有用到的内部变量改写成函数的参数。
 
-```
+```js
 // 普通方法递归
 function Fibonacci(n) {
-    if(n <= 1) {
-        return 1;
-    }
+  if (n <= 1) {
+    return 1
+  }
 
-    return Fibonacci(n - 1) + Fibonacci(n -2);
+  return Fibonacci(n - 1) + Fibonacci(n - 2)
 }
 
-console.log('Fibonacci 100:', Fibonacci(10)); // 89
-console.log('Fibonacci 100:', Fibonacci(100)); // 堆栈溢出
+console.log('Fibonacci 100:', Fibonacci(10)) // 89
+console.log('Fibonacci 100:', Fibonacci(100)) // 堆栈溢出
 ```
 
-```
+```js
 // 尾递归
 function tailFibonacci(n, ac1 = 1, ac2 = 1) {
-    if(n <= 1) {return ac2};
+  if (n <= 1) {
+    return ac2
+  }
 
-    return tailFibonacci(n - 1, ac2, ac1 + ac2);
+  return tailFibonacci(n - 1, ac2, ac1 + ac2)
 }
 
-console.log('tailFibonacci 10:', tailFibonacci(10)); // 89
-console.log('tailFibonacci 100:', tailFibonacci(100)); // 573147844013817200000
+console.log('tailFibonacci 10:', tailFibonacci(10)) // 89
+console.log('tailFibonacci 100:', tailFibonacci(100)) // 573147844013817200000
 ```
 
 ES6 之 class 继承（续）
@@ -3065,55 +3060,50 @@ console.log(o.attr === true); //false
 
 将多个类的接口“混入”另一个类
 
-```
+```js
 function mix(...mixins) {
-    class Mix{}
+  class Mix {}
 
-    for(let mixin of mixins) {
-        copyProperties(Mix, mixin); // 拷贝实例属性
-        copyProperties(Mix.prototype, mixin.prototype); // 拷贝原型属性
-    }
+  for (let mixin of mixins) {
+    copyProperties(Mix, mixin) // 拷贝实例属性
+    copyProperties(Mix.prototype, mixin.prototype) // 拷贝原型属性
+  }
 
-    return Mix;
-
+  return Mix
 }
 
 function copyProperties(target, source) {
-    for(let key of Reflect.ownKeys(source)) {
-        if(key !== 'constructor'
-        && key !== 'prototype'
-        && key !== 'name') {
-            let desc = Object.getOwnPropertyDescriptor(source, key);
-            Object.defineProperty(target, key, desc);
-        }
+  for (let key of Reflect.ownKeys(source)) {
+    if (key !== 'constructor' && key !== 'prototype' && key !== 'name') {
+      let desc = Object.getOwnPropertyDescriptor(source, key)
+      Object.defineProperty(target, key, desc)
     }
+  }
 }
 
 class School {
-    constructor() {
-        this.name = 'qing';
-    }
-    getAddress() {
-        return 'beijing';
-    }
+  constructor() {
+    this.name = 'qing'
+  }
+  getAddress() {
+    return 'beijing'
+  }
 }
 
 class Student {
-    constructor() {
-        this.name = 'wang xiao';
-    }
-    getAddress() {
-        return'shenzhen';
-    }
+  constructor() {
+    this.name = 'wang xiao'
+  }
+  getAddress() {
+    return 'shenzhen'
+  }
 }
 
-class Ins extends mix(School, Student) {
+class Ins extends mix(School, Student) {}
 
-}
+let ins = new Ins()
 
-let ins = new Ins();
-
-console.log(ins.getAddress());
+console.log(ins.getAddress())
 ```
 
 —— 2018/1/8
@@ -3171,4 +3161,4 @@ pattern 用于验证表单输入的内容，通常 HTML5 的 type 属性，比�
 
 `novalidate`
 
-## novalidate 属性规定当提交表单时不对其进行验证。
+novalidate 属性规定当提交表单时不对其进行验证

@@ -26,7 +26,7 @@ Javascript 垃圾回收机制分为：标记清除和引用计数。
 
 ### 事件循环（Event Loop）机制
 
-** 浏览中 Event Loop 运行机制 **
+**浏览中 Event Loop 运行机制**
 
 Javascript 是单线程语言。
 
@@ -35,7 +35,7 @@ Javascript 是单线程语言。
 3、一旦“执行栈”中所有同步任务执行完毕，系统就会读取“任务队列”，看看里面有哪些事件。那些对应的异步任务，于是结束等待状态，进入执行栈，开始执行；
 4、主线程不断重复上面的第三步。
 
-** Node.js 的 Event Loop **
+**Node.js 的 Event Loop**
 
 Node.js 也是单线程 Event Loop。
 
@@ -57,7 +57,7 @@ Node.js 中 libuv 引用的事件循环分为 6 个阶段：
 
 process.nextTick 独立于 Event Loop 之外，它有一个自己的队列，当每个阶段完成后，如果存在 nextTick 队列，就会清空队列中所有回调函数，并且优先于其他 microtask 执行。
 
-** 浏览器和 Node.js 的 Event Loop 区别 **
+**浏览器和 Node.js 的 Event Loop 区别**
 
 浏览器环境下，microtask 的任务队列是每个 macrotask 执行完后执行。而在 Node.js 中，microtask 会在事件循环的各个阶段之间执行，也就是一个阶段执行完毕，就会去执行 microtask 队列的任务。
 
@@ -121,7 +121,10 @@ Babel 处理分为 3 步：解析（parse），转换（transform）和 生成�
 
 - setState 只在合成事件（onclick、onChange 等）和钩子函数（componentWillUpdate、componentDidMount 等）中是异步的，在原生事件和 setTimeout 中都是同步的；
 - setState 异步并不是说内部由异步代码实现，其实本身执行过程和代码都是同步的，只是合成事件和钩子函数的调用顺序在更新之前，导致合成事件和钩子函数中没法拿到更新后的值，可以通过第二个参数 callback 拿到更新后的结果；
-- setState 批量更新优化是建立在异步之上，在原生事件和 setTimeout 中不会批量更新，在异步中如果对同一个值进行多次 setState，批量更新策略会对其进行覆盖，取最后一次的执行。
+- setState 批量更新优化是建立在异步之上，在原生事件和 setTimeout 中不会批量更新。在异步中如果对同一个值进行多次 setState，批量更新策略会对其进行覆盖，取最后一次的执行。
+
+参考
+[你真的理解 setState 吗？](https://juejin.cn/post/6844903636749778958)
 
 ### Fiber 原理
 
@@ -160,9 +163,61 @@ Fiber 的协调阶段可以：
 - 在任务队列中选出优先级高的任务执行，如果执行时间超过 deathLine，则设置为 pending 状态挂起状态；
 - 一个 Fiber 执行结束或者挂起，会调用基于 requestIdleCallback/requestAnimation 实现调度器，返回一个新的 Fiber 任务队列继续进行上述过程。
 
+首先，在说 React Fiber 架构前，说一下它产生的背景吧，在 React16 之前，数据更新，是通过函数调用栈方式，该过程是同步的，会占据 js 主线程，比如一个组件更新需要 1 毫秒，1000 个组建就需要 1s，在这段时间内，浏览器的其他任务不能得到响应，比如用户的 IO 操作，这样就会出现卡顿现象，影响用户体验。Fiber 架构的思想是，将大量同步任务进行拆解，和异步化。在 React Fiber 实现是将原来的函数调用栈的数据结构，变成链表结构，链表的每一项是任务执行单元，从而可以实现对任务的暂停和重启。React 将一个 state 更新需要执行的同步任务拆分成一个 Fiber 任务队列。
+从 Fiber 任务队列中选出优先级高的任务执行，如果执行时间超过 deathLine，设置为 padding 挂起状态，会在浏览器下次空闲时间继续执行，也就在 requestIdleCallback API 实现调度。
+
 参考：
 [浅谈 React 16 中的 Fiber 机制](https://tech.youzan.com/react-fiber/)
 [这可能是最通俗的 React Fiber(时间分片) 打开方式](https://juejin.cn/post/6844903975112671239)
+
+### React 性能优化
+
+- 使用 React.PuerComponent 和 React.memo 来缓存组建
+- 使用 useMemo 缓存大量的计算
+- 使用 React.Lazy 配合 Suspense 延时加载组件
+- 避免使用内联对象和匿名函数
+- 使用 React.Fragment 避免添加额外的 DOM
+
+参考：
+[React 性能优化](https://juejin.cn/post/6844903924302888973)
+
+### Vue 性能优化
+
+- v-for 不要和 v-if 一起使用
+- v-show 应用在显示和隐藏频繁操作上
+- v-for key 尽量不要用 index
+- 函数式组件
+- 虚拟滚动 virtual-list
+
+### Vue3 和 React 的 hook 区别
+
+- Vue hook 只会在 setup 函数被调用的时候调用一次，react 数据更改时候会导致重新 render，hooks 重新注册，虽然 React 有相应方案，比如 userCallback，userMemo 等；
+- 不受调用顺序的限制，可以有条件的被调用；
+- 不会在后续更新时产生大量的内联函数而影响引擎优化或者导致 GC 压力；
+- 不需要总是使用 useCallback 来缓存传给子组件的回调函数防止过度更新；
+- 不需要担心传入错误的依赖数组给 useEffect/useMemo/useCallback 从而导致回调中使用了过期的值，Vue 的依赖追踪是全自动的；
+
+参考
+[一文看懂：Vue3 和 React Hook 对比，到底哪里好？](https://cloud.tencent.com/developer/article/1760189)
+
+### Vue 与 React diff 算法差异
+
+- Vue 列表比对，采用双向指针向内收缩算法，而 React 则采用从左到右依次比对方式，通过比较 lastIndex 和上次\_mounteIndex，lastIndex > \_moutedIndex 节点不动。当一个集合，只把最后一个元素移动到第一个，React 会把前面的节点依次移动，而 Vue 只会把最后一个节点移动到第一个。总体上，Vue 比对方式更高效；
+- 判断是否是相同节点，Vue 会比对 tag、key，是否是注释节点，是否有 data，是否是 input 相同的 type，而 React 比较简单，只判断 tag 和 key；
+- Vue 基于 snabbdom 库，它有较好的速度和模块机制，Vue diff 使用双向链表边比对边更新 DOM，而 React 主要是使用 diff 队列保存需要更新哪些 DOM，得到 patch 树，再统一批量更新 DOM。
+
+参考
+[React 和 Vue 的 diff 算法](https://juejin.cn/post/6878892606307172365)
+
+[不可思议的 React diff](https://zhuanlan.zhihu.com/p/20346379)
+
+### Vue2 与 Vue3 diff 差异
+
+- Vue3 事件缓存、静态标记、静态提升
+- Vue3 patchKeyedChildren 比对，会基于头和尾比较，尾和尾比较，基于最长递增子序列进行移动、添加和删除。
+
+参考
+[深入浅出虚拟 DOM 和 Diff 算法，及 Vue2 与 Vue3 中的区别](https://juejin.cn/post/7010594233253888013)
 
 ### Set 与 WeakSet，Map 与 WeakMap 的区别
 
@@ -198,4 +253,51 @@ Fiber 的协调阶段可以：
     name: 'wuwhs',
     age: 20
   }
+  ```
+
+### Express 与 Koa 的区别
+
+相同点：
+
+- 对 http 模块进行封装
+
+不同点：
+
+- express 内置了很多中间件可供使用，而 koa 没有；
+- express 包含路由，视图渲染等特性，而 koa 只有 http 模块；
+- express 中间件模型为线性，而 koa 的中间件模型为 U 型，也可称为洋葱模型构造中间件；
+- express 通过回调函数处理异步操作，koa 主要是基于 co 中间件，通过 generator 使用同步方式写异步逻辑；
+
+### Nginx 正向和反向代理
+
+- 客户端向代理服务器发送请求，并且指定目标服务器，之后代理服务器向目标服务器转发请求，将获得的内容返回给客户端。用途：翻墙，数据缓存，隐藏客户端真实 IP；
+- 代理服务器接受客户端请求，请求转发给内部网络服务器，再将服务器处理结果返回给客户端。用途：隐藏服务器真实 IP，负载均衡，数据缓存，数据加密；
+
+- Nginx 设置正向代理
+
+  ```nginx
+  server {
+    listen: 82;
+    resolver: 8.8.8.8; # 设置DNS的IP，用来解析 proxy_pass 中的域名
+    location / {
+      proxy_pass http://$http_host$request_url; # 被代理转发的地址，$http_host 请求的域名和端口，$request_url请求URI
+    }
+  }
+  ```
+
+- Nginx 设置反向代理
+
+  ```nginx
+  upstream myServers { # upstream 服务器集合
+    server 192.168.30.20:3000 weigth=10; # weight 设置权重
+    server 192.168.30.20:3001 weight=5;
+    server 192.168.30.20:3002 weight=1;
+  }
+    server {
+      listen 8080;
+      server_name localhost;
+      location /server {
+        proxy_pass http:myServer;
+      }
+    }
   ```

@@ -29,17 +29,18 @@
 // console.log('fib(50): ', fib(50)) // fib(50):  12586269025
 
 // 尾递归
-// function tailFib (n, prev, next) {
+// function tailFib(n, prev, next) {
+//   console.log('this: ', typeof this)
 //   if (n === 0) return 0
 //   if (n === 1 || n === 2) return next
-//   return tailFib(n - 1, next, prev + next)
+//   return tailFib.call(this, n - 1, next, prev + next)
 // }
 // // 函数科理化
-// function curry (fn) {
+// function curry(fn) {
 //   let outArgs = Array.prototype.slice.call(arguments, 1)
 //   return function () {
 //     let innerArgs = Array.prototype.slice.call(arguments)
-//     return fn.apply(null, innerArgs.concat(outArgs))
+//     return fn.apply('', innerArgs.concat(outArgs))
 //   }
 // }
 // const fib = curry(tailFib, 1, 1)
@@ -94,3 +95,20 @@
 //   return min
 // }
 // console.log('coinChange: ', coinChange(11))
+
+var a = 20
+function Fn() {
+  this.a = 2
+  this.b = () => {
+    console.log('a: ', this.a)
+  }
+}
+
+Fn.prototype.b = function () {
+  this.c = 0
+  console.log('c: ', c)
+}
+
+const fn = new Fn()
+fn.b.call(null)
+fn.prototype.b.call(null)

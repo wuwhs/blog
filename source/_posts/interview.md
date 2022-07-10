@@ -22,24 +22,6 @@ dom.getBoundingClientRect().width
 兄弟元素
 空元素（margin-top margin-bottom）
 
-#### BFC
-
-块级格式化上下文
-
-**原理就是渲染规则**
-
-1. 垂直方向边距会发生重叠
-2. 不会浮动元素重叠
-3. 独立容器，外面的元素不会影响里面的元素
-4. 计算高度，浮动元素参与计算
-
-#### 可用来生成 BFC 的 css 属性
-
-1. float 不为 none
-2. overflow 不为 visiable
-3. position 为 fixed 和 absolute
-4. display 为 inline-block table-cell table-caption flex inline-flex
-
 #### DOM 事件
 
 DOM 事件捕获流程

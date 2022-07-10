@@ -32,6 +32,11 @@ webpack 是一个现代 JavaScript 应用程序的静态模块打包器。当 we
 webpack 像一条生产线，其中每个处理流程的职责是单一的，只有当前流程处理完成后才能交给下一个流程处理。
 webpack 通过 Tapable 组织这条复杂的生产线。webpack 在运行过程中会广播事件，插件只需要监听它所关心的事件，就能加入到这条生产线，改变生产线的运作。webpack 的事件流机制保证了插件的有序性。
 
+### webpack loader 和 plugin 的区别
+
+- loader 让 webpack 能够去处理那些非 JavaScript 文件（webpack 自身只理解 JavaScript）。loader 可以将所有类型的文件转换为 webpack 能够处理的有效模块，然后你就可以利用 webpack 的打包能力，对它们进行处理。
+- loader 被用于转换某些类型的模块，而插件则可以用于执行范围更广的任务。插件的范围包括，从打包优化和压缩，一直到重新定义环境中的变量。插件接口功能极其强大，可以用来处理各种各样的任务。
+
 #### webpack plugin 实现
 
 - Plugin 是一个类（Class），类有一个 apply 方法，执行具体的插件方法；
@@ -75,11 +80,11 @@ Compilation Hooks
 
 - 传入一个文件路径参数，通过 fs 将文件中的内容读取出来；
 - 再通过 babylon 解析代码获取 AST，目的是为了分析代码中是否还引入了别的文件；
-- 通过 dependencies 来存储文件中的依赖，然后再将 AST 转化成 ES5代码；
+- 通过 dependencies 来存储文件中的依赖，然后再将 AST 转化成 ES5 代码；
 - 最后函数返回一个对象，对象中包含当前文件路径、当前文件依赖和当前文件转化后的代码；
 - 这样遍历所有依赖文件，构建出一个函数参数对象；
 - 对象的属性就是当前文件的相对路径，属性值是一个函数，函数体是当前文件下的代码，函数接受三个参数 module、exports、require；
-- 接下来就是构造一个使用参数的函数require，调用 require('./entry.js')就可以执行 `./entry.js` 对应的函数并执行，通过 `module.export` 方式导出内容。
+- 接下来就是构造一个使用参数的函数 require，调用 require('./entry.js')就可以执行 `./entry.js` 对应的函数并执行，通过 `module.export` 方式导出内容。
 
 [实现小型打包工具](https://juejin.cn/book/6844733763675488269/section/6844733763780345864)
 

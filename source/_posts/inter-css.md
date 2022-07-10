@@ -342,11 +342,6 @@ table {
 - 如果元素 float 属性不是 none,元素会脱离文档流，根据 float 属性值来显示
 - 有浮动、绝对定位、inline-block 属性的元素，margin 不会和垂直方向上的其他元素 margin 折叠
 
-### 对 BFC 规范(块级格式化上下文：block formatting context)的理解？
-
-[加深理解 BFC](https://segmentfault.com/a/1190000013259184)
-[学习 BFC (Block Formatting Context)](https://juejin.cn/post/6844903495108132877)
-
 ### css 定义权重
 
 以下是权重的规则：标签的权重为 1，class 的权重为 10，id 的权重为 100
@@ -522,3 +517,13 @@ w3c 定义：
 - 克隆节点进行操作，然后进行原节点替换
 - 使用`display: none;`进行批量操作
 - 减少样式重新计算，即减少`offset`、`scroll`、`clientX/Y`、`getComputedStyle`、`currentStyle`的使用，因为每次使用都会刷新操作缓冲区，执行 reflow 和 repaint
+
+### 解决移动端 1px 问题
+
+- 首先移动端 1px 问题的背景是因为在移动端设备存在高清 Retina 屏，也就是 2 倍 3 倍屏幕，它们的 dpr（物理像素比）更高，比如 1 x 1 px 在 2 倍屏幕上会用 2x2 物理像素显示，比普通设备看起来更粗。要解决 1px 问题，本质就是解决让高清屏用一个物理像素展示一个 CSS 像素。
+- 方案一：`border-image: url(svg);`使用 svg 做边框图片，svg 可以是 4x4px 图片，stroke=1，`border-image-slice: xxx`将 svg 图片切割成 9 部分，除中间一块，其他八块当做边框使用。
+- 方案二：利用伪元素，比如`::after`，设置元素绝对定位，` left``top `均为 0，使用媒体查询识别 dpr（`@media(device-pixel-radio:2)`），比如 dpr 为 2，将 `width: 200%; height: 200%`，然后再通过`transform: scale(0.5)`，`pointer-events: none;`鼠标点击穿透。
+- 方案三：viewPort + scale
+
+参考
+[移动端 1px 解决方案](https://mp.weixin.qq.com/s/cJB-MDY_YyXuEyD0lALrvQ)

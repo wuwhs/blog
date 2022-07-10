@@ -14,7 +14,7 @@ css2.1 中只有 BFC 和 IFC，css3 中还增加了 GFC 和 FFC。
 
 ### 1.2 BFC 定义
 
-BFC(Block formatting context)直译为“块级格式化上下文”。它是独立的渲染区域，只有 Block-level box 参与，它规定了内部的 Block-level Box 如何布局，并且与这个区域外部毫不相干。
+BFC(Block formatting context)直译为“块级格式化上下文”。它是独立的渲染区域，块格式上下文是页面 CSS 视觉渲染的一部分，用于决定块盒子的布局及浮动相互影响范围的一个区域。
 
 ### 1.3 BFC 布局规则：
 
@@ -23,7 +23,7 @@ BFC(Block formatting context)直译为“块级格式化上下文”。它是独
 - 每个元素的 margin box 的左边，与包含块 border box 的左边相接触（对于从左往右的格式化，否则相反）。即便存在浮动也是如此。
 - BFC 的区域不会与 float box 重叠。
 - BFC 就是页面的一个隔离的独立容器，容器里面的子元素不会影响到外面的元素。反之也如此。
-- 计算 BFC 的高度时，浮动元素页参与计算。
+- 计算 BFC 的高度时，浮动元素也参与计算。
 
 ## 2、作用
 
@@ -160,3 +160,7 @@ BFC(Block formatting context)直译为“块级格式化上下文”。它是独
 ```
 
 ![image](https://note.youdao.com/yws/public/resource/b9cdada69234d36736d09235b516171c/xmlnote/56A0200CB1424C20AB9930AA4CAC44E2/7217)
+
+参考
+[加深理解 BFC](https://segmentfault.com/a/1190000013259184)
+[学习 BFC (Block Formatting Context)](https://juejin.cn/post/6844903495108132877)

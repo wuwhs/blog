@@ -25,26 +25,27 @@
 // console.log('arr: ', arr)
 
 // 插入排序
-// const insertionSort = function (arr) {
-//   const len = arr.length
-//   for (let i = 1; i < len; i++) {
-//     let current = arr[i]
-//     for (let j = i - 1; j >= 0; j--) {
-//       // current 小于 j 指向的左侧值，将 j 指向左侧值右移一位
-//       if (current < arr[j]) {
-//         arr[j + 1] = arr[j]
-//       } else {
-//         // 否则将 current 插入到 j 位置，跳出内循环
-//         arr[j] = current
-//         break
-//       }
-//     }
-//   }
-// }
+const insertionSort = function (arr) {
+  const len = arr.length
+  for (let i = 1; i < len; i++) {
+    let current = arr[i]
+    for (let j = i - 1; j >= 0; j--) {
+      // current 小于 j 指向的左侧值，将 j 指向左侧值右移一位
+      if (current < arr[j]) {
+        arr[j + 1] = arr[j]
+        if (j === 0) arr[j] = current
+      } else {
+        // 否则将 current 插入到 j 位置，跳出内循环
+        arr[j] = current
+        break
+      }
+    }
+  }
+}
 
-// const arr = [2, 1, 7, 9, 5, 8]
-// insertionSort(arr)
-// console.log('arr: ', arr)
+const arr = [1, 8, 6, 2, 5, 4, 8, 3, 7]
+insertionSort(arr)
+console.log('arr: ', arr)
 
 // 归并排序
 // const mergeSort = function (arr, lo, hi) {
@@ -97,6 +98,7 @@
 // mergeSort(arr)
 // console.log('arr: ', arr)
 
+/*
 // 快速排序
 const quickSort = function (arr, lo, hi) {
   if (lo === undefined) {
@@ -155,3 +157,4 @@ const partition = function (arr, lo, hi) {
 const arr = [2, 1, 7, 9, 5, 8]
 quickSort(arr)
 console.log(arr)
+*/

@@ -95,6 +95,7 @@
 // const arr = [10, 9, 2, 5, 3, 7, 101, 18]
 // console.log('rb: ', rob(arr))
 
+// 最大回文
 const LPS = function (s) {
   let n = s.length
   // 定义 dp 矩阵， dp[i][j] 表示从字符串第 i 个字符
@@ -121,8 +122,48 @@ const LPS = function (s) {
         dp[i][j] = Math.max(dp[i + 1][j], dp[i][j - 1])
       }
     }
-    return dp[0][n - 1]
   }
+  return dp[0][n - 1]
 }
 
 console.log(LPS('abcbc'))
+
+// 在一个整形数组中，寻找满足当前数字均大于它前面的数，但是均小于它后面的数。
+// [1, 2, 4, 3, 10, 13, 15, 12, 16, 18, 17]，返回 [1, 2, 10.16]
+function findNumber(arr) {
+  // 从左到右遍历，找出当前数字的左边最大的数leftMax，如果当前的数大于leftMax这是条件一
+  // 从右往左遍历，找到当前数字比右边最小的数minRight，如果当前数字小于minRight这是条件二
+  // 条件一、二都满足则是要找的数字
+  const len = arr.length
+  const dp = findRightMin(arr)
+  let leftMax = -1
+  const result = []
+
+  for (let i = 0; i < len; i++) {
+    let curr = arr[i]
+    if (curr > leftMax) {
+      leftMax = curr
+      // 比右边最小的都小，则比右边所有的都小
+      if (curr <= dp[i]) {
+        result.push(curr)
+      }
+    }
+  }
+  return result
+}
+
+function findRightMin(arr) {
+  const len = arr.length
+  const dp = new Array(len)
+  let rightMin = Number.MAX_VALUE
+
+  for (let i = len - 1; i >= 0; i--) {
+    let curr = arr[i]
+    if (curr < rightMin) {
+      rightMin = curr
+    }
+    dp[i] = rightMin
+  }
+  return dp
+}
+console.log(findNumber([1, 2, 4, 3, 10, 13, 15, 12, 16, 18, 17]))

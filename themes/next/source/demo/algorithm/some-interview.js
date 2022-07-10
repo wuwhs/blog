@@ -13,7 +13,26 @@ const fibonacci = function (n) {
 }
 console.log(fibonacci(100))
 */
+
 /*
+// 省去空间复杂度
+const fibonacci = function (n) {
+  if (n <= 1) return 1
+  let prev = 1
+  let curr = 1
+  let next = 0
+  for (let i = 2; i < n; i++) {
+    next = prev + curr
+    curr = next
+    prev = curr
+  }
+  return next
+}
+console.log(fibonacci(100))
+*/
+
+/*
+// 尾递归方式
 const fibonacci = function (n, curr = 1, next = 1) {
   if (n === 0) {
     return curr
@@ -25,7 +44,7 @@ console.log(fibonacci(100))
 */
 
 /**已知和一定，找出所有连续正整数序列**/
-/*
+
 const createArr = function (start, end) {
   const result = []
   for (let i = start; i <= end; i++) {
@@ -45,8 +64,7 @@ const findSerice = function (sum) {
   }
   return result
 }
-console.log(findSerice(3))
-*/
+console.log(findSerice(22))
 
 /**数组去重**/
 /*
@@ -74,6 +92,7 @@ console.log(flattedArr)
 */
 
 /*
+// JSON.stringify
 const flattedArr = JSON.stringify(arr)
   .replace(/(\[|\])/g, '')
   .split(',')
@@ -285,7 +304,9 @@ console.log(combinationSum(arr, 9))
 
 /*
 // 寻找最长上升子序列长度
-// f(n) = max(f(i)) 0<=i<=n-1
+// 思想：动态规划：1、最优子结构，2、重叠子问题。f(n) = max(f(i)) 0<=i<=n-1
+// 假设最长子序列数为dp[i]，遍历0-i中有一个数 arr[j]<arr[i]，并且 dp[j]+1>dp[i]，
+// 那么i位置的最长子序列数更新 d[i]=d[j]+1，记录max=Math.max(d[i], max)
 const getSeriseLen = function (arr) {
   const len = arr.length
   let max = 1
@@ -458,6 +479,7 @@ console.log(findIndex(str1, str2)) */
 // BM算法
 // 从右往左比对，坏字符/好后缀
 
+/*
 // KMP算法
 // 算出部分匹配表 PMT：前缀子串和后缀子串交集
 const findIndex = (str, pattern, next) => {
@@ -503,3 +525,33 @@ const next = new Array(str2.length)
 console.log('next: ', next)
 console.log(getNext([...str2], next), next)
 // console.log(findIndex([...str1], [...str2], next))
+*/
+
+// js 构造函数继承的几种方式
+// 1、原型继承：父级实例赋值给子级原型链，缺点：不能传参给父级
+// 2、组合继承：父级实例赋值给子级原型链，并且执行父级函数，缺点：父级构造函数执行两次
+// 3、寄生组合继承：父级原型链赋值给子级原型链，并且执行父级函数
+// 4、拷贝继承：执行父级函数，将所有父级原型链上的方法和属性都拷贝到子级的原型链上，缺点：父子级原型链断开
+
+/*
+// 寻找最长回文序列 abcbc => cbc，子序列两端相等
+// 解题思路：用 dp[i][j] 表示 i 位，和 j 位组成的最长回文子序列
+// 长度为n=2,3...len的回文子序列，记录dp
+// 如果 arr[i]===arr[j]，dp[i][j]=2+dp[i+1][j-1]
+// 如果 arr[i]!==arr[j]，dp[i][j]=max(dp[i+1][j], dp[i][j-1])
+const LPS = (str) => {
+  const len = str.length
+  const dp = new Array(len)
+
+  for (let n = 2; n < len; n++) {
+    for (let i = 0; i < len - n + 1; i++) {}
+  }
+}
+*/
+
+const p = new Proxy(console.log, {
+  apply(target, name, args) {
+    console.info('args: ', target, name, args)
+  }
+})
+p('abc')

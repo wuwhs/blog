@@ -171,6 +171,17 @@ png 图片压缩输出相同格式图片“不减反增”现象。使用 Canvas
 
 因为我们已经能够监听到 IOS 和 Android 软键盘弹起和收起了的状态，当键盘弹起时，针对输入框被遮挡的问题，我猜测是由于第三方输入法软键盘计算有误造成，可以通过 DOM 元素的 scrollIntoView 方法将输入框滚动到可视区。当键盘收起时，针对输入框收起后，视图下不来问题，将 document/body 通过 scrollTo 方法重置视图位置。
 
+### 聊天输入框的 @ 功能是怎样实现的
+
+- 首先，监听富文本输入框的 input 事件，有输入 @ 字符，就会触发显示列表提示框；
+- 其次，定位列表提示框显示的位置，利用 document.getSelection().getRangeAt(0) 获取光标，再通过 range.getBoundingRect() 获取光标在视口的位置，对列表提示框进行定位；
+- 暂存光标，当选中列表项时，输入框会失去焦点，选中获取数据后，再恢复光标，在光标后通过 range.inertNode 插入数据，并将光标 range.setEndAfter 移动到最后；
+
+参考
+[手把手实现输入框@功能（完结）](https://juejin.cn/post/7093142333201317901)
+[Selection](https://developer.mozilla.org/zh-CN/docs/Web/API/Selection)
+[Web 中的“选区”和“光标”需求实现](https://mp.weixin.qq.com/s/iWKVhPNj8QjOqEYrR7PcmA)
+
 ### 顺丰在线客服客服端项目
 
 - 顺丰在线客服客服端是用于集团客服与访客在线沟通的 IM 桌面软件，集成了快递相关业务。
@@ -228,19 +239,40 @@ ipcMain.handle('some-name', async (event, someArgument) => {
 网络性能检测 API PerformanceObserver(callback) 构造函数，观察的性能事件被记录时调用回调 callback 函数，第一个参数是性能观察条目列表，第二个参数是观察者对象。
 实例 observer.observe 观察性能事件类型。
 
+#### 基于 Electron 做的优化
+
+- 基于 Web 优化，代码分割、按需加载，延后加载 Node 模块（模块查找、读取），electron 预装了对应最新的 chromium，使用现代的 JS 和 CSS，babel 配置放宽，无须 postcss，打包优化，代码压缩，tree-shaking；
+- 优化进程通信优化：1、避免使用 remote，remote 底层是同步操作，虽然在渲染进程中通过 remote 可以直接使用主进程；2、封装 IPC 库，消息合并，批量传递，序列化，传递 JSON 字符串，避免 Electron 干涉序列化；
+- 减少主进程负荷：密集计算和 IO 操作避免放到主进程，比如将主窗口和消息窗口直接通信，日志收集放在消息窗口完成；
+
 #### 项目优化
 
 对在线客服访客端做过的优化实践：
 
-在 1-2 年的业务迭代开发，发现本地构建变慢，生产访问也慢，用 Lighthouse 对站点进行检测，performance 指标只有 55 分，给出的改进建议前几条是：1、代码覆盖率地 50%左右，2、图片加载拥堵，3、建议使用 HTTP2 等。
+在 1-2 年的业务迭代开发，发现本地构建变慢，生产访问也慢，用 Lighthouse 对站点进行检测，performance 指标只有 55 分，给出的改进建议前几条是：1、代码覆盖率 50%左右，2、图片加载拥堵，3、建议使用 HTTP2 等。
 
 措施：
 
-- webpack 构建打包方面：1、js 压缩混淆由 uglify 替换成多线程压缩，压缩率更好的 terser；2、使用 cache-loader 做二次构建缓存；3、在 optization 优化选项分别对 node_modules 和代码目录做 splitChunk，代码输出块控制在 200k 左右；4、生产构建使用 gzip-plugin 打 gzip 压缩副本；5、生产构建 publicPath 配置 CDN 域名；6、image-compress-plugin 做图片压缩；
-- HTTP 请求方面：1、升级 Nginx-openresty 的 ssl 模块，要求高于 1.0.2，然后配置 listen 443 端口加上 ssl http2 即可；2、开启 Nginx 的 gzip 开关，gzip_type 设定匹配 HTML、CSS 和 JavaScript 文件，再调整 gzip_cache 的分片数量和大小；3、调整 Nginx 对 JavaScript、CSS 和图片的强缓存和协商缓存时间；4、开启 CDN 加速；
+- webpack 构建打包方面：1、js 压缩混淆由 uglifyJS 替换成多线程压缩，压缩率更好的 terser；2、使用 cache-loader 做二次构建缓存；3、在 optization 优化选项分别对 node_modules 和代码目录做 splitChunk，代码输出块控制在 200k 左右；4、生产构建使用 compression-plugin 打 gzip 压缩副本；5、生产构建 publicPath 配置 CDN 域名；6、image-compress-plugin 做图片压缩；component-webpack-plugin 对 UI 框架组建按需引入；
+- HTTP 请求方面：1、升级 Nginx-openresty 的 ssl 模块，要求高于 1.0.2，然后配置 listen 443 端口加上 ssl http2 即可；2、开启 Nginx 的 gzip 开关，gzip_type 设定匹配 HTML、CSS 和 JavaScript 文件，再调整 gzip_buffers 的分片数量和大小；3、调整 Nginx 对 JavaScript、CSS 和图片的强缓存和协商缓存时间；4、开启 CDN 加速；
 - 代码方面：1、将所有弹窗和卡片组建改成异步组件；2、图标集成 icon-font；
-- 正在解决的问题：将所有图片替换成 webp 格式，高保真，体积小有点，但是我们的 h5 有部分渠道是嵌入到小程序里，小程序不支持该格式，Nodejs 做中间转换层；
+- 正在解决的问题：将所有图片替换成 webp 格式，高保真，体积小，但是我们的 h5 有部分渠道是嵌入到小程序里，小程序不支持该格式，Nodejs 做中间转换层；
 
 成果：
 
-通过神策埋点数据统计，首屏打开 P90 从 6s 到秒开；Lighthouse 站点 Performance 性能指标从 55-88；
+通过神策埋点数据统计，首屏打开 P90 从 6s 到秒开；Lighthouse 站点 Performance 性能指标从 55-80；
+
+### introduction
+
+xxx，cong shi qian duan kai fa gong zuo kuai 7 nian le，dang qian jiu zhi yu shunfeng ke ji de ke hu ti yan yan fa bu，开发客服和客户体验相关产品。
+从 0-1 实现了顺丰在线客服访客前端，包括 PC 和 H5 端，现已经接入了 100 多个渠道，比如顺丰官网、小程序、冷运，还有第三方 app，蜂巢、聚美优品、拼多多和抖音等。
+
+- 实现核心 IM 流程，防止消息丢失，采用发布-订阅者模式，建立了一套类似 TCP 消息丢失，重发 ack 确认机制，确保复杂的移动端环境消息 0 丢失；
+- 由于项目需要接入多端环境，需要做一些兼容，比如：聊天输入框吸附软键盘兼容，websocket 回退轮询兼容，h5 与 app 还有与小程序通讯兼容等；
+- 解决 C 端图片流量偏高问题，尝试使用 JS 对图片压缩后上传，封装成了一个 npm 插件；
+
+在近一年的紧张地开发中，基于 Electron 从 0-1 开发了客服 IM 桌面客户端，实现了 1 对 N 的 IM 核心能力，同时集成了运单查询、用户轨迹和机器人自动辅助能力。
+
+- 简化了主进程和渲染进程 ipc 通讯，清洗数据保存快照，优化本地数据库 indexDB 存取频次和大小，控制 keep-alive 组件二级缓存数量等措施，解决白屏和闪退问题；
+
+以上是我的基本情况。
