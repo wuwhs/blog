@@ -629,25 +629,6 @@ console.log('reverseList: ', JSON.stringify(reverseListNode(nodeList)))
 */
 
 /*
-// 查找链表中点
-function findMiddleNode(head) {
-  let slow = head
-  let fast = head
-  while (fast.next) {
-    // 偶数
-    if (fast.next && !fast.next.next) {
-      return slow.next
-    }
-    slow = slow.next
-    fast = fast.next.next
-  }
-  return slow
-}
-const middleNode = findMiddleNode(nodeList)
-console.log('middleNode: ', middleNode)
-*/
-
-/*
 // 归并排序
 function mergeSort(arr) {
   const len = arr.length
@@ -1049,25 +1030,25 @@ function arr2tree(arr) {
 console.log(JSON.stringify(arr2tree(arr)))
 */
 
-function CreateNodeList(value, next = null) {
-  this.value = value
-  this.next = next
-}
+// function CreateNodeList(value, next = null) {
+//   this.value = value
+//   this.next = next
+// }
 
-function arr2NodeList(arr) {
-  const len = arr.length
-  let head = new CreateNodeList()
-  const result = head
+// function arr2NodeList(arr) {
+//   const len = arr.length
+//   let head = new CreateNodeList()
+//   const result = head
 
-  for (let i = 0; i < len; i++) {
-    head.value = arr[i]
-    head.next = i === len - 1 ? null : new CreateNodeList()
-    head = head.next
-  }
-  return result
-}
-const listNode = arr2NodeList([1, 2, 3, 4])
-console.log(JSON.stringify(listNode))
+//   for (let i = 0; i < len; i++) {
+//     head.value = arr[i]
+//     head.next = i === len - 1 ? null : new CreateNodeList()
+//     head = head.next
+//   }
+//   return result
+// }
+// const listNode = arr2NodeList([1, 2, 3, 4, 5])
+// console.log(JSON.stringify(listNode))
 
 // function reverseListNode(head) {
 //   let prev = null
@@ -1082,13 +1063,87 @@ console.log(JSON.stringify(listNode))
 //   return prev
 // }
 
-function reverseListNode(head) {
-  if (!head.next) return head
+// function reverseListNode(head) {
+//   if (!head.next) return head
 
-  const result = reverseListNode(head.next)
-  head.next.next = head
-  head.next = null
-  return result
-}
+//   const result = reverseListNode(head.next)
+//   head.next.next = head
+//   head.next = null
+//   return result
+// }
 
-console.log(JSON.stringify(reverseListNode(listNode)))
+// console.log(JSON.stringify(reverseListNode(listNode)))
+
+// function findMiddleNode(head) {
+//   let slow = head
+//   let fast = head
+//   while (fast && fast.next) {
+//     slow = slow.next
+//     fast = fast.next.next
+//   }
+//   console.log('fast: ', fast)
+//   // 奇数
+//   if (fast) {
+//     return slow.next
+//   }
+//   return slow
+// }
+
+// console.log('result: ', findMiddleNode(listNode))
+
+// 查找比左边都要大，同时比右边都要小的数
+// [1, 2, 4, 3, 10, 13, 15, 12, 16, 18, 17]，返回 [1, 2, 10, 16]
+// function findNums(arr) {
+//   const len = arr.length
+//   const rightMinDp = findRightMin(arr)
+//   let max = Number.MIN_SAFE_INTEGER
+//   const result = []
+
+//   for (let i = 0; i < len; i++) {
+//     const curr = arr[i]
+//     if (curr > max) {
+//       max = curr
+//       if (curr <= rightMinDp[i]) {
+//         result.push(curr)
+//       }
+//     }
+//   }
+//   return result
+// }
+
+// function findRightMin(arr) {
+//   const len = arr.length
+//   const dp = []
+//   let min = Number.MAX_SAFE_INTEGER
+//   for (let i = len - 1; i >= 0; i--) {
+//     const curr = arr[i]
+//     if (curr < min) {
+//       min = curr
+//     }
+//     dp[i] = min
+//   }
+//   return dp
+// }
+
+// 维护一个栈，新来的数，如果小于之前的数字，之前的数字出栈，这样保证了当前的数字小于后面的数字
+// 当前的数字大于当前最大的数字，则入栈，否则不入栈，这样保证了当前的数字大于前面的数字
+// function findNums(arr) {
+//   const len = arr.length
+//   const stack = [arr[0]]
+//   let max = arr[0]
+
+//   for (let i = 1; i < len; i++) {
+//     const curr = arr[i]
+
+//     while (stack[stack.length - 1] >= curr) {
+//       stack.pop()
+//     }
+//     if (curr > max) {
+//       stack.push(curr)
+//       max = curr
+//     }
+//   }
+//   return stack
+// }
+
+// console.log(findNums([1, 2, 4, 3, 10, 13, 15, 12, 16, 18, 17]))
