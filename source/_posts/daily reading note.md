@@ -337,7 +337,7 @@ selfBtn.dispatchEvent(event)
 
 form 表单作为一种古老的数据提交方式，很多细节还真是头回见，下面小记下。
 
-```
+```js
 <form action="http://xxx.com" method="post" id="form1">
     <p>
         <label>姓名：</label>
@@ -354,7 +354,7 @@ form 表单作为一种古老的数据提交方式，很多细节还真是头回
 </form>
 ```
 
-```
+```js
 var forms = document.forms // 获取页面中所有form集合
 var firstForm = document.forms[0]; // 索引获取表单
 var form1 = document.forms["form1"]; // 根据名称获取表单
@@ -362,7 +362,7 @@ var form1 = document.forms["form1"]; // 根据名称获取表单
 
 单击一下代码生成的按钮，可以提交表单
 
-```
+```js
 <input type="submit" value="Submit form">
 <button type="submit" >Submit form</button>
 <input type="image" src="demo.png">
@@ -370,7 +370,7 @@ var form1 = document.forms["form1"]; // 根据名称获取表单
 
 这种方式提交表单，浏览器会将请求发送到服务器之前触发 submit 事件。
 
-```
+```js
 var form = document.querySelector("form");
 var firstField = form.elements[0];
 var field1 = form.elements["name"];
@@ -382,7 +382,7 @@ var field1 = form.elements["name"];
 
 为解决不知道用户选择了什么文本的困扰，新认识了两个属性：**selectionStart**、**selectionEnd**。
 
-```
+```js
 $name.addEventListener("select", function(ev) {
     if(typeof $name.selectionStart == "number") {
         console.log($name.value.substring($name.selectionStart, $name.selectionEnd));
@@ -395,7 +395,7 @@ $name.addEventListener("select", function(ev) {
 
 设置选中部分文本解决方案：**setSelectionRange**
 
-```
+```js
 $name.value = "hello form";
 $name.setSelectionRange(0, 4); // hel
 $name.focus();
@@ -421,7 +421,7 @@ HTMLOptionElement 有一下属性：
 4. text：选项的文本。
 5. value：选项的值。
 
-```
+```html
 <select name="is-student" id="is-student">
     <option value="0">否</option>
     <option value="1">是</option>
@@ -431,7 +431,7 @@ HTMLOptionElement 有一下属性：
 </select>
 ```
 
-```
+```js
 options = $isStudent.options;
 // 将第四位置上的option元素插入到第二位前面
 $isStudent.add(options[3], options[1]);
@@ -926,7 +926,7 @@ iframe.src = location.href
 
 document.body.appendChild(iframe)
 
-console.log(iframe.contentWindow.Symbol.for('foo') === window.Symbol.for('foo'))
+console.log(iframe.contentWindow.Symbol.for('foo') === window.Symbol.for('foo')) // true
 ```
 
 #### ES6 之 Proxy
@@ -2032,7 +2032,7 @@ function next(ret) {
 
 ---
 
-```
+```js
 class Point {
     constructor(x, y) {
         this.x = x;
@@ -2047,19 +2047,19 @@ class Point {
 
 类的数据类型就是函数
 
-```
+```js
 console.log(typeof Point); // function
 ```
 
 类本身就指向构造函数
 
-```
+```js
 console.log(Point === Point.prototype.constructor); // true
 ```
 
 直接对类使用 new 命令
 
-```
+```js
 let p = new Point(1, 2);
 console.log(p.toString()); // (1, 2)
 ```
@@ -2068,13 +2068,13 @@ x 和 y 都是对象 point 自身的属性（定义在 this 变量上），toStr
 
 实例上调用的方法，就是调用原型上的方法
 
-```
+```js
 console.log(p.toString === Point.prototype.toString); // true
 ```
 
 给实例的原型上添加方法
 
-```
+```js
 Reflect.getPrototypeOf(p).getX = function() {
     console.log(this.x);
 };
@@ -2085,7 +2085,7 @@ p1.getX(); // 3 */
 
 类的属性名，可以采用表达式
 
-```
+```js
 let methodName = "getArea";
 
 class Square {
@@ -2104,7 +2104,7 @@ sq.getArea(); // get area...
 
 类中没有定义 constructor 方法，js 引擎会自动为它添加一个空的 constructor 方法，constructor 方法默认返回实例对象，也可以指定返回另一个对象
 
-```
+```js
 class Foo {
     constructor() {
         return Object.create(null);
@@ -2116,7 +2116,7 @@ console.log(new Foo() instanceof Foo); // false
 
 用表达式表示一个类，类的名称是 MyClass，Me 只在 Class 内部代码可用，指代当前类，如果内部没有使用到的话，可以省略 Me
 
-```
+```js
 const MyClass = class Me {
     getClassName() {
         return Me.name;
@@ -2138,14 +2138,14 @@ console.log(inst1.getClassName());
 
 在类的内部使用 get 和 set 关键字，对某个属性设置存值函数和取值函数，拦截该属性的存取行为
 
-```
+```js
 inst.prop = 123; // setter:123
 console.log(inst.prop); // getter
 ```
 
 for...of 循环自动调用遍历器
 
-```
+```js
 class Foo {
     constructor(...args) {
         this.args = args;
@@ -2186,26 +2186,26 @@ for(let x of new Foo("hello", "world")) {
 
 静态方法中的 this 指向 Foo 类，而不是实例。静态方法可以与非静态方法重名
 
-```
+```js
 console.log(Foo.sayHi()); // hi
 console.log(new Foo().sayHi()); //Uncaught TypeError: (intermediate value).sayHi is not a function
 ```
 
 父类的静态方法可以被子类继承
 
-```
+```js
 console.log(Bar.sayHi()); // hi
 ```
 
 静态方法可以从 super 对象上调用
 
-```
+```js
 console.log(Bar.childSayHi()); // hi child
 ```
 
 子类继承父类时，new.target 会返回子类
 
-```
+```js
 console.log(new Bar()); // false
 ```
 
@@ -3125,7 +3125,7 @@ console.log(ins.getAddress())
 
 ---
 
-**输入框弹起数字键盘**
+#### 输入框弹起数字键盘
 
 ```html
 <input type="tel" novalidate="novalidate" pattern="[0-9]*" id="q2" value="" name="q2" verify="学号" />
@@ -3162,3 +3162,76 @@ pattern 用于验证表单输入的内容，通常 HTML5 的 type 属性，比�
 `novalidate`
 
 novalidate 属性规定当提交表单时不对其进行验证
+
+#### 获取对象属性的一些方法
+
+- `Object.getOwnPropertyNames` 获取对象本身属性名，包括不可枚举（`enumerable: false;`）属性，不包括 `Symbol` 属性；
+- `Object.getOwnPropertySymbols` 获取对象本身的 `Symbol` 属性名；
+- `Object.keys` 获取对象本身属性名，不包括不可枚举属性和 `Symbol` 属性；
+- `Reflect.ownKeys` 获取对象本身所有属性，等于 `Object.getOwnPropertyNames` + `Object.getOwnPropertySymbols`；
+- `key in obj` 获取对象本身属性和原型属性，不包括不可枚举属性和 `Symbol` 属性；
+
+```js
+const obj = {
+  a: 1,
+  b: '2',
+  [Symbol.for('foo')]: 'foo',
+  [Symbol.for('bar')]: 'bar'
+}
+
+const target = Object.create(obj)
+target.c = true
+target[Symbol.for('zoo')] = 'zoo'
+
+Object.defineProperty(target, 'f', {
+  writable: false,
+  enumerable: false,
+  configurable: true,
+  value: 'f'
+})
+
+const handler = {
+  ownKeys(target) {
+    return Reflect.ownKeys(target)
+  }
+}
+
+const proxy = new Proxy(target, handler)
+
+console.log('Object.getOwnPropertyNames: ', Object.getOwnPropertyNames(proxy)) // ['c', 'f']
+console.log('Object.getOwnPropertySymbols: ', Object.getOwnPropertySymbols(proxy)) // [Symbol(zoo)]
+console.log('Object.keys: ', Object.keys(proxy)) // ['c']
+console.log('Reflect.ownKeys: ', Reflect.ownKeys(proxy)) // ['c', 'f', Symbol(zoo)]
+
+for (let key in proxy) {
+  console.log('key: ', key) // 'c' 'a' 'b'
+}
+```
+
+### 判断是否是数组
+
+```js
+var arr = []
+
+// ES6
+console.log(Array.isArray(arr))
+
+// instanceof
+console.log(arr instanceof Array)
+
+// constructor
+console.log(arr.__proto__.constructor === Array)
+
+// getPrototypeOf
+console.log(Object.getPrototypeOf(arr).constructor === Array)
+
+// isPrototypeOf
+console.log(Array.prototype.isPrototypeOf(arr))
+
+// Object.prototype.toString
+console.log(Object.prototype.toString.apply(arr).slice(8, -1) === 'Array')
+```
+
+Object.definedProperty 拦截XMLHttpRequest请求，解决跨域问题
+离线和在线资源过期
+拦截cookie 同步cookie发生变化

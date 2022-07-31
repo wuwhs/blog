@@ -1147,3 +1147,153 @@ console.log(JSON.stringify(arr2tree(arr)))
 // }
 
 // console.log(findNums([1, 2, 4, 3, 10, 13, 15, 12, 16, 18, 17]))
+
+// 滑动窗口
+// function findWinMaxNum(arr, k) {
+//   const queue = [];
+//   function push(val) {
+//     while (queue[queue.length - 1] < val) {
+//       queue.pop();
+//     }
+//     queue.push(val);
+//   }
+
+//   function pop(val) {
+//     if (queue[0] === val) {
+//       queue.shift();
+//     }
+//   }
+
+//   const result = [];
+//   const len = arr.length;
+//   for (let i = 0; i < len; i++) {
+//     if (i < k - 1) {
+//       push(arr[i]);
+//       continue;
+//     }
+//     push(arr[i]);
+//     result.push(queue[0]);
+//     pop(arr[i - k + 1]);
+//   }
+//   return result;
+// }
+// console.log(findWinMaxNum([1, 2, 4, 3, 10, 13, 15, 12, 16, 18, 17], 3));
+
+// function asyncPool(arr, k) {
+//   return new Promise((resolve) => {
+//     const len = arr.length;
+//     let next = k;
+//     let count = 0;
+//     const result = [];
+
+//     function fn(index) {
+//       createRequest(arr[index]).then((res) => {
+//         console.log("res: ", res);
+//         result[index] = res;
+//         count++;
+//         console.log("next: ", next);
+//         if (next < len) {
+//           fn(next);
+//           next++;
+//         }
+
+//         if (count === len) {
+//           resolve(result);
+//         }
+//       });
+//     }
+
+//     for (let i = 0; i < k; i++) {
+//       fn(i);
+//     }
+//   });
+// }
+
+// function createRequest() {
+//   return new Promise((resolve) => {
+//     const delay = 3000 * Math.random();
+//     setTimeout(() => {
+//       resolve(delay);
+//     }, delay);
+//   });
+// }
+// const requests = [...new Array(10)];
+// console.log("requests", requests);
+// asyncPool(requests, 2).then((res) => {
+//   console.log("result: ", res);
+// });
+
+// function LPS(str) {
+//   const len = str.length;
+//   let dp = [...new Array(len)];
+//   dp = dp.map(() => new Array(len).fill(0));
+//   console.log("dp: ", dp);
+
+//   for (let i = 1; i < len; i++) {
+//     for (let j = 0; j < len - i; j++) {
+//       if (str[j] === str[j + i]) {
+//         dp[j][j + i] = dp[j + 1][j + i - 1] + 2;
+//       } else {
+//         dp[j][j + i] = Math.max(dp[j + 1][j + i], dp[j][j + i - 1]);
+//       }
+//     }
+//   }
+//   return dp[0][len - 1];
+// }
+// console.log(LPS("abcabcbad"));
+
+Promise.resolve(1)
+  .then(2)
+  .then(Promise.resolve(3))
+  .then((res) => {
+    console.log('res: ', res)
+  })
+
+const p1 = Promise.resolve(111)
+p1.then((res) => {
+  console.log('p1 res1: ', res)
+}).then((res) => {
+  console.log('p1 res2: ', res)
+})
+p1.then((res) => {
+  console.log('p2 res1: ', res)
+}).then((res) => {
+  console.log('p2 res2: ', res)
+})
+
+// Promise.resolve(1)
+//   .then((res1) => {
+//     console.log("res1: ", res1);
+//   })
+//   .then((res2) => {
+//     console.log("res2: ", res2);
+//     return new Error("error!");
+//   })
+//   .then((res) => {
+//     console.log("then: ", res);
+//   })
+//   .catch((err) => {
+//     console.log("catch: ", err);
+//   });
+
+// 回文链表
+// function isPadding(head) {
+//   let left = head
+
+//   function traverse(right) {
+//     if (!right) return true
+//     let result = traverse(right.next)
+//     result = result && right.value === left.value
+//     if (result) {
+//       left = left.next
+//     }
+//     return result
+//   }
+//   return traverse(head)
+// }
+
+function longestPalindrome(str) {
+  const len = str.length
+
+  for (let i = 0; i < len; i++) {}
+}

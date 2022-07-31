@@ -102,32 +102,39 @@
       // }
       // console.log(a)
 
-      Function.prototype.call = function (context, ...args) {
-        const self = this
-        const key = Symbol('key')
-        // null undefined
-        context == null ? (context = window) : null
-        // string number
-        !/^(object|function)$/i.test(typeof context) ? (context = Object(context)) : null
-
-        // array function object
-        context[key] = self
-        const result = context[key](...args)
-        delete context[key]
-        return result
+      const obj = {
+        a: 1,
+        b: '2',
+        [Symbol.for('foo')]: 'foo',
+        [Symbol.for('bar')]: 'bar'
       }
 
-      const obj = { name: 'w' }
-      const fn = function () {
-        console.log(this.name)
-      }
-      fn.call(obj)
+      const target = Object.create(obj)
+      target.c = true
+      target[Symbol.for('zoo')] = 'zoo'
 
-      Function.prototype.bind = function bind(context, ...args) {
-        const self = this
-        return function proxy(params) {
-          self.apply(context, args.concat(params))
+      Object.defineProperty(target, 'f', {
+        writable: false,
+        enumerable: false,
+        configurable: true,
+        value: 'f'
+      })
+
+      const handler = {
+        ownKeys(target) {
+          return Reflect.ownKeys(target)
         }
+      }
+
+      const proxy = new Proxy(target, handler)
+
+      console.log('Object.getOwnPropertyNames: ', Object.getOwnPropertyNames(proxy))
+      console.log('Object.getOwnPropertySymbols: ', Object.getOwnPropertySymbols(proxy))
+      console.log('Object.keys: ', Object.keys(proxy))
+      console.log('Reflect.ownKeys: ', Reflect.ownKeys(proxy))
+
+      for (let key in proxy) {
+        console.log('key: ', key)
       }
     </script>
   </body>

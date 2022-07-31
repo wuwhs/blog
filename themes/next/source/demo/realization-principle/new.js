@@ -27,3 +27,14 @@ const student = myNew(Student, 'wuwhs', 123)
 console.log(student.__proto__ === Student.prototype) // true
 console.log(Object.getPrototypeOf(student) === Student.prototype) // true
 console.log(student)
+
+// 金额转千分位
+const formatPrice = (number) => {
+  number = '' + number
+
+  const [integer, decimal = ''] = number.split('.')
+
+  return integer.replace(/\B(?=(\d{3})+$)/g, ',') + (decimal ? '.' + decimal : '')
+}
+
+console.log(formatPrice(123456789.3343)) // 123,456,789.3343

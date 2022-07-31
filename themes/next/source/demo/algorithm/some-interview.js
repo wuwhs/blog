@@ -44,7 +44,7 @@ console.log(fibonacci(100))
 */
 
 /**已知和一定，找出所有连续正整数序列**/
-
+/*
 const createArr = function (start, end) {
   const result = []
   for (let i = start; i <= end; i++) {
@@ -65,13 +65,47 @@ const findSerice = function (sum) {
   return result
 }
 console.log(findSerice(22))
+ */
 
 /**数组去重**/
 /*
 const arr = [1, 2, 3, 4, 3, 2, 5, 6, 5]
 // ES6中 Set，再解构
 console.log([...new Set(arr)])
+
+// indexOf 查找出的索引是否和当前遍历相同，相同则无重复
+const result1 = arr.filter((item, index) => {
+  return arr.indexOf(item) === index
+})
+console.log('result1: ', result1)
+
+// 对象记录
+const mp2 = {}
+const result2 = []
+arr.forEach((item) => {
+  if (!mp2[item]) {
+    mp2[item] = 1
+    result2.push(item)
+  } else {
+    mp2[item]++
+  }
+})
+console.log('result2: ', result2)
+
+// Map
+const mp3 = new Map()
+const result3 = []
+arr.forEach((item) => {
+  if (!mp3.has(item)) {
+    mp3.set(item, 1)
+    result3.push(item)
+  } else {
+    mp3.set(item, mp3.get(item) + 1)
+  }
+})
+console.log('result3: ', result3)
 */
+
 /*
 // 数组的扁平化
 const arr = [1, [2], [3, [4, 5]]]
@@ -549,9 +583,55 @@ const LPS = (str) => {
 }
 */
 
-const p = new Proxy(console.log, {
-  apply(target, name, args) {
-    console.info('args: ', target, name, args)
-  }
-})
-p('abc')
+// 实现数组扁平化
+// const arr = [1, 2, [3, 4, [5]], 6]
+
+// 逐层结构
+// function flattedArr(arr) {
+//   let result = [...arr]
+//   while (result.some((item) => Array.isArray(item))) {
+//     result = [].concat(...result)
+//   }
+//   return result
+// }
+// console.log('result1: ', flattedArr(arr))
+
+// 递归
+// function flattedArr(arr) {
+//   const result = []
+
+//   function traverse(data) {
+//     if (!Array.isArray(data)) {
+//       return result.push(data)
+//     }
+
+//     data.forEach((item) => {
+//       traverse(item)
+//     })
+//   }
+//   traverse(arr)
+//   return result
+// }
+// console.log('result2: ', flattedArr(arr))
+
+function promiseAll(promiseArr) {
+  return new Promise((resolve, reject) => {
+    const len = promiseArr.length
+    const result = []
+    const count = 0
+    for (let i = 0; i < len; i++) {
+      const promiseItem = promiseArr[i]
+      promiseItem
+        .then((res) => {
+          result[i] = res
+          count++
+          if (count === len) {
+            resolve(result)
+          }
+        })
+        .catch((e) => {
+          reject(e)
+        })
+    }
+  })
+}

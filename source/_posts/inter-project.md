@@ -276,3 +276,9 @@ xxx，cong shi qian duan kai fa gong zuo kuai 7 nian le，dang qian jiu zhi yu s
 - 简化了主进程和渲染进程 ipc 通讯，清洗数据保存快照，优化本地数据库 indexDB 存取频次和大小，控制 keep-alive 组件二级缓存数量等措施，解决白屏和闪退问题；
 
 以上是我的基本情况。
+
+### 客户端三层架构设计
+
+基础框架物料构建。Electron 桌面跨端能力，webpack 现代打包工具构建页面应用，nodejs 和 chromium 本地化能力。
+应用能力健壮和增强。渲染进程和主进程层日志收集与上报，自动或强制更新，本地异步消息队列存储，IPC 通讯消息合并和序列化，web worker 线程做高开销运算。
+应用拓展能力和平台化。路由权限分割，第三方应用以微应用形式接入，解决在线和离线应用跨域请求，sdk 提供交互和底层能力。

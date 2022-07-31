@@ -5,6 +5,7 @@ tags: css
 categories: css
 ---
 #### 1、如果子元素全部设置为浮动，则父元素是塌陷的
+
 1. 在元素末尾加块级空元素设置clear:both；
 
 ```css
@@ -13,6 +14,7 @@ categories: css
     clear: both;
 }
 ```
+
 2. 在父级容器设置before/after模拟一个块级空元素
 
 ```css
@@ -22,6 +24,7 @@ categories: css
     clear: both;
 }
 ```
+
 3. 父级容器直接设置overflow: auto/hidden;
 
 #### 2、普通文档流中块级垂直外边距合并
@@ -37,6 +40,7 @@ categories: css
     -webkit-perspective: 1000
 }
 ```
+
 过渡动画在没有启动硬件加速的情况下，会出现抖动现象，解决方案：用translated3d、translateZ、transform自动启动硬件加速，即改为：
 
 ```css
@@ -45,6 +49,7 @@ categories: css
     transform: translated3d(0,0,0);
 }
 ```
+
 ps:硬件加速导致cpu性能占用增加，电池电量消耗加大
 
 #### 4、超出内容用"..."表示
@@ -66,6 +71,7 @@ ps:硬件加速导致cpu性能占用增加，电池电量消耗加大
 ```
 
 说明：
+
 1. -webkit-line-clamp用来限制在一个块元素显示的文本的行数
 2. display: -webkit-box; 必须结合的属性 ，将对象作为弹性伸缩盒子模型显示
 3. -webkit-box-orient 必须结合的属性 ，设置或检索伸缩盒对象的子元素的排列方式
@@ -97,7 +103,9 @@ ps:硬件加速导致cpu性能占用增加，电池电量消耗加大
   background: linear-gradient(to right, transparent, #fff 55%);
 }
 ```
+
 说明：
+
 1. 将height设置为line-height整数倍，防止超出文字露出
 2. ie10+才支持linear-gradient属性
 

@@ -9,7 +9,7 @@ const fetch = function (url) {
     const time = Math.random() * 3
     setTimeout(() => {
       resolve({ status: 0, data: time + 's', url })
-    }, time * 1000)
+    }, time * 2000)
   })
 }
 
@@ -27,6 +27,7 @@ const multiRequest = (urls, maxNum) => {
     const done = (index) => {
       const url = urls[index]
       return fetch(url).then((res) => {
+        console.log('res: ', res)
         result[index] = res
         count++
 
@@ -51,7 +52,7 @@ const arr = [...new Array(10)].map((val, index) => {
 })
 console.log('arr: ', arr)
 
-multiRequest(arr, 5).then((res) => {
+multiRequest(arr, 2).then((res) => {
   console.log('res: ')
   console.log(res)
 })

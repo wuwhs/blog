@@ -114,7 +114,7 @@ function debounce(func, wait) {
   let timer = null
   return function (...args) {
     clearTimeout(timer)
-    setTimeout(()=>{
+    setTimeout(() => {
       func.apply(this, args)
     }, wait)
   }
@@ -209,3 +209,5 @@ var EventUtil = {
   }
 }
 ```
+
+参考 https://juejin.cn/post/7018337760687685669
