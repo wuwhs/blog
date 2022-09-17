@@ -181,6 +181,18 @@ png 图片压缩输出相同格式图片“不减反增”现象。使用 Canvas
 [手把手实现输入框@功能（完结）](https://juejin.cn/post/7093142333201317901)
 [Selection](https://developer.mozilla.org/zh-CN/docs/Web/API/Selection)
 [Web 中的“选区”和“光标”需求实现](https://mp.weixin.qq.com/s/iWKVhPNj8QjOqEYrR7PcmA)
+[基于 contenteditable 技术实现@选人功能](https://segmentfault.com/a/1190000037660531)
+[在输入框实现@ At 功能的一些思考](https://juejin.cn/post/6982251438332182542)
+
+### 视屏“秒发”实现思路
+
+[富媒体在客服 IM 消息通信中的秒发实践](https://juejin.cn/post/7129705874154586125)
+[\<video\>: 视频嵌入元素](https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/video)
+[JavaScript 获取视频的尺寸信息和第一帧图片](https://juejin.cn/post/6844904115445694477)
+
+```html
+<video preload="metadata" poster=""></video>
+```
 
 ### 顺丰在线客服客服端项目
 
@@ -192,7 +204,7 @@ png 图片压缩输出相同格式图片“不减反增”现象。使用 Canvas
 #### electron 通信方式
 
 electron 的进程分为主进程和渲染进程，主进程和渲染进程通过 IPC 通信。
-https://www.w3cschool.cn/electronmanual/electronmanual-ipc-main.html
+<https://www.w3cschool.cn/electronmanual/electronmanual-ipc-main.html>
 
 主进程 ipcMain.on 监听事件 channel，异步消息使用 event.reply(...)，同步消息通过 event.returnValue 发送回发送者。渲染进程 ipcRender.on 监听事件 channel，ipcRender.send/ipcRender.sendSync 发送异步/同步消息。
 
