@@ -1242,24 +1242,24 @@ console.log(JSON.stringify(arr2tree(arr)))
 // }
 // console.log(LPS("abcabcbad"));
 
-Promise.resolve(1)
-  .then(2)
-  .then(Promise.resolve(3))
-  .then((res) => {
-    console.log('res: ', res)
-  })
+// Promise.resolve(1)
+//   .then(2)
+//   .then(Promise.resolve(3))
+//   .then((res) => {
+//     console.log('res: ', res)
+//   })
 
-const p1 = Promise.resolve(111)
-p1.then((res) => {
-  console.log('p1 res1: ', res)
-}).then((res) => {
-  console.log('p1 res2: ', res)
-})
-p1.then((res) => {
-  console.log('p2 res1: ', res)
-}).then((res) => {
-  console.log('p2 res2: ', res)
-})
+// const p1 = Promise.resolve(111)
+// p1.then((res) => {
+//   console.log('p1 res1: ', res)
+// }).then((res) => {
+//   console.log('p1 res2: ', res)
+// })
+// p1.then((res) => {
+//   console.log('p2 res1: ', res)
+// }).then((res) => {
+//   console.log('p2 res2: ', res)
+// })
 
 // Promise.resolve(1)
 //   .then((res1) => {
@@ -1292,8 +1292,145 @@ p1.then((res) => {
 //   return traverse(head)
 // }
 
-function longestPalindrome(str) {
-  const len = str.length
+// 查找最长回文字符串
+// function longestPalindrome(str) {
+//   const len = str.length
+//   let maxLen = 0
+//   let maxStr = ''
 
-  for (let i = 0; i < len; i++) {}
+//   for (let i = 0; i < len; i++) {
+//     let maxStr1 = palindrome(str, i, i)
+//     let maxStr1Len = maxStr1.length
+//     let maxStr2 = palindrome(str, i, i + 1)
+//     let maxStr2Len = maxStr2.length
+
+//     if (maxStr1Len > maxLen) {
+//       maxLen = maxStr1Len
+//       maxStr = maxStr1
+//     }
+
+//     if (maxStr2Len > maxLen) {
+//       maxLen = maxStr2Len
+//       maxStr = maxStr2
+//     }
+//   }
+//   return maxStr
+// }
+
+// function palindrome(str, l, r) {
+//   while (str[l] === str[r] && l > 0 && r < str.length - 1) {
+//     l--
+//     r++
+//   }
+//   return str.slice(l, r + 1)
+// }
+
+// console.log('longestPalindrome: ', longestPalindrome('eabccbaef'))
+
+// 查找公共前缀
+// function longestCommonPrefix(strs) {
+//   let min = Number.MAX_SAFE_INTEGER
+//   const first = strs[0]
+//   const len = strs.length
+
+//   for (let i = 1; i < len; i++) {
+//     let maxLen = twoStrLongestCommonPrefix(first, strs[i])
+//     if (maxLen < min) {
+//       min = maxLen
+//     }
+//   }
+//   return first.slice(0, min)
+// }
+
+// function twoStrLongestCommonPrefix(s, t) {
+//   let i = 0
+//   let j = 0
+//   while (i < s.length && j < t.length && s[i] === t[j]) {
+//     i++
+//     j++
+//   }
+//   return i
+// }
+// console.log('longestCommonPrefix: ', longestCommonPrefix(['abc dcs', 'abc', 'abcd']))
+
+/*
+// 接雨水 [0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1] => 9
+function trap(arr) {
+  const len = arr.length
+  let maxInd = 0
+  let max = -1
+  let res = 0
+
+  // 先找出最高点
+  for (let i = 0; i < len; i++) {
+    if (arr[i] > max) {
+      max = arr[i]
+      maxInd = i
+    }
+  }
+
+  // 遍历最高点左边
+  // 当前比左边最高点低可以积雨水
+  let leftMax = arr[0]
+  for (let j = 1; j < maxInd; j++) {
+    const curr = arr[j]
+    if (leftMax > curr) {
+      res += leftMax - curr
+    } else {
+      leftMax = curr
+    }
+  }
+
+  // 遍历最高点右边
+  // 当前比右边最高点低可以积雨水
+  let rightMax = arr[len - 1]
+  for (let t = len - 1; t > maxInd; t--) {
+    const curr = arr[t]
+    if (rightMax > curr) {
+      res += rightMax - curr
+    } else {
+      rightMax = curr
+    }
+  }
+  return res
 }
+console.log('trap: ', trap([0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1]))
+*/
+
+/*
+// 最长不重复子字符串
+function longestCommonSubsequence(str) {
+  let l = 0
+  let r = 0
+  const len = str.length
+  const mp = {}
+  let maxLen = 0
+  let maxStr = ''
+
+  while (r < len) {
+    const curr = str[r]
+    if (!mp[curr]) {
+      mp[curr] = 1
+    } else {
+      mp[curr]++
+    }
+
+    r++
+
+    while (mp[curr] > 1) {
+      const left = str[l]
+      mp[left]--
+      l++
+      console.log('left: ', left)
+    }
+
+    if (r - l > maxLen) {
+      maxLen = r - l
+      maxStr = str.slice(l, r)
+    }
+  }
+
+  return maxStr
+}
+console.log('longestCommonSubsequence: ', longestCommonSubsequence('abcdefc'))
+*/

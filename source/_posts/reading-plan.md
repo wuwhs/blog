@@ -167,3 +167,11 @@ base64 -> formData
 [跨域请求如何携带 cookie?](https://juejin.cn/post/7066420545327218725)
 
 分为两步处理，处理跨域，响应头设置 `Access-Control-Allow-Origin: https://simple.com` 允许特定的域名发送跨域请求；处理携带 cookie，响应头设置`Access-Control-Allow-Credentials：true` 允许携带身份（Cookie，authorization）。
+
+### 2022-9-19
+
+[嗨，你真的懂 this 吗？](https://juejin.cn/post/6844903805587619854)
+[JS 的 this 指向](https://juejin.cn/post/6844903805587619854)
+[图解 javascript 的 this 指向](https://juejin.cn/post/6844903941021384711)
+[nvm](https://www.jianshu.com/p/cb5265434d91)
+[this,call,bind,apply](https://juejin.cn/post/6844903496253177863)

@@ -274,5 +274,5 @@ puppeteer_download_host=http://npm.taobao.org/mirrors/chromium-browser-snapshots
 - `npm+package-lock.json`。
 - `yarn+yarn-lock.json`。
 
-根据自身情况选择。
+根据自身情况选择。
 见识有限，欢迎指正，谢谢点赞，完～
